@@ -1,0 +1,97 @@
+/* General page styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* Admin menu sidebar */
+.admin-menu {
+  width: 220px;
+  background: #1a73e8;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding-top: 20px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+}
+
+.admin-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-menu ul li {
+  margin: 10px 0;
+}
+
+.admin-menu ul li a {
+  display: block;
+  padding: 12px 20px;
+  color: white;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.admin-menu ul li a:hover {
+  background: #0f5bb5;
+  border-radius: 4px;
+}
+
+/* Active menu item styling */
+.admin-menu ul li a.active {
+  background: #0f5bb5;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+/* Dashboard content */
+.dashboard {
+  margin-left: 240px; /* space for sidebar */
+  padding: 40px;
+}
+
+.dashboard h1 {
+  font-size: 28px;
+  color: #1a73e8;
+  margin-bottom: 20px;
+}
+
+.dashboard p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Footer */
+footer {
+  margin-left: 240px;
+  background: #1a73e8;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 240px);
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .admin-menu {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .dashboard {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  footer {
+    margin-left: 0;
+    width: 100%;
+  }
+}

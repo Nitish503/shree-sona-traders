@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Billing - SOMA TRADERS</title>
+  <link rel="stylesheet" href="billing.css">
+</head>
+<body>
+  <h2>Billing</h2>
+  <form id="bill-form">
+    <label>Memo No:</label><input type="text" id="memo" required><br><br>
+    <label>Date:</label><input type="date" id="date" required><br><br>
+    <label>Customer Name (M/s):</label><input type="text" id="customer" required><br><br>
+    <label>Address:</label><input type="text" id="address" required><br><br>
+
+    <label>Select Items & Quantity:</label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Cement"> Cement
+      Qty: <input type="number" class="item-qty" data-item="Cement" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Bricks"> Bricks
+      Qty: <input type="number" class="item-qty" data-item="Bricks" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Sand"> Sand
+      Qty: <input type="number" class="item-qty" data-item="Sand" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Steel Rods"> Steel Rods
+      Qty: <input type="number" class="item-qty" data-item="Steel Rods" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Paint"> Paint
+      Qty: <input type="number" class="item-qty" data-item="Paint" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Tiles"> Tiles
+      Qty: <input type="number" class="item-qty" data-item="Tiles" min="1" value="1">
+    </label><br>
+    <label>
+      <input type="checkbox" class="item-check" value="Wood"> Wood
+      Qty: <input type="number" class="item-qty" data-item="Wood" min="1" value="1">
+    </label><br><br>
+
+    <label>Total:</label><input type="number" id="total" readonly><br><br>
+    <label>Paid:</label><input type="number" id="paid" required><br><br>
+    <label>Due:</label><input type="number" id="due" readonly><br><br>
+
+    <button type="submit" class="btn">Generate Bill</button>
+  </form>
+
+  <div id="bill-output" class="hidden">
+    <div id="bill-details"></div>
+    <button class="btn" onclick="window.print()">Print / Download PDF</button>
+  </div>
+
+  <a href="admin.html" class="btn">Back to Menu</a>
+
+  <script src="billing.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+/* General page styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* Section heading */
+.stock {
+  padding: 40px;
+}
+
+.stock h2 {
+  font-size: 28px;
+  color: #1a73e8;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Stock table */
+.stock-table {
+  width: 80%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.stock-table th, .stock-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.stock-table th {
+  background: #1a73e8;
+  color: white;
+}
+
+.stock-table tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+/* Update Stock button */
+.btn {
+  background: #1a73e8;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #0f5bb5;
+}
+
+/* Popup form styling */
+.popup-form {
+  display: none; /* hidden by default */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.form-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 350px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.form-content h3 {
+  margin-bottom: 20px;
+  color: #1a73e8;
+}
+
+.form-content label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+.form-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+.close:hover {
+  color: #1a73e8;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .stock-table {
+    width: 95%;
+    font-size: 14px;
+  }
+
+  .form-content {
+    width: 90%;
+  }
+}

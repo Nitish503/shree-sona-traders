@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock Management - SHREE SONA TRADER</title>
+  <link rel="stylesheet" href="stock.css">
+</head>
+<body>
+
+  <section class="stock">
+    <h2>Manage Items</h2>
+
+    <!-- Add Item Form -->
+    <form id="addItemForm">
+      <label for="itemName">Item Name:</label>
+      <input type="text" id="itemName" required>
+
+      <label for="itemDesc">Description:</label>
+      <input type="text" id="itemDesc" required>
+
+      <label for="itemCategory">Category:</label>
+      <select id="itemCategory" required>
+        <option value="construction">Construction</option>
+        <option value="rental">Rental</option>
+        <option value="fuel">Fuel</option>
+      </select>
+
+      <button type="submit" class="btn">Add Item</button>
+    </form>
+
+    <!-- Existing Items -->
+    <h3>Current Items</h3>
+    <ul id="itemList"></ul>
+  </section>
+
+  <script src="stock.js"></script>
+</body>
+</html>

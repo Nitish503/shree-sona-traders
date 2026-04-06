@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Construction Material Services - SHREE SONA TRADER</title>
+  <link rel="stylesheet" href="construction.css">
+</head>
+<body>
+
+  <section class="services">
+    <h2>Construction Materials</h2>
+    <div class="cards" id="cardsContainer">
+      <!-- Cards will be injected here by JS -->
+    </div>
+  </section>
+
+  <!-- Popup Order Form -->
+  <div id="orderForm" class="popup-form">
+    <div class="form-content">
+      <span class="close" onclick="closeOrderForm()">&times;</span>
+      <h3 id="formTitle">Place Order</h3>
+      <form>
+        <label for="item">Item:</label>
+        <input type="text" id="item" name="item" readonly>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity">
+
+        <label for="customerName">Your Name:</label>
+        <input type="text" id="customerName" name="customerName" placeholder="Enter your name">
+
+        <label for="contact">Contact Number:</label>
+        <input type="tel" id="contact" name="contact" placeholder="Enter contact number">
+
+        <label for="address">Delivery Address:</label>
+        <textarea id="address" name="address" placeholder="Enter delivery address"></textarea>
+
+        <button type="submit" class="btn">Submit Order</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 SHREE SONA TRADER. All rights reserved.</p>
+  </footer>
+
+  <script src="construction.js"></script>
+</body>
+</html>
