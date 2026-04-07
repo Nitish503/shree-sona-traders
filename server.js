@@ -8,10 +8,8 @@ const app = express();
 // --------------------
 // Enable CORS
 // --------------------
-// Option 1: Allow all origins (easy for testing)
-app.use(cors());
-
-// Option 2: Restrict only to your frontend domain
+app.use(cors()); // allow all origins for now
+// For production, restrict:
 // app.use(cors({ origin: "https://shree-sona-traders.onrender.com" }));
 
 // Middleware
@@ -21,7 +19,7 @@ app.use(express.json());
 // Connect to Neon PostgreSQL
 // --------------------
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // set in Render environment
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
@@ -138,10 +136,16 @@ app.get("/items/:category", async (req, res) => {
 
 app.post("/items", async (req, res) => {
   const { name, description, category } = req.body;
+  console.log("Received item:", req.body);
+
+  if (!name || !category) {
+    return res.status(400).send("Name and Category are required");
+  }
+
   try {
     const result = await pool.query(
       "INSERT INTO items (name, description, category, status) VALUES ($1, $2, LOWER($3), 'available') RETURNING *",
-      [name, description, category]
+      [name, description || null, category]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -156,7 +160,7 @@ app.put("/items/:id", async (req, res) => {
   try {
     const result = await pool.query(
       "UPDATE items SET name=$1, description=$2, category=LOWER($3) WHERE id=$4 RETURNING *",
-      [name, description, category, id]
+      [name, description || null, category, id]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -223,10 +227,16 @@ app.delete("/items/bulk/delete", async (req, res) => {
 // --------------------
 app.post("/customers", async (req, res) => {
   const { name, email, phone, address } = req.body;
+  console.log("Received customer:", req.body);
+
+  if (!name || !email) {
+    return res.status(400).send("Name and Email are required");
+  }
+
   try {
     const result = await pool.query(
       "INSERT INTO customers (name, email, phone, address) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, phone, address]
+      [name, email, phone || null, address || null]
     );
     res.json(result.rows[0]);
   } catch (err) {
