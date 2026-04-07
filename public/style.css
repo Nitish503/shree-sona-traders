@@ -12,7 +12,7 @@ body {
   justify-content: space-between;
   align-items: center;
   background: #1a73e8;
-  padding: 10px 20px;
+  padding: 12px 20px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -33,7 +33,7 @@ body {
 
 .nav-links li {
   margin-left: 15px;
-  position: relative; /* Important for dropdown positioning */
+  position: relative;
 }
 
 .nav-links a {
@@ -57,8 +57,8 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  top: 100%; /* directly below parent */
-  left: 0;   /* aligned with parent */
+  top: 100%;
+  left: 0;
   min-width: 160px;
   border-radius: 4px;
 }
@@ -83,20 +83,21 @@ body {
 
 /* Hero Section */
 .hero {
-  padding: 100px 20px;
+  padding: 60px 20px;
   text-align: center;
   background: linear-gradient(to right, #e3f2fd, #bbdefb);
 }
 
 .hero h1 {
-  font-size: 48px;
+  font-size: 36px;
   margin-bottom: 20px;
   color: #1a73e8;
 }
 
 .hero p {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 30px;
+  color: #444;
 }
 
 .btn {
@@ -108,6 +109,7 @@ body {
   cursor: pointer;
   text-decoration: none;
   transition: background 0.3s;
+  font-size: 16px;
 }
 
 .btn:hover {
@@ -121,22 +123,26 @@ footer {
   text-align: center;
   padding: 20px;
   margin-top: 40px;
+  font-size: 14px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav-links {
-    display: none;
     flex-direction: column;
     width: 100%;
     background: #1a73e8;
     position: absolute;
     top: 60px;
     left: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
 
   .nav-links.active {
-    display: flex;
+    transform: translateY(0);
+    opacity: 1;
   }
 
   .nav-links li {
@@ -149,7 +155,45 @@ footer {
   }
 
   .dropdown-menu {
-    position: static; /* stack inside mobile menu */
+    position: static;
     min-width: 100%;
+  }
+
+  /* Hero adjustments */
+  .hero {
+    padding: 40px 15px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  footer {
+    font-size: 12px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 22px;
+  }
+
+  .hero p {
+    font-size: 13px;
+  }
+
+  .logo {
+    font-size: 18px;
   }
 }
