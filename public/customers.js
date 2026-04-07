@@ -18,6 +18,7 @@ async function loadCustomers() {
         <h3>${c.name}</h3>
         <p>Email: ${c.email}</p>
         <p>Phone: ${c.phone}</p>
+        <p>Address: ${c.address || "N/A"}</p>
       `;
       container.appendChild(div);
     });

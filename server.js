@@ -28,13 +28,14 @@ async function initDB() {
       );
     `);
 
-    // Customers table
+    // Customers table (now includes address)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS customers (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
         email VARCHAR(100) UNIQUE,
-        phone VARCHAR(20)
+        phone VARCHAR(20),
+        address TEXT
       );
     `);
 
@@ -94,33 +95,13 @@ initDB();
 app.use(express.static(path.join(__dirname, "public")));
 
 // Routes for specific pages
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/construction", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "construction.html"));
-});
-
-app.get("/rental", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "rental.html"));
-});
-
-app.get("/fuel", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "fuel.html"));
-});
-
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
-
-app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "register.html"));
-});
-
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "about.html"));
-});
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.get("/construction", (req, res) => res.sendFile(path.join(__dirname, "public", "construction.html")));
+app.get("/rental", (req, res) => res.sendFile(path.join(__dirname, "public", "rental.html")));
+app.get("/fuel", (req, res) => res.sendFile(path.join(__dirname, "public", "fuel.html")));
+app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
+app.get("/register", (req, res) => res.sendFile(path.join(__dirname, "public", "register.html")));
+app.get("/about", (req, res) => res.sendFile(path.join(__dirname, "public", "about.html")));
 
 // Example API route for items
 app.get("/items", async (req, res) => {
@@ -139,11 +120,11 @@ app.get("/items", async (req, res) => {
 
 // Save new customer
 app.post("/customers", async (req, res) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, address } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO customers (name, email, phone) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, phone]
+      "INSERT INTO customers (name, email, phone, address) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, email, phone, address]
     );
     res.json(result.rows[0]);
   } catch (err) {
