@@ -28,7 +28,7 @@ document.getElementById("bulk-delete-btn").addEventListener("click", () => {
 
     const name = document.getElementById("name").value.trim();
     const description = document.getElementById("description").value.trim();
-    const category = document.getElementById("category").value;
+    const category = document.getElementById("category").value.trim();
 
     if (!name || !description || !category) {
       alert("⚠️ Please fill all fields");
