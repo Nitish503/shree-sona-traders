@@ -7,7 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --------------------
 // Connect to Neon PostgreSQL
+// --------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL, // set in Render environment
   ssl: { rejectUnauthorized: false }
@@ -18,18 +20,16 @@ const pool = new Pool({
 // --------------------
 async function initDB() {
   try {
-    // Items table (with status)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS items (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(100),
+        name VARCHAR(100) NOT NULL,
         description TEXT,
         category VARCHAR(50),
         status VARCHAR(20) DEFAULT 'available'
       );
     `);
 
-    // Customers table (now includes address)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS customers (
         id SERIAL PRIMARY KEY,
@@ -40,7 +40,6 @@ async function initDB() {
       );
     `);
 
-    // Orders table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
@@ -51,7 +50,6 @@ async function initDB() {
       );
     `);
 
-    // Admins table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS admins (
         id SERIAL PRIMARY KEY,
@@ -60,7 +58,6 @@ async function initDB() {
       );
     `);
 
-    // Billing table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS billing (
         id SERIAL PRIMARY KEY,
@@ -71,7 +68,6 @@ async function initDB() {
       );
     `);
 
-    // Rates table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS rates (
         id SERIAL PRIMARY KEY,
@@ -86,8 +82,6 @@ async function initDB() {
     console.error("❌ Error creating tables:", err);
   }
 }
-
-// Run table creation once when server starts
 initDB();
 
 // --------------------
@@ -95,7 +89,6 @@ initDB();
 // --------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routes for specific pages
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 app.get("/construction", (req, res) => res.sendFile(path.join(__dirname, "public", "construction.html")));
 app.get("/rental", (req, res) => res.sendFile(path.join(__dirname, "public", "rental.html")));
@@ -115,23 +108,23 @@ app.get("/items", async (req, res) => {
     const result = await pool.query("SELECT * FROM items ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching items:", err);
     res.status(500).send("Error fetching items");
   }
 });
 
-// Get items by category
+// Get items by category (case-insensitive)
 app.get("/items/:category", async (req, res) => {
   const { category } = req.params;
   try {
     const result = await pool.query(
-      "SELECT * FROM items WHERE category = $1 ORDER BY id DESC",
+      "SELECT * FROM items WHERE LOWER(category) = LOWER($1) ORDER BY id DESC",
       [category]
     );
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching items");
+    console.error("Error fetching items by category:", err);
+    res.status(500).send("Error fetching items by category");
   }
 });
 
@@ -140,7 +133,7 @@ app.post("/items", async (req, res) => {
   const { name, description, category } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO items (name, description, category, status) VALUES ($1, $2, $3, 'available') RETURNING *",
+      "INSERT INTO items (name, description, category, status) VALUES ($1, $2, LOWER($3), 'available') RETURNING *",
       [name, description, category]
     );
     res.json(result.rows[0]);
@@ -156,7 +149,7 @@ app.put("/items/:id", async (req, res) => {
   const { name, description, category } = req.body;
   try {
     const result = await pool.query(
-      "UPDATE items SET name=$1, description=$2, category=$3 WHERE id=$4 RETURNING *",
+      "UPDATE items SET name=$1, description=$2, category=LOWER($3) WHERE id=$4 RETURNING *",
       [name, description, category, id]
     );
     res.json(result.rows[0]);
@@ -181,7 +174,7 @@ app.delete("/items/:id", async (req, res) => {
 // Toggle stock status
 app.put("/items/:id/status", async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // 'available' or 'out_of_stock'
+  const { status } = req.body;
   try {
     const result = await pool.query(
       "UPDATE items SET status=$1 WHERE id=$2 RETURNING *",
