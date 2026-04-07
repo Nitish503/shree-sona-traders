@@ -2,48 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fuel Services - SHREE SONA TRADER</title>
+  <title>Fuel Services</title>
   <link rel="stylesheet" href="fuel.css">
 </head>
 <body>
+  <nav class="navbar">
+    <div class="logo">SHREE SONA TRADER</div>
+    <div class="menu-toggle">&#9776;</div>
+  </nav>
 
-  <section class="services">
-    <h2>Fuel Services</h2>
-    <div class="cards" id="cardsContainer">
-      <!-- Cards will be injected here by fuel.js -->
-    </div>
+  <section class="hero">
+    <h1>Fuel Services</h1>
+    <p>Browse available fuel items below.</p>
   </section>
 
-  <!-- Popup Order Form -->
-  <div id="orderForm" class="popup-form">
-    <div class="form-content">
-      <span class="close" onclick="closeOrderForm()">&times;</span>
-      <h3 id="formTitle">Place Order</h3>
-      <form>
-        <label for="item">Fuel Type:</label>
-        <input type="text" id="item" name="item" readonly>
-
-        <label for="quantity">Quantity (litres/cylinders):</label>
-        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity">
-
-        <label for="customerName">Your Name:</label>
-        <input type="text" id="customerName" name="customerName" placeholder="Enter your name">
-
-        <label for="contact">Contact Number:</label>
-        <input type="tel" id="contact" name="contact" placeholder="Enter contact number">
-
-        <label for="address">Delivery Address:</label>
-        <textarea id="address" name="address" placeholder="Enter delivery address"></textarea>
-
-        <button type="submit" class="btn">Submit Order</button>
-      </form>
-    </div>
-  </div>
+  <div id="fuel-items" class="item-container"></div>
 
   <footer>
-    <p>&copy; 2026 SHREE SONA TRADER. All rights reserved.</p>
+    © 2026 SONA TRADER. All rights reserved.
   </footer>
 
-  <script src="fuel.js"></script>
+  <script>
+    async function loadFuel() {
+      const res = await fetch("/items/fuel");
+      const items = await res.json();
+      const container = document.getElementById("fuel-items");
+      container.innerHTML = "";
+
+      items.forEach(item => {
+        if (item.status === "available") {
+          const div = document.createElement("div");
+          div.className = "item-card";
+          div.innerHTML = `<h4>${item.name}</h4><p>${item.description}</p>`;
+          container.appendChild(div);
+        }
+      });
+    }
+    loadFuel();
+  </script>
 </body>
 </html>

@@ -2,36 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Stock Management - SHREE SONA TRADER</title>
-  <link rel="stylesheet" href="stock.css">
+  <title>Stock Management</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h2>Stock Management</h2>
 
-  <section class="stock">
-    <h2>Manage Items</h2>
+  <!-- Add Item Form -->
+  <form id="add-item-form">
+    <input type="text" id="name" placeholder="Item Name" required>
+    <input type="text" id="description" placeholder="Description" required>
+    <select id="category" required>
+      <option value="construction">Construction</option>
+      <option value="rental">Rental</option>
+      <option value="fuel">Fuel</option>
+    </select>
+    <button type="submit">Add Item</button>
+  </form>
 
-    <!-- Add Item Form -->
-    <form id="addItemForm">
-      <label for="itemName">Item Name:</label>
-      <input type="text" id="itemName" required>
+  <!-- Search/Filter -->
+  <h3>Filter Items</h3>
+  <select id="filter-category">
+    <option value="all">All</option>
+    <option value="construction">Construction</option>
+    <option value="rental">Rental</option>
+    <option value="fuel">Fuel</option>
+  </select>
 
-      <label for="itemDesc">Description:</label>
-      <input type="text" id="itemDesc" required>
+  <!-- Bulk Actions -->
+  <h3>Bulk Actions</h3>
+  <button onclick="bulkDelete()">Delete Selected</button>
+  <button onclick="bulkUpdate('available')">Mark Available</button>
+  <button onclick="bulkUpdate('out_of_stock')">Mark Out of Stock</button>
 
-      <label for="itemCategory">Category:</label>
-      <select id="itemCategory" required>
-        <option value="construction">Construction</option>
-        <option value="rental">Rental</option>
-        <option value="fuel">Fuel</option>
-      </select>
-
-      <button type="submit" class="btn">Add Item</button>
-    </form>
-
-    <!-- Existing Items -->
-    <h3>Current Items</h3>
-    <ul id="itemList"></ul>
-  </section>
+  <!-- Item List -->
+  <h3>All Items</h3>
+  <div id="item-list"></div>
 
   <script src="stock.js"></script>
 </body>
