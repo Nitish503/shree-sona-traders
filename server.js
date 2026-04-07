@@ -258,5 +258,5 @@ app.get("/customers", async (req, res) => {
 // --------------------
 // Server Port
 // --------------------
-const PORT = process.env.PORT || 10000; // ✅ match Render logs
+const PORT = process.env.PORT || 10000; // ✅ matches Render logs
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
