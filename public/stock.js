@@ -32,7 +32,7 @@ document.getElementById("bulk-delete-btn").addEventListener("click", () => {
 
     if (!name || !description || !category) {
       alert("⚠️ Please fill all fields");
-      return;
+    
     }
 
     try {
