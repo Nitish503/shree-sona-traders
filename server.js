@@ -4,7 +4,17 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
+
+// --------------------
+// Enable CORS
+// --------------------
+// Option 1: Allow all origins (easy for testing)
 app.use(cors());
+
+// Option 2: Restrict only to your frontend domain
+// app.use(cors({ origin: "https://shree-sona-traders.onrender.com" }));
+
+// Middleware
 app.use(express.json());
 
 // --------------------
@@ -180,9 +190,10 @@ app.put("/items/:id/status", async (req, res) => {
     res.status(500).send("Error updating status");
   }
 });
+
 // Bulk update status
 app.put("/items/bulk/status", async (req, res) => {
-  const { ids, status } = req.body; // ids = array of item IDs
+  const { ids, status } = req.body;
   try {
     const result = await pool.query(
       "UPDATE items SET status=$1 WHERE id = ANY($2::int[]) RETURNING *",
@@ -197,7 +208,7 @@ app.put("/items/bulk/status", async (req, res) => {
 
 // Bulk delete
 app.delete("/items/bulk/delete", async (req, res) => {
-  const { ids } = req.body; // ids = array of item IDs
+  const { ids } = req.body;
   try {
     await pool.query("DELETE FROM items WHERE id = ANY($1::int[])", [ids]);
     res.sendStatus(200);
