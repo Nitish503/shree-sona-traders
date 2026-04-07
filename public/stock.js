@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadItems();
 
   document.getElementById("add-item-form").addEventListener("submit", async (e) => {
-    ...
+  
   });
 
   document.getElementById("filter-category").addEventListener("change", loadItems);
