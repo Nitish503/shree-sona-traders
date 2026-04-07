@@ -195,33 +195,6 @@ app.put("/items/:id/status", async (req, res) => {
   }
 });
 
-// Bulk update status
-app.put("/items/bulk/status", async (req, res) => {
-  const { ids, status } = req.body;
-  try {
-    const result = await pool.query(
-      "UPDATE items SET status=$1 WHERE id = ANY($2::int[]) RETURNING *",
-      [status, ids]
-    );
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error bulk updating:", err.message);
-    res.status(500).send("Error bulk updating: " + err.message);
-  }
-});
-
-// Bulk delete
-app.delete("/items/bulk/delete", async (req, res) => {
-  const { ids } = req.body;
-  try {
-    await pool.query("DELETE FROM items WHERE id = ANY($1::int[])", [ids]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Error bulk deleting:", err.message);
-    res.status(500).send("Error bulk deleting: " + err.message);
-  }
-});
-
 // --------------------
 // Customers API
 // --------------------
