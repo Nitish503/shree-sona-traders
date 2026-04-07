@@ -87,7 +87,7 @@ async function initDB() {
 
     console.log("✅ Tables verified/created successfully");
   } catch (err) {
-    console.error("❌ Error creating tables:", err);
+    console.error("❌ Error creating tables:", err.message);
   }
 }
 initDB();
@@ -115,8 +115,8 @@ app.get("/items", async (req, res) => {
     const result = await pool.query("SELECT * FROM items ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error("Error fetching items:", err);
-    res.status(500).send("Error fetching items");
+    console.error("Error fetching items:", err.message);
+    res.status(500).send("Error fetching items: " + err.message);
   }
 });
 
@@ -129,8 +129,8 @@ app.get("/items/:category", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    console.error("Error fetching items by category:", err);
-    res.status(500).send("Error fetching items by category");
+    console.error("Error fetching items by category:", err.message);
+    res.status(500).send("Error fetching items by category: " + err.message);
   }
 });
 
@@ -149,8 +149,8 @@ app.post("/items", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error adding item:", err);
-    res.status(500).send("Error adding item");
+    console.error("Error adding item:", err.message);
+    res.status(500).send("Error adding item: " + err.message);
   }
 });
 
@@ -164,8 +164,8 @@ app.put("/items/:id", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error editing item:", err);
-    res.status(500).send("Error editing item");
+    console.error("Error editing item:", err.message);
+    res.status(500).send("Error editing item: " + err.message);
   }
 });
 
@@ -175,8 +175,8 @@ app.delete("/items/:id", async (req, res) => {
     await pool.query("DELETE FROM items WHERE id=$1", [id]);
     res.sendStatus(200);
   } catch (err) {
-    console.error("Error deleting item:", err);
-    res.status(500).send("Error deleting item");
+    console.error("Error deleting item:", err.message);
+    res.status(500).send("Error deleting item: " + err.message);
   }
 });
 
@@ -190,8 +190,8 @@ app.put("/items/:id/status", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error updating status:", err);
-    res.status(500).send("Error updating status");
+    console.error("Error updating status:", err.message);
+    res.status(500).send("Error updating status: " + err.message);
   }
 });
 
@@ -205,8 +205,8 @@ app.put("/items/bulk/status", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    console.error("Error bulk updating:", err);
-    res.status(500).send("Error bulk updating");
+    console.error("Error bulk updating:", err.message);
+    res.status(500).send("Error bulk updating: " + err.message);
   }
 });
 
@@ -217,8 +217,8 @@ app.delete("/items/bulk/delete", async (req, res) => {
     await pool.query("DELETE FROM items WHERE id = ANY($1::int[])", [ids]);
     res.sendStatus(200);
   } catch (err) {
-    console.error("Error bulk deleting:", err);
-    res.status(500).send("Error bulk deleting");
+    console.error("Error bulk deleting:", err.message);
+    res.status(500).send("Error bulk deleting: " + err.message);
   }
 });
 
@@ -240,8 +240,8 @@ app.post("/customers", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("Error saving customer:", err);
-    res.status(500).send("Error saving customer");
+    console.error("Error saving customer:", err.message);
+    res.status(500).send("Error saving customer: " + err.message);
   }
 });
 
@@ -250,10 +250,13 @@ app.get("/customers", async (req, res) => {
     const result = await pool.query("SELECT * FROM customers ORDER BY id DESC");
     res.json(result.rows);
   } catch (err) {
-    console.error("Error fetching customers:", err);
-    res.status(500).send("Error fetching customers");
+    console.error("Error fetching customers:", err.message);
+    res.status(500).send("Error fetching customers: " + err.message);
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// --------------------
+// Server Port
+// --------------------
+const PORT = process.env.PORT || 10000; // ✅ match Render logs
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
