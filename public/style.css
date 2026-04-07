@@ -11,7 +11,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #000000; /* black navbar */
+  background: #000000;
   padding: 18px 24px;
   position: sticky;
   top: 0;
@@ -38,7 +38,7 @@ body {
   background: #000000;
   position: fixed;
   top: 0;
-  left: -100%; /* slide from left */
+  left: -100%; /* start hidden off LEFT side */
   height: 100%;
   width: 80%;
   max-width: 300px;
@@ -47,7 +47,7 @@ body {
 }
 
 .nav-links.active {
-  left: 0;
+  left: 0; /* slide IN from left */
 }
 
 .nav-links li {
@@ -83,7 +83,7 @@ body {
 .hero {
   padding: 100px 20px;
   text-align: center;
-  background: #f4f4f4; /* light background */
+  background: #f4f4f4;
   color: #000000;
 }
 
@@ -99,7 +99,7 @@ body {
 }
 
 .btn {
-  background: #000000; /* black button */
+  background: #000000;
   color: white;
   padding: 14px 28px;
   border: none;
