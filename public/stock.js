@@ -5,7 +5,26 @@ document.addEventListener("DOMContentLoaded", () => {
   loadItems();
 
   document.getElementById("add-item-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    ...
+  });
+
+  document.getElementById("filter-category").addEventListener("change", loadItems);
+});
+
+document.getElementById("bulk-available-btn").addEventListener("click", () => {
+  const ids = getSelectedIds();
+  if (ids.length) bulkUpdateStatus(ids, "available");
+});
+
+document.getElementById("bulk-outofstock-btn").addEventListener("click", () => {
+  const ids = getSelectedIds();
+  if (ids.length) bulkUpdateStatus(ids, "out_of_stock");
+});
+
+document.getElementById("bulk-delete-btn").addEventListener("click", () => {
+  const ids = getSelectedIds();
+  if (ids.length) bulkDelete(ids);
+});
 
     const name = document.getElementById("name").value.trim();
     const description = document.getElementById("description").value.trim();
@@ -57,14 +76,15 @@ async function loadItems() {
       const card = document.createElement("div");
       card.className = "item-card";
       card.innerHTML = `
-        <h4>${item.name}</h4>
-        <p>${item.description}</p>
-        <p><strong>Category:</strong> ${item.category}</p>
-        <p><strong>Status:</strong> ${item.status}</p>
-        <button onclick="markStatus(${item.id}, 'available')">Mark Available</button>
-        <button onclick="markStatus(${item.id}, 'out_of_stock')">Mark Out of Stock</button>
-        <button onclick="deleteItem(${item.id})">Delete</button>
-      `;
+  <input type="checkbox" class="item-checkbox" value="${item.id}">
+  <h4>${item.name}</h4>
+  <p>${item.description}</p>
+  <p><strong>Category:</strong> ${item.category}</p>
+  <p><strong>Status:</strong> ${item.status}</p>
+  <button onclick="markStatus(${item.id}, 'available')">Mark Available</button>
+  <button onclick="markStatus(${item.id}, 'out_of_stock')">Mark Out of Stock</button>
+  <button onclick="deleteItem(${item.id})">Delete</button>
+`;
       itemList.appendChild(card);
     });
   } catch (err) {
@@ -107,4 +127,48 @@ async function deleteItem(id) {
     console.error("Error deleting item:", err);
     alert("❌ Server error deleting item");
   }
+}
+async function bulkUpdateStatus(ids, status) {
+  try {
+    const res = await fetch(`${API_BASE}/items/bulk/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids, status })
+    });
+
+    if (res.ok) {
+      alert(`✅ Selected items marked as ${status}`);
+      loadItems();
+    } else {
+      alert("❌ Failed to bulk update status");
+    }
+  } catch (err) {
+    console.error("Error bulk updating:", err);
+    alert("❌ Server error bulk updating");
+  }
+}
+
+async function bulkDelete(ids) {
+  if (!confirm("Are you sure you want to delete selected items?")) return;
+  try {
+    const res = await fetch(`${API_BASE}/items/bulk/delete`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids })
+    });
+
+    if (res.ok) {
+      alert("✅ Selected items deleted successfully");
+      loadItems();
+    } else {
+      alert("❌ Failed to bulk delete items");
+    }
+  } catch (err) {
+    console.error("Error bulk deleting:", err);
+    alert("❌ Server error bulk deleting");
+  }
+}
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll(".item-checkbox:checked"))
+              .map(cb => parseInt(cb.value));
 }
