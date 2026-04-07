@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const { Pool } = require("pg"); // Neon PostgreSQL client
+const { Pool } = require("pg");
 
 const app = express();
 app.use(cors());
@@ -89,6 +89,7 @@ initDB();
 // --------------------
 app.use(express.static(path.join(__dirname, "public")));
 
+// Routes for pages
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 app.get("/construction", (req, res) => res.sendFile(path.join(__dirname, "public", "construction.html")));
 app.get("/rental", (req, res) => res.sendFile(path.join(__dirname, "public", "rental.html")));
@@ -99,10 +100,8 @@ app.get("/about", (req, res) => res.sendFile(path.join(__dirname, "public", "abo
 app.get("/stock", (req, res) => res.sendFile(path.join(__dirname, "public", "stock.html")));
 
 // --------------------
-// Items API (Stock Management)
+// Items API
 // --------------------
-
-// Get all items
 app.get("/items", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM items ORDER BY id DESC");
@@ -113,7 +112,6 @@ app.get("/items", async (req, res) => {
   }
 });
 
-// Get items by category (case-insensitive)
 app.get("/items/:category", async (req, res) => {
   const { category } = req.params;
   try {
@@ -128,7 +126,6 @@ app.get("/items/:category", async (req, res) => {
   }
 });
 
-// Add new item
 app.post("/items", async (req, res) => {
   const { name, description, category } = req.body;
   try {
@@ -143,7 +140,6 @@ app.post("/items", async (req, res) => {
   }
 });
 
-// Edit item details
 app.put("/items/:id", async (req, res) => {
   const { id } = req.params;
   const { name, description, category } = req.body;
@@ -159,7 +155,6 @@ app.put("/items/:id", async (req, res) => {
   }
 });
 
-// Delete item
 app.delete("/items/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -171,7 +166,6 @@ app.delete("/items/:id", async (req, res) => {
   }
 });
 
-// Toggle stock status
 app.put("/items/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -187,38 +181,9 @@ app.put("/items/:id/status", async (req, res) => {
   }
 });
 
-// Bulk update status
-app.put("/items/bulk/status", async (req, res) => {
-  const { ids, status } = req.body;
-  try {
-    const result = await pool.query(
-      "UPDATE items SET status=$1 WHERE id = ANY($2::int[]) RETURNING *",
-      [status, ids]
-    );
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error bulk updating:", err);
-    res.status(500).send("Error bulk updating");
-  }
-});
-
-// Bulk delete
-app.delete("/items/bulk/delete", async (req, res) => {
-  const { ids } = req.body;
-  try {
-    await pool.query("DELETE FROM items WHERE id = ANY($1::int[])", [ids]);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Error bulk deleting:", err);
-    res.status(500).send("Error bulk deleting");
-  }
-});
-
 // --------------------
-// Customer Registration API
+// Customers API
 // --------------------
-
-// Save new customer
 app.post("/customers", async (req, res) => {
   const { name, email, phone, address } = req.body;
   try {
@@ -233,7 +198,6 @@ app.post("/customers", async (req, res) => {
   }
 });
 
-// Fetch all customers
 app.get("/customers", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM customers ORDER BY id DESC");

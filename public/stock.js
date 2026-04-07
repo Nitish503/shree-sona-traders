@@ -1,8 +1,9 @@
-// Load items on page load
+// Use your deployed Render backend URL
+const API_BASE = "https://shree-sona-trader.onrender.com";
+
 document.addEventListener("DOMContentLoaded", () => {
   loadItems();
 
-  // Handle Add Item form
   document.getElementById("add-item-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -11,40 +12,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const category = document.getElementById("category").value;
 
     if (!name || !description || !category) {
-      alert("Please fill all fields");
+      alert("⚠️ Please fill all fields");
       return;
     }
 
     try {
-      await fetch("http://localhost:5000/items", {
+      const res = await fetch(`${API_BASE}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, description, category })
       });
 
-      // Clear form
-      document.getElementById("add-item-form").reset();
-
-      // Refresh item list
-      loadItems();
+      if (res.ok) {
+        alert("✅ Item added successfully!");
+        document.getElementById("add-item-form").reset();
+        loadItems();
+      } else {
+        alert("❌ Failed to add item. Please try again.");
+      }
     } catch (err) {
       console.error("Error adding item:", err);
-      alert("Failed to add item");
+      alert("❌ Server error adding item");
     }
   });
 
-  // Handle filter dropdown
   document.getElementById("filter-category").addEventListener("change", loadItems);
 });
 
-// --------------------
-// Load Items
-// --------------------
 async function loadItems() {
   const category = document.getElementById("filter-category").value;
-  let url = "http://localhost:5000/items";
+  let url = `${API_BASE}/items`;
   if (category !== "all") {
-    url = `http://localhost:5000/items/${category}`;
+    url = `${API_BASE}/items/${category}`;
   }
 
   try {
@@ -70,47 +69,42 @@ async function loadItems() {
     });
   } catch (err) {
     console.error("Error loading items:", err);
+    alert("❌ Failed to load items");
   }
 }
 
-// --------------------
-// Update Item Status
-// --------------------
 async function markStatus(id, status) {
   try {
-    await fetch(`http://localhost:5000/items/${id}/status`, {
+    const res = await fetch(`${API_BASE}/items/${id}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status })
     });
-    loadItems();
+
+    if (res.ok) {
+      alert(`✅ Item marked as ${status}`);
+      loadItems();
+    } else {
+      alert("❌ Failed to update status");
+    }
   } catch (err) {
     console.error("Error updating status:", err);
+    alert("❌ Server error updating status");
   }
 }
 
-// --------------------
-// Delete Item
-// --------------------
 async function deleteItem(id) {
   if (!confirm("Are you sure you want to delete this item?")) return;
   try {
-    await fetch(`http://localhost:5000/items/${id}`, { method: "DELETE" });
-    loadItems();
+    const res = await fetch(`${API_BASE}/items/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      alert("✅ Item deleted successfully");
+      loadItems();
+    } else {
+      alert("❌ Failed to delete item");
+    }
   } catch (err) {
     console.error("Error deleting item:", err);
+    alert("❌ Server error deleting item");
   }
-}
-
-// --------------------
-// Bulk Actions
-// --------------------
-async function bulkDelete() {
-  // Example: implement later with checkboxes
-  alert("Bulk delete not yet implemented");
-}
-
-async function bulkUpdate(status) {
-  // Example: implement later with checkboxes
-  alert(`Bulk update to ${status} not yet implemented`);
 }
