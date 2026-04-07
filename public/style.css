@@ -11,7 +11,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #0d47a1; /* deep blue */
+  background: #0d47a1;
   padding: 18px 24px;
   position: sticky;
   top: 0;
@@ -20,29 +20,47 @@ body {
 
 .logo {
   color: white;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
-  letter-spacing: 1px;
 }
 
+.menu-toggle {
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Slide-in Menu */
 .nav-links {
   list-style: none;
-  display: flex;
   margin: 0;
-  padding: 0;
+  padding: 60px 20px;
+  background: #0d47a1;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 80%;
+  max-width: 300px;
+  transition: left 0.3s ease;
+  z-index: 1001;
+}
+
+.nav-links.active {
+  left: 0;
 }
 
 .nav-links li {
-  margin-left: 20px;
-  position: relative;
+  margin: 20px 0;
 }
 
 .nav-links a {
   color: white;
-  padding: 12px 18px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 500;
+  display: block;
+  padding: 10px;
   transition: background 0.3s;
 }
 
@@ -51,80 +69,43 @@ body {
   border-radius: 4px;
 }
 
-/* Dropdown Menu */
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  background: #0d47a1;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  top: 100%;
-  left: 0;
-  min-width: 180px;
-  border-radius: 4px;
-}
-
-.dropdown-menu li a {
-  padding: 12px;
-  color: white;
-  display: block;
-}
-
-.dropdown:hover .dropdown-menu {
-  display: block;
-}
-
-/* Hamburger Menu */
-.menu-toggle {
-  display: none;
-  font-size: 30px;
-  color: white;
-  cursor: pointer;
-}
-
-/* Overlay background */
+/* Overlay */
 .overlay {
   display: none;
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 900;
+  z-index: 1000;
 }
 
 /* Hero Section */
 .hero {
-  padding: 120px 20px;
+  padding: 100px 20px;
   text-align: center;
   background: linear-gradient(135deg, #2196f3, #64b5f6);
   color: white;
 }
 
 .hero h1 {
-  font-size: 54px;
-  margin-bottom: 25px;
+  font-size: 48px;
+  margin-bottom: 20px;
   font-weight: bold;
-  line-height: 1.2;
 }
 
 .hero p {
-  font-size: 22px;
-  margin-bottom: 40px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 20px;
+  margin-bottom: 30px;
 }
 
 .btn {
-  background: #ff9800; /* bold orange CTA */
+  background: #ff9800;
   color: white;
-  padding: 14px 32px;
+  padding: 14px 28px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.3s;
   font-size: 18px;
   font-weight: 600;
 }
@@ -138,82 +119,7 @@ footer {
   background: #0d47a1;
   color: white;
   text-align: center;
-  padding: 25px;
-  margin-top: 60px;
-  font-size: 16px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .nav-links {
-    flex-direction: column;
-    width: 80%;
-    max-width: 300px;
-    background: #0d47a1;
-    position: fixed;
-    top: 0;
-    right: -100%;
-    height: 100%;
-    transition: right 0.3s ease, opacity 0.3s ease;
-    z-index: 1000;
-    padding-top: 60px;
-    opacity: 0;
-  }
-
-  .nav-links.active {
-    right: 0;
-    opacity: 1;
-  }
-
-  .nav-links li {
-    margin: 15px 0;
-    text-align: center;
-  }
-
-  .menu-toggle {
-    display: block;
-  }
-
-  .dropdown-menu {
-    position: static;
-    min-width: 100%;
-  }
-
-  /* Hero adjustments */
-  .hero {
-    padding: 80px 20px;
-  }
-
-  .hero h1 {
-    font-size: 38px;
-  }
-
-  .hero p {
-    font-size: 18px;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 17px;
-  }
-
-  footer {
-    font-size: 14px;
-    padding: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero h1 {
-    font-size: 32px;
-  }
-
-  .hero p {
-    font-size: 16px;
-  }
-
-  .logo {
-    font-size: 22px;
-  }
+  padding: 20px;
+  margin-top: 40px;
+  font-size: 14px;
 }
