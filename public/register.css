@@ -1,42 +1,56 @@
+/* General page styling */
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
   background: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h2 {
   color: #1a73e8;
   margin-bottom: 15px;
+  text-align: center;
 }
 
+/* Form styling */
 form {
   background: #fff;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 6px;
   max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 label {
-  display: inline-block;
-  width: 120px;
+  display: block;
+  margin-bottom: 6px;
   font-weight: bold;
+  color: #333;
 }
 
 input {
-  padding: 6px;
-  width: 220px;
+  padding: 8px;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
 }
 
+/* Buttons */
 .btn {
   background: #1a73e8;
   color: white;
-  padding: 8px 14px;
+  padding: 10px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
   margin-top: 10px;
 }
 
@@ -44,6 +58,42 @@ input {
   background: #0f5bb5;
 }
 
+.back-btn {
+  margin-top: 20px;
+}
+
+/* Output message */
 .hidden {
   display: none;
+}
+
+#register-output {
+  margin-top: 20px;
+  background: #e8f0fe;
+  padding: 15px;
+  border-radius: 6px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  body {
+    margin: 10px;
+  }
+
+  form {
+    padding: 15px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
 }
