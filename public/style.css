@@ -30,7 +30,7 @@ body {
   cursor: pointer;
 }
 
-/* Slide-in Menu */
+/* Slide-in Menu (from right side) */
 .nav-links {
   list-style: none;
   margin: 0;
@@ -38,16 +38,16 @@ body {
   background: #000000;
   position: fixed;
   top: 0;
-  left: -100%; /* start hidden off LEFT side */
+  right: -100%; /* start hidden off RIGHT side */
   height: 100%;
   width: 80%;
   max-width: 300px;
-  transition: left 0.3s ease;
+  transition: right 0.3s ease;
   z-index: 1001;
 }
 
 .nav-links.active {
-  left: 0; /* slide IN from left */
+  right: 0; /* slide IN from right */
 }
 
 .nav-links li {
