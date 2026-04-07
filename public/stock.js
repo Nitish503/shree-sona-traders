@@ -1,5 +1,5 @@
-// Use your deployed Render backend URL
-const API_BASE = "https://shree-sona-trader.onrender.com";
+// Use relative path since frontend and backend share the same domain
+const API_BASE = "";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadItems();
@@ -14,11 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!name || !description || !category) {
       alert("⚠️ Please fill all fields");
-      return; // ✅ valid here inside the function
+      return;
     }
 
     try {
-      const res = await fetch(`${API_BASE}/items`, {
+      const res = await fetch(`/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, description, category })
@@ -60,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Load items
 async function loadItems() {
   const category = document.getElementById("filter-category").value;
-  let url = `${API_BASE}/items`;
+  let url = `/items`;
   if (category !== "all") {
-    url = `${API_BASE}/items/${category}`;
+    url = `/items/${category}`;
   }
 
   try {
@@ -96,7 +96,7 @@ async function loadItems() {
 // Single item status update
 async function markStatus(id, status) {
   try {
-    const res = await fetch(`${API_BASE}/items/${id}/status`, {
+    const res = await fetch(`/items/${id}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status })
@@ -118,7 +118,7 @@ async function markStatus(id, status) {
 async function deleteItem(id) {
   if (!confirm("Are you sure you want to delete this item?")) return;
   try {
-    const res = await fetch(`${API_BASE}/items/${id}`, { method: "DELETE" });
+    const res = await fetch(`/items/${id}`, { method: "DELETE" });
     if (res.ok) {
       alert("✅ Item deleted successfully");
       loadItems();
@@ -134,7 +134,7 @@ async function deleteItem(id) {
 // Bulk status update
 async function bulkUpdateStatus(ids, status) {
   try {
-    const res = await fetch(`${API_BASE}/items/bulk/status`, {
+    const res = await fetch(`/items/bulk/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids, status })
@@ -156,7 +156,7 @@ async function bulkUpdateStatus(ids, status) {
 async function bulkDelete(ids) {
   if (!confirm("Are you sure you want to delete selected items?")) return;
   try {
-    const res = await fetch(`${API_BASE}/items/bulk/delete`, {
+    const res = await fetch(`/items/bulk/delete`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids })
@@ -177,5 +177,5 @@ async function bulkDelete(ids) {
 // Helper to get selected IDs
 function getSelectedIds() {
   return Array.from(document.querySelectorAll(".item-checkbox:checked"))
-              .map(cb => parseInt(cb.value));
+   .map(cb => parseInt(cb.value));
 }
