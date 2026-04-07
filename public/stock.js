@@ -4,27 +4,9 @@ const API_BASE = "https://shree-sona-trader.onrender.com";
 document.addEventListener("DOMContentLoaded", () => {
   loadItems();
 
+  // Add Item Form Submit Handler
   document.getElementById("add-item-form").addEventListener("submit", async (e) => {
-  
-  });
-
-  document.getElementById("filter-category").addEventListener("change", loadItems);
-});
-
-document.getElementById("bulk-available-btn").addEventListener("click", () => {
-  const ids = getSelectedIds();
-  if (ids.length) bulkUpdateStatus(ids, "available");
-});
-
-document.getElementById("bulk-outofstock-btn").addEventListener("click", () => {
-  const ids = getSelectedIds();
-  if (ids.length) bulkUpdateStatus(ids, "out_of_stock");
-});
-
-document.getElementById("bulk-delete-btn").addEventListener("click", () => {
-  const ids = getSelectedIds();
-  if (ids.length) bulkDelete(ids);
-});
+    e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
     const description = document.getElementById("description").value.trim();
@@ -32,7 +14,7 @@ document.getElementById("bulk-delete-btn").addEventListener("click", () => {
 
     if (!name || !description || !category) {
       alert("⚠️ Please fill all fields");
-    
+      return; // ✅ valid here inside the function
     }
 
     try {
@@ -55,9 +37,27 @@ document.getElementById("bulk-delete-btn").addEventListener("click", () => {
     }
   });
 
+  // Filter dropdown
   document.getElementById("filter-category").addEventListener("change", loadItems);
+
+  // Bulk action buttons
+  document.getElementById("bulk-available-btn").addEventListener("click", () => {
+    const ids = getSelectedIds();
+    if (ids.length) bulkUpdateStatus(ids, "available");
+  });
+
+  document.getElementById("bulk-outofstock-btn").addEventListener("click", () => {
+    const ids = getSelectedIds();
+    if (ids.length) bulkUpdateStatus(ids, "out_of_stock");
+  });
+
+  document.getElementById("bulk-delete-btn").addEventListener("click", () => {
+    const ids = getSelectedIds();
+    if (ids.length) bulkDelete(ids);
+  });
 });
 
+// Load items
 async function loadItems() {
   const category = document.getElementById("filter-category").value;
   let url = `${API_BASE}/items`;
@@ -76,15 +76,15 @@ async function loadItems() {
       const card = document.createElement("div");
       card.className = "item-card";
       card.innerHTML = `
-  <input type="checkbox" class="item-checkbox" value="${item.id}">
-  <h4>${item.name}</h4>
-  <p>${item.description}</p>
-  <p><strong>Category:</strong> ${item.category}</p>
-  <p><strong>Status:</strong> ${item.status}</p>
-  <button onclick="markStatus(${item.id}, 'available')">Mark Available</button>
-  <button onclick="markStatus(${item.id}, 'out_of_stock')">Mark Out of Stock</button>
-  <button onclick="deleteItem(${item.id})">Delete</button>
-`;
+        <input type="checkbox" class="item-checkbox" value="${item.id}">
+        <h4>${item.name}</h4>
+        <p>${item.description}</p>
+        <p><strong>Category:</strong> ${item.category}</p>
+        <p><strong>Status:</strong> ${item.status}</p>
+        <button onclick="markStatus(${item.id}, 'available')">Mark Available</button>
+        <button onclick="markStatus(${item.id}, 'out_of_stock')">Mark Out of Stock</button>
+        <button onclick="deleteItem(${item.id})">Delete</button>
+      `;
       itemList.appendChild(card);
     });
   } catch (err) {
@@ -93,6 +93,7 @@ async function loadItems() {
   }
 }
 
+// Single item status update
 async function markStatus(id, status) {
   try {
     const res = await fetch(`${API_BASE}/items/${id}/status`, {
@@ -113,6 +114,7 @@ async function markStatus(id, status) {
   }
 }
 
+// Single item delete
 async function deleteItem(id) {
   if (!confirm("Are you sure you want to delete this item?")) return;
   try {
@@ -128,6 +130,8 @@ async function deleteItem(id) {
     alert("❌ Server error deleting item");
   }
 }
+
+// Bulk status update
 async function bulkUpdateStatus(ids, status) {
   try {
     const res = await fetch(`${API_BASE}/items/bulk/status`, {
@@ -148,6 +152,7 @@ async function bulkUpdateStatus(ids, status) {
   }
 }
 
+// Bulk delete
 async function bulkDelete(ids) {
   if (!confirm("Are you sure you want to delete selected items?")) return;
   try {
@@ -168,6 +173,8 @@ async function bulkDelete(ids) {
     alert("❌ Server error bulk deleting");
   }
 }
+
+// Helper to get selected IDs
 function getSelectedIds() {
   return Array.from(document.querySelectorAll(".item-checkbox:checked"))
               .map(cb => parseInt(cb.value));
