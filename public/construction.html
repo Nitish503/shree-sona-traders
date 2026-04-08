@@ -2,43 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Construction Materials</title>
-  <link rel="stylesheet" href="construction.css">
+  <title>Construction Services</title>
+  <link rel="stylesheet" href="/services.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="logo">SHREE SONA TRADER</div>
-    <div class="menu-toggle">&#9776;</div>
-  </nav>
 
-  <section class="hero">
-    <h1>Construction Materials</h1>
-    <p>Browse available construction items below.</p>
-  </section>
+<h1>Construction Materials</h1>
 
-  <div id="construction-items" class="item-container"></div>
+<div id="itemsContainer" class="grid"></div>
 
-  <footer>
-    © 2026 SONA TRADER. All rights reserved.
-  </footer>
+<script>
+async function loadItems() {
+  const res = await fetch("/items/construction");
+  const data = await res.json();
 
-  <script>
-    async function loadConstruction() {
-      const res = await fetch("/items/construction");
-      const items = await res.json();
-      const container = document.getElementById("construction-items");
-      container.innerHTML = "";
+  const container = document.getElementById("itemsContainer");
+  container.innerHTML = "";
 
-      items.forEach(item => {
-        if (item.status === "available") {
-          const div = document.createElement("div");
-          div.className = "item-card";
-          div.innerHTML = `<h4>${item.name}</h4><p>${item.description}</p>`;
-          container.appendChild(div);
-        }
-      });
-    }
-    loadConstruction();
-  </script>
+  data.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      ${item.image ? `<img src="${item.image}">` : ""}
+      <h3>${item.name}</h3>
+      <p>${item.description || "No description"}</p>
+      <span class="${item.status}">${item.status}</span>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+loadItems();
+</script>
+
 </body>
 </html>
