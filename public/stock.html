@@ -6,39 +6,29 @@
   <link rel="stylesheet" href="stock.css">
 </head>
 <body>
-  <h2>Stock Management</h2>
 
-  <!-- Add Item Form -->
-  <form id="add-item-form">
-    <input type="text" id="name" placeholder="Item Name" required>
-    <input type="text" id="description" placeholder="Description" required>
-    <select id="category" required>
-      <option value="construction">Construction</option>
-      <option value="rental">Rental</option>
-      <option value="fuel">Fuel</option>
-    </select>
-    <button type="submit">Add Item</button>
-  </form>
+<h2>Stock Management</h2>
 
-  <!-- Search/Filter -->
-  <h3>Filter Items</h3>
-  <select id="filter-category">
-    <option value="all">All</option>
+<div class="top-bar">
+  <input type="text" id="name" placeholder="Enter item name">
+
+  <select id="category">
     <option value="construction">Construction</option>
     <option value="rental">Rental</option>
     <option value="fuel">Fuel</option>
   </select>
 
-  <!-- Bulk Actions -->
-  <h3>Bulk Actions</h3>
-  <button id="bulk-delete-btn">Delete Selected</button>
-  <button id="bulk-available-btn">Mark Selected Available</button>
-  <button id="bulk-outofstock-btn">Mark Selected Out of Stock</button>
+  <button onclick="addItem()">Add Item</button>
+</div>
 
-  <!-- Item List -->
-  <h3>All Items</h3>
-  <div id="item-list"></div>
+<div class="filter">
+  <button onclick="loadItems('construction')">Construction</button>
+  <button onclick="loadItems('rental')">Rental</button>
+  <button onclick="loadItems('fuel')">Fuel</button>
+</div>
 
-  <script src="stock.js"></script>
+<ul id="stockList"></ul>
+
+<script src="stock.js"></script>
 </body>
 </html>
