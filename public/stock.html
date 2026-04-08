@@ -3,32 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Stock Management</title>
-  <link rel="stylesheet" href="stock.css">
+  <link rel="stylesheet" href="/stock.css">
 </head>
 <body>
 
-<h2>Stock Management</h2>
+  <h1>Stock Management</h1>
 
-<div class="top-bar">
-  <input type="text" id="name" placeholder="Enter item name">
+  <div class="top-bar">
+    <input type="text" id="name" placeholder="Enter item name">
+    <input type="text" id="description" placeholder="Enter description">
+    
+    <select id="category">
+      <option value="construction">Construction</option>
+      <option value="rental">Rental</option>
+      <option value="fuel">Fuel</option>
+    </select>
 
-  <select id="category">
-    <option value="construction">Construction</option>
-    <option value="rental">Rental</option>
-    <option value="fuel">Fuel</option>
-  </select>
+    <input type="file" id="image">
 
-  <button onclick="addItem()">Add Item</button>
-</div>
+    <button onclick="addItem()">Add Item</button>
+  </div>
 
-<div class="filter">
-  <button onclick="loadItems('construction')">Construction</button>
-  <button onclick="loadItems('rental')">Rental</button>
-  <button onclick="loadItems('fuel')">Fuel</button>
-</div>
+  <div class="filter">
+    <button onclick="loadItems('construction')">Construction</button>
+    <button onclick="loadItems('rental')">Rental</button>
+    <button onclick="loadItems('fuel')">Fuel</button>
+  </div>
 
-<ul id="stockList"></ul>
+  <ul id="stockList"></ul>
 
-<script src="stock.js"></script>
+  <script src="/stock.js"></script>
 </body>
 </html>
