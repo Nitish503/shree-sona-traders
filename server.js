@@ -5,14 +5,12 @@ const { Pool } = require("pg");
 
 const app = express();
 
-// --------------------
 // Middleware
-// --------------------
 app.use(cors());
 app.use(express.json());
 
 // --------------------
-// Database Connection (Neon)
+// Connect to Neon DB
 // --------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -20,7 +18,7 @@ const pool = new Pool({
 });
 
 // --------------------
-// Initialize Database
+// Initialize DB
 // --------------------
 async function initDB() {
   try {
@@ -28,6 +26,7 @@ async function initDB() {
       CREATE TABLE IF NOT EXISTS items (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
+        description TEXT,
         category VARCHAR(50),
         status VARCHAR(20) DEFAULT 'available'
       );
@@ -41,31 +40,12 @@ async function initDB() {
 initDB();
 
 // --------------------
-// Serve Static Files
+// Serve static files
 // --------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-// --------------------
-// Page Routes
-// --------------------
 app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "index.html"))
-);
-
-app.get("/construction", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "construction.html"))
-);
-
-app.get("/rental", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "rental.html"))
-);
-
-app.get("/fuel", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "fuel.html"))
-);
-
-app.get("/admin", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "admin.html"))
 );
 
 app.get("/stock", (req, res) =>
@@ -73,35 +53,39 @@ app.get("/stock", (req, res) =>
 );
 
 // --------------------
-// STOCK MANAGEMENT API
+// ITEMS API
 // --------------------
 
-// ✅ Get all items
+// 🔹 Get all items
 app.get("/items", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM items ORDER BY id DESC");
+    const result = await pool.query(
+      "SELECT * FROM items ORDER BY id DESC"
+    );
     res.json(result.rows);
   } catch (err) {
+    console.error("❌ Fetch Error:", err.message);
     res.status(500).send(err.message);
   }
 });
 
-// ✅ Get items by category
+// 🔹 Get by category
 app.get("/items/:category", async (req, res) => {
   const { category } = req.params;
 
   try {
     const result = await pool.query(
-      "SELECT * FROM items WHERE LOWER(category)=LOWER($1) ORDER BY id DESC",
+      "SELECT * FROM items WHERE LOWER(category) = LOWER($1) ORDER BY id DESC",
       [category]
     );
     res.json(result.rows);
   } catch (err) {
+    console.error("❌ Category Fetch Error:", err.message);
     res.status(500).send(err.message);
   }
 });
 
-// ✅ Add item
+// 🔹 Add item
 app.post("/items", async (req, res) => {
   const { name, category } = req.body;
 
@@ -111,16 +95,20 @@ app.post("/items", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO items (name, category, status) VALUES ($1, LOWER($2), 'available') RETURNING *",
-      [name, category]
+      `INSERT INTO items (name, description, category, status)
+       VALUES ($1, $2, LOWER($3), 'available')
+       RETURNING *`,
+      [name, null, category]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("❌ Insert Error:", err.message);
     res.status(500).send(err.message);
   }
 });
 
-// ✅ Toggle status
+// 🔹 Update status
 app.put("/items/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -130,13 +118,15 @@ app.put("/items/:id/status", async (req, res) => {
       "UPDATE items SET status=$1 WHERE id=$2 RETURNING *",
       [status, id]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("❌ Status Update Error:", err.message);
     res.status(500).send(err.message);
   }
 });
 
-// ✅ Delete item
+// 🔹 Delete item
 app.delete("/items/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -144,6 +134,7 @@ app.delete("/items/:id", async (req, res) => {
     await pool.query("DELETE FROM items WHERE id=$1", [id]);
     res.sendStatus(200);
   } catch (err) {
+    console.error("❌ Delete Error:", err.message);
     res.status(500).send(err.message);
   }
 });
@@ -152,6 +143,7 @@ app.delete("/items/:id", async (req, res) => {
 // Start Server
 // --------------------
 const PORT = process.env.PORT || 10000;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
