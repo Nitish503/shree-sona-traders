@@ -1,34 +1,26 @@
-const API = "https://your-render-url.onrender.com";
-
-let currentCategory = "construction";
-
-// ✅ Add Item
+// Add Item
 async function addItem() {
   const name = document.getElementById("name").value;
   const category = document.getElementById("category").value;
 
   if (!name) return alert("Enter item name");
 
-  await fetch(`${API}/items`, {
+  await fetch(`/items`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      name,
-      category
-    })
+    body: JSON.stringify({ name, category })
   });
 
   document.getElementById("name").value = "";
   loadItems(category);
 }
 
-// ✅ Load Items
-async function loadItems(category = currentCategory) {
-  currentCategory = category;
 
-  const res = await fetch(`${API}/items/${category}`);
+// Load Items
+async function loadItems(category = "construction") {
+  const res = await fetch(`/items/${category}`);
   const data = await res.json();
 
   const list = document.getElementById("stockList");
@@ -45,12 +37,12 @@ async function loadItems(category = currentCategory) {
         </span>
       </div>
 
-      <div class="actions">
-        <button class="toggle" onclick="toggleStatus(${item.id}, '${item.status}')">
+      <div>
+        <button onclick="toggleStatus(${item.id}, '${item.status}')">
           Toggle
         </button>
 
-        <button class="delete" onclick="deleteItem(${item.id})">
+        <button onclick="deleteItem(${item.id})">
           Delete
         </button>
       </div>
@@ -60,11 +52,12 @@ async function loadItems(category = currentCategory) {
   });
 }
 
-// ✅ Toggle Status
+
+// Toggle Status
 async function toggleStatus(id, currentStatus) {
   const newStatus = currentStatus === "available" ? "out" : "available";
 
-  await fetch(`${API}/items/${id}/status`, {
+  await fetch(`/items/${id}/status`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -72,17 +65,18 @@ async function toggleStatus(id, currentStatus) {
     body: JSON.stringify({ status: newStatus })
   });
 
-  loadItems(currentCategory);
+  loadItems();
 }
 
-// ✅ Delete Item
+
+// Delete Item
 async function deleteItem(id) {
-  await fetch(`${API}/items/${id}`, {
+  await fetch(`/items/${id}`, {
     method: "DELETE"
   });
 
-  loadItems(currentCategory);
+  loadItems();
 }
 
-// Initial Load
+// Initial load
 loadItems();
