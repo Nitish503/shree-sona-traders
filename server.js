@@ -32,6 +32,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// 🔥 Extract public_id from Cloudinary URL
+function getPublicId(url) {
+  if (!url) return null;
+
+  const parts = url.split("/");
+  const file = parts.slice(-2).join("/"); // sona-trader/abc123.jpg
+
+  return file.split(".")[0]; // sona-trader/abc123
+}
+
 // --------------------
 // 🔥 CLOUDINARY STORAGE
 // --------------------
@@ -169,12 +179,29 @@ app.put("/items/:id/status", async (req, res) => {
   }
 });
 
-// DELETE item
 app.delete("/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
+    // 🔹 Get image URL from DB
+    const item = await pool.query(
+      "SELECT image FROM items WHERE id=$1",
+      [id]
+    );
+
+    const imageUrl = item.rows[0]?.image;
+
+    // 🔥 Delete image from Cloudinary
+    if (imageUrl) {
+      const publicId = getPublicId(imageUrl);
+
+      await cloudinary.uploader.destroy(publicId);
+      console.log("🗑 Deleted from Cloudinary:", publicId);
+    }
+
+    // 🔹 Delete item from DB
     await pool.query("DELETE FROM items WHERE id=$1", [id]);
+
     res.sendStatus(200);
   } catch (err) {
     console.error("❌ Delete Error:", err.message);
