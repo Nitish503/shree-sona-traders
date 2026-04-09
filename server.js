@@ -115,6 +115,20 @@ app.get("/items/:category", async (req, res) => {
   }
 });
 
+// GET all items (for rate management)
+app.get("/items", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM items ORDER BY id DESC"
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ Fetch All Error:", err.message);
+    res.status(500).send(err.message);
+  }
+});
+
 // ADD item (🔥 Cloudinary image)
 app.post("/items", upload.single("image"), async (req, res) => {
   try {
@@ -175,6 +189,24 @@ app.put("/items/:id/status", async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     console.error("❌ Status Error:", err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+// UPDATE rate
+app.put("/items/:id/rate", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rate } = req.body;
+
+    const result = await pool.query(
+      "UPDATE items SET rate=$1 WHERE id=$2 RETURNING *",
+      [rate, id]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ Rate Update Error:", err.message);
     res.status(500).send(err.message);
   }
 });

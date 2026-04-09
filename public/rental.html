@@ -2,16 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Rental Services</title>
+  <title> Rental Services</title>
   <link rel="stylesheet" href="/services.css">
 </head>
 <body>
 
-<h1>Rental Services</h1>
+<h1> Rental services</h1>
 
 <div id="itemsContainer" class="grid"></div>
 
 <script>
+function formatRupee(value) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR'
+  }).format(value || 0);
+}
+
 async function loadItems() {
   const res = await fetch("/items/rental");
   const data = await res.json();
@@ -27,6 +34,9 @@ async function loadItems() {
       ${item.image ? `<img src="${item.image}">` : ""}
       <h3>${item.name}</h3>
       <p>${item.description || "No description"}</p>
+
+      <p class="price">${formatRupee(item.rate)}</p>
+
       <span class="${item.status}">${item.status}</span>
     `;
 
