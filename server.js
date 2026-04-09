@@ -1,8 +1,14 @@
+require("dotenv").config(); // 🔥 ENV support
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const { Pool } = require("pg");
 const multer = require("multer");
+
+// 🔥 Cloudinary
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 
@@ -18,12 +24,22 @@ const pool = new Pool({
 });
 
 // --------------------
-// FILE UPLOAD CONFIG
+// 🔥 CLOUDINARY CONFIG (SECURE)
 // --------------------
-const storage = multer.diskStorage({
-  destination: "public/uploads/",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// --------------------
+// 🔥 CLOUDINARY STORAGE
+// --------------------
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "sona-trader",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"]
   }
 });
 
@@ -53,12 +69,9 @@ async function initDB() {
 initDB();
 
 // --------------------
-// STATIC FILES (VERY IMPORTANT)
+// STATIC FILES
 // --------------------
 app.use(express.static(path.join(__dirname, "public")));
-
-// 🔥 THIS LINE FIXES IMAGE LOADING
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // --------------------
 // ROUTES
@@ -92,7 +105,7 @@ app.get("/items/:category", async (req, res) => {
   }
 });
 
-// ADD item
+// ADD item (🔥 Cloudinary image)
 app.post("/items", upload.single("image"), async (req, res) => {
   try {
     const { name, description, category } = req.body;
@@ -101,7 +114,9 @@ app.post("/items", upload.single("image"), async (req, res) => {
       return res.status(400).send("Name and category required");
     }
 
-    const image = req.file ? "/uploads/" + req.file.filename : null;
+    const image = req.file ? req.file.path : null;
+
+    console.log("Uploaded file:", req.file); // debug
 
     const result = await pool.query(
       `INSERT INTO items (name, description, category, status, image)
