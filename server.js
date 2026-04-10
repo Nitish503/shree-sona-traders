@@ -257,6 +257,14 @@ app.post("/order", async (req, res) => {
       unit
     } = req.body;
 
+    // 🔥 DEBUG LOG (IMPORTANT)
+    console.log("Incoming Order:", req.body);
+
+    // 🔥 VALIDATION
+    if (!item_id || !item_name || !customer_name || !phone) {
+      return res.status(400).send("Missing required fields");
+    }
+
     const result = await pool.query(
       `INSERT INTO orders 
       (item_id, item_name, customer_name, phone, permanent_address, delivery_address, quantity, unit)
@@ -267,16 +275,17 @@ app.post("/order", async (req, res) => {
         item_name,
         customer_name,
         phone,
-        permanent_address,
-        delivery_address,
-        quantity,
-        unit
+        permanent_address || null,
+        delivery_address || null,
+        quantity || null,
+        unit || null
       ]
     );
 
     res.json(result.rows[0]);
+
   } catch (err) {
-    console.error("❌ Order Error:", err.message);
+    console.error("❌ ORDER ERROR FULL:", err); // 🔥 VERY IMPORTANT
     res.status(500).send(err.message);
   }
 });

@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title> Rental Services</title>
+  <title>Rental Services</title>
   <link rel="stylesheet" href="/services.css">
 </head>
 <body>
 
-<h1> Rental services</h1>
+<h1>Rental Services</h1>
 
 <div id="itemsContainer" class="grid"></div>
 
 <script>
+const API = window.location.origin;
+
 function formatRupee(value) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -19,8 +21,9 @@ function formatRupee(value) {
   }).format(value || 0);
 }
 
+// LOAD ITEMS
 async function loadItems() {
-  const res = await fetch("/items/rental");
+  const res = await fetch(`${API}/items/rental`);
   const data = await res.json();
 
   const container = document.getElementById("itemsContainer");
@@ -34,12 +37,11 @@ async function loadItems() {
       ${item.image ? `<img src="${item.image}">` : ""}
       <h3>${item.name}</h3>
       <p>${item.description || "No description"}</p>
-
       <p class="price">${formatRupee(item.rate)}</p>
 
       <button onclick="openOrderForm(${item.id}, '${item.name}')">
-  Order Now
-</button>
+        Order Now
+      </button>
 
       <span class="${item.status}">${item.status}</span>
     `;
@@ -79,34 +81,36 @@ async function submitOrder() {
     return;
   }
 
-  await fetch("/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      item_id: selectedItemId,
-      item_name: selectedItemName,
-      customer_name: name,
-      phone,
-      permanent_address,
-      delivery_address,
-      quantity,
-      unit
-    })
-  });
+  try {
+    const res = await fetch(`${API}/order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        item_id: selectedItemId,
+        item_name: selectedItemName,
+        customer_name: name,
+        phone,
+        permanent_address,
+        delivery_address,
+        quantity,
+        unit
+      })
+    });
 
-  alert("✅ Order placed successfully!");
+    if (!res.ok) {
+      const error = await res.text();
+      alert("❌ Error: " + error);
+      return;
+    }
 
-  closeOrderForm();
+    alert("✅ Order placed successfully!");
+    closeOrderForm();
 
-  // clear form
-  document.getElementById("custName").value = "";
-  document.getElementById("custPhone").value = "";
-  document.getElementById("permAddress").value = "";
-  document.getElementById("delAddress").value = "";
-  document.getElementById("quantity").value = "";
-  document.getElementById("unit").value = "";
+  } catch (err) {
+    alert("❌ Network Error");
+  }
 }
 </script>
 
