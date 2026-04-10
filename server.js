@@ -301,11 +301,20 @@ app.post("/register", async (req, res) => {
   try {
     const { name, phone, captcha, captchaId } = req.body;
 
+    // ✅ VALIDATION
+    if (!name || !phone || !captcha || !captchaId) {
+      return res.status(400).json({ error: "All fields required" });
+    }
+
     // 🔐 CAPTCHA CHECK
-    if (!captchaStore[captchaId] || captchaStore[captchaId] !== captcha) {
+    if (
+      !captchaStore[captchaId] ||
+      captchaStore[captchaId].toString().trim() !== captcha.toString().trim()
+    ) {
       return res.status(400).json({ error: "Invalid captcha" });
     }
 
+    // 🧹 DELETE CAPTCHA AFTER USE
     delete captchaStore[captchaId];
 
     // 🔍 CHECK IF CUSTOMER EXISTS
