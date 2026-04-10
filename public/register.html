@@ -1,63 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Register</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/register.css">
 </head>
 <body>
 
-<h2>Customer Registration</h2>
+<div class="container">
+  <h2>Customer Registration</h2>
 
-<input type="text" id="name" placeholder="Name"><br><br>
-<input type="text" id="phone" placeholder="Phone"><br><br>
+  <input type="text" id="name" placeholder="Enter your name">
+  <input type="text" id="phone" placeholder="Enter phone number">
 
-<p id="captchaText"></p>
+  <!-- CAPTCHA BOX -->
+  <div class="captcha-container">
+  <div class="captcha-box" id="captchaText"></div>
+  <button type="button" onclick="loadCaptcha()" class="refresh-btn">↻</button>
+</div>
 
-<input type="text" id="captchaInput" placeholder="Enter CAPTCHA"><br><br>
+  <input type="text" id="captchaInput" placeholder="Enter CAPTCHA">
 
-<button onclick="register()">Register</button>
+  <!-- LOADER -->
+  <div id="loader" class="loader"></div>
+
+  <button onclick="register()" id="registerBtn">Register</button>
+</div>
 
 <script>
+const API = window.location.origin;
 let captchaId = "";
 
 // LOAD CAPTCHA
 async function loadCaptcha() {
-  const res = await fetch("/captcha");
+  const res = await fetch(`${API}/captcha`);
   const data = await res.json();
 
   captchaId = data.id;
-  document.getElementById("captchaText").innerText = "Captcha: " + data.captcha;
+  document.getElementById("captchaText").innerText = data.captcha;
 }
 
 loadCaptcha();
 
-// REGISTER
+// REGISTER FUNCTION
 async function register() {
   const name = document.getElementById("name").value;
   const phone = document.getElementById("phone").value;
   const captcha = document.getElementById("captchaInput").value;
 
-  const res = await fetch("/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name,
-      phone,
-      captcha,
-      captchaId
-    })
-  });
+  const loader = document.getElementById("loader");
+  const btn = document.getElementById("registerBtn");
 
-  const data = await res.json();
-
-  if (res.ok) {
-    alert("✅ Registered successfully");
-    loadCaptcha();
-  } else {
-    alert(data.error);
-    loadCaptcha();
+  if (!name || !phone || !captcha) {
+    alert("Please fill all fields");
+    return;
   }
+
+  // SHOW LOADER
+  loader.style.display = "block";
+  btn.disabled = true;
+  btn.innerText = "Processing...";
+
+  try {
+    const res = await fetch(`${API}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        phone,
+        captcha,
+        captchaId
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("✅ Registered successfully");
+
+      // clear inputs
+      document.getElementById("name").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("captchaInput").value = "";
+
+    } else {
+      alert(data.error);
+    }
+
+    loadCaptcha();
+
+  } catch (err) {
+    alert("❌ Network error");
+  }
+
+  // HIDE LOADER
+  loader.style.display = "none";
+  btn.disabled = false;
+  btn.innerText = "Register";
 }
 </script>
 
