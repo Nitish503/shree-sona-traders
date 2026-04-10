@@ -18,14 +18,23 @@ async function loadOrders() {
       const card = document.createElement("div");
       card.className = "order-card";
 
-      card.innerHTML = `
-        <h3>${order.item_name}</h3>
-        <p><b>Name:</b> ${order.customer_name}</p>
-        <p><b>Phone:</b> ${order.phone}</p>
-        <p><b>Quantity:</b> ${order.quantity} ${order.unit}</p>
-        <p><b>Delivery:</b> ${order.delivery_address}</p>
-        <p><b>Date:</b> ${new Date(order.order_date).toLocaleString()}</p>
-      `;
+      div.innerHTML = `
+  <h3>${order.item_name}</h3>
+  <p><b>Name:</b> ${order.customer_name}</p>
+  <p><b>Phone:</b> ${order.phone}</p>
+  <p><b>Qty:</b> ${order.quantity} ${order.unit}</p>
+  <p><b>Address:</b> ${order.delivery_address}</p>
+
+  <p>
+    <b>Status:</b> 
+    <select onchange="updateStatus(${order.id}, this.value)">
+      <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+      <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+    </select>
+  </p>
+
+  <button onclick="deleteOrder(${order.id})">Delete</button>
+`;
 
       container.appendChild(card);
     });
@@ -36,3 +45,28 @@ async function loadOrders() {
 }
 
 loadOrders();
+
+// UPDATE STATUS
+async function updateStatus(id, status) {
+  await fetch(`/orders/${id}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ status })
+  });
+
+  alert("Status updated");
+}
+
+// DELETE ORDER
+async function deleteOrder(id) {
+  if (!confirm("Delete this order?")) return;
+
+  await fetch(`/orders/${id}`, {
+    method: "DELETE"
+  });
+
+  alert("Order deleted");
+  loadOrders(); // reload list
+}

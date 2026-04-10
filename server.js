@@ -241,6 +241,40 @@ app.delete("/items/:id", async (req, res) => {
   }
 });
 
+// UPDATE ORDER STATUS
+app.put("/orders/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const result = await pool.query(
+      "UPDATE orders SET status=$1 WHERE id=$2 RETURNING *",
+      [status, id]
+    );
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error("❌ Status Update Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE ORDER
+app.delete("/orders/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM orders WHERE id=$1", [id]);
+
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.error("❌ Delete Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --------------------
 // CREATE ORDER API
 // --------------------
@@ -295,19 +329,20 @@ app.post("/order", async (req, res) => {
 app.get("/orders", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT 
-        id,
-        item_name,
-        customer_name,
-        phone,
-        quantity,
-        unit,
-        permanent_address,
-        delivery_address,
-        order_date
-      FROM orders
-      ORDER BY id DESC
-    `);
+  SELECT 
+    id,
+    item_name,
+    customer_name,
+    phone,
+    quantity,
+    unit,
+    permanent_address,
+    delivery_address,
+    status,   // 👈 ADD THIS LINE
+    order_date
+  FROM orders
+  ORDER BY id DESC
+`);
 
     res.json(result.rows);
 
