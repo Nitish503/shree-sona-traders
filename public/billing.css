@@ -1,109 +1,95 @@
-/* General page styling */
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BODY */
 body {
-  font-family: 'Arial', sans-serif;
-  margin: 20px;
-  background: #fff;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #dbe6f6);
+  padding: 20px;
 }
 
+/* CONTAINER STYLE */
+body > * {
+  max-width: 420px;
+  margin: auto;
+}
+
+/* HEADING */
 h2 {
-  color: #1a73e8;
-  margin-bottom: 15px;
-}
-
-/* Form styling */
-form {
-  background: #f9f9f9;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  max-width: 600px;
-}
-
-label {
-  display: inline-block;
-  width: 160px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="number"] {
-  padding: 6px;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
-
-/* Buttons */
-.btn {
-  background: #1a73e8;
-  color: white;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background: #0f5bb5;
-}
-
-/* Bill output box styled like cash memo */
-#bill-output {
-  margin-top: 20px;
-  background: #fff;
-  padding: 20px;
-  border: 2px solid #000;
-  border-radius: 4px;
-  max-width: 700px;
-}
-
-#bill-details {
   text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #333;
 }
 
-.bill-header {
+/* INPUT FIELDS */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* TOTAL TEXT */
+p {
+  margin-top: 10px;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.bill-subheader {
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.bill-contact {
-  font-size: 12px;
-  margin-bottom: 15px;
-}
-
-/* Bill table styling */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 15px;
-}
-
-table, th, td {
-  border: 1px solid #000;
-  padding: 6px;
-}
-
-th {
-  background: #f0f0f0;
-  font-weight: bold;
-}
-
-td {
   text-align: center;
 }
 
-/* Footer styling */
-.bill-footer {
+#total {
+  color: green;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 12px;
   margin-top: 15px;
-  text-align: right;
+  border: none;
+  border-radius: 8px;
+  background: #28a745;
+  color: white;
+  font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #218838;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  button {
+    font-size: 15px;
+  }
 }
