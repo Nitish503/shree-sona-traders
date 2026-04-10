@@ -23,3 +23,23 @@ h2 {
 .order-card p {
   margin: 5px 0;
 }
+.order-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.order-card select {
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.order-card button {
+  margin-top: 10px;
+  background: red;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+}
