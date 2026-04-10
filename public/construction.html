@@ -66,10 +66,13 @@ function closeOrderForm() {
 // SUBMIT ORDER
 async function submitOrder() {
   const name = document.getElementById("custName").value;
-  const address = document.getElementById("custAddress").value;
   const phone = document.getElementById("custPhone").value;
+  const permanent_address = document.getElementById("permAddress").value;
+  const delivery_address = document.getElementById("delAddress").value;
+  const quantity = document.getElementById("quantity").value;
+  const unit = document.getElementById("unit").value;
 
-  if (!name || !address || !phone) {
+  if (!name || !phone || !permanent_address || !delivery_address || !quantity || !unit) {
     alert("Fill all details");
     return;
   }
@@ -83,19 +86,25 @@ async function submitOrder() {
       item_id: selectedItemId,
       item_name: selectedItemName,
       customer_name: name,
-      address: address,
-      phone: phone
+      phone,
+      permanent_address,
+      delivery_address,
+      quantity,
+      unit
     })
   });
 
-  alert("✅ Order placed!");
+  alert("✅ Order placed successfully!");
 
   closeOrderForm();
 
   // clear form
   document.getElementById("custName").value = "";
-  document.getElementById("custAddress").value = "";
   document.getElementById("custPhone").value = "";
+  document.getElementById("permAddress").value = "";
+  document.getElementById("delAddress").value = "";
+  document.getElementById("quantity").value = "";
+  document.getElementById("unit").value = "";
 }
 </script>
 
@@ -105,8 +114,13 @@ async function submitOrder() {
     <h2>Place Order</h2>
 
     <input type="text" id="custName" placeholder="Your Name">
-    <input type="text" id="custAddress" placeholder="Address">
     <input type="text" id="custPhone" placeholder="Phone Number">
+
+    <textarea id="permAddress" placeholder="Permanent Address"></textarea>
+    <textarea id="delAddress" placeholder="Delivery Address"></textarea>
+
+    <input type="number" id="quantity" placeholder="Quantity">
+    <input type="text" id="unit" placeholder="Unit (kg, ton, litre, etc)">
 
     <button onclick="submitOrder()">Submit</button>
     <button onclick="closeOrderForm()">Cancel</button>

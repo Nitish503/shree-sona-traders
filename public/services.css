@@ -73,3 +73,8 @@ h1 {
   padding: 10px;
   margin: 8px 0;
 }
+textarea {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+}

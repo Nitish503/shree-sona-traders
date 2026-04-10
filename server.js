@@ -246,12 +246,32 @@ app.delete("/items/:id", async (req, res) => {
 // --------------------
 app.post("/order", async (req, res) => {
   try {
-    const { item_id, item_name, customer_name, address, phone } = req.body;
+    const {
+      item_id,
+      item_name,
+      customer_name,
+      phone,
+      permanent_address,
+      delivery_address,
+      quantity,
+      unit
+    } = req.body;
 
     const result = await pool.query(
-      `INSERT INTO orders (item_id, item_name, customer_name, address, phone)
-       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [item_id, item_name, customer_name, address, phone]
+      `INSERT INTO orders 
+      (item_id, item_name, customer_name, phone, permanent_address, delivery_address, quantity, unit)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      RETURNING *`,
+      [
+        item_id,
+        item_name,
+        customer_name,
+        phone,
+        permanent_address,
+        delivery_address,
+        quantity,
+        unit
+      ]
     );
 
     res.json(result.rows[0]);
@@ -260,7 +280,6 @@ app.post("/order", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
 // --------------------
 // GET ALL ORDERS
 // --------------------
