@@ -301,29 +301,38 @@ app.post("/register", async (req, res) => {
   try {
     const { name, phone, captcha, captchaId } = req.body;
 
-    // 🔴 CAPTCHA CHECK
-    if (captchaStore[captchaId] !== captcha) {
-      return res.status(400).json({ error: "Invalid CAPTCHA" });
+    // 🔐 CAPTCHA CHECK
+    if (!captchaStore[captchaId] || captchaStore[captchaId] !== captcha) {
+      return res.status(400).json({ error: "Invalid captcha" });
     }
 
     delete captchaStore[captchaId];
 
-    if (!name || !phone) {
-      return res.status(400).send("Missing fields");
+    // 🔍 CHECK IF CUSTOMER EXISTS
+    const existing = await pool.query(
+      "SELECT * FROM customers WHERE phone=$1",
+      [phone]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(200).json({
+        message: "already_registered"
+      });
     }
 
+    // ✅ INSERT NEW CUSTOMER
     const result = await pool.query(
-      `INSERT INTO customers (name, phone)
-       VALUES ($1,$2)
-       ON CONFLICT (phone) DO NOTHING
-       RETURNING *`,
+      "INSERT INTO customers (name, phone) VALUES ($1,$2) RETURNING *",
       [name, phone]
     );
 
-    res.json({ message: "Registered successfully", user: result.rows[0] });
+    res.status(200).json({
+      message: "registered",
+      user: result.rows[0]
+    });
 
   } catch (err) {
-    console.error("❌ Register Error:", err.message);
+    console.error("❌ Register Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -335,8 +344,6 @@ app.post("/order", async (req, res) => {
   try {
     const {
       item_id,
-      item_name,
-      customer_name,
       phone,
       permanent_address,
       delivery_address,
@@ -344,36 +351,57 @@ app.post("/order", async (req, res) => {
       unit
     } = req.body;
 
-    // 🔥 DEBUG LOG (IMPORTANT)
-    console.log("Incoming Order:", req.body);
+    // 🔍 1. CHECK CUSTOMER EXISTS
+    const customer = await pool.query(
+      "SELECT * FROM customers WHERE phone=$1",
+      [phone]
+    );
 
-    // 🔥 VALIDATION
-    if (!item_id || !item_name || !customer_name || !phone) {
-      return res.status(400).send("Missing required fields");
+    if (customer.rows.length === 0) {
+      return res.status(400).json({
+        error: "❌ You are not registered. Please register first."
+      });
     }
 
+    const customerData = customer.rows[0];
+
+    // 🔍 2. CHECK ITEM STOCK
+    const item = await pool.query(
+      "SELECT * FROM items WHERE id=$1",
+      [item_id]
+    );
+
+    if (item.rows.length === 0) {
+      return res.status(400).json({ error: "Item not found" });
+    }
+
+    if (item.rows[0].status !== "available") {
+      return res.status(400).json({
+        error: "❌ Item is out of stock"
+      });
+    }
+
+    // ✅ INSERT ORDER
     const result = await pool.query(
       `INSERT INTO orders 
-      (item_id, item_name, customer_name, phone, permanent_address, delivery_address, quantity, unit)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      (customer_id, item_id, quantity, unit, permanent_address, delivery_address)
+      VALUES ($1,$2,$3,$4,$5,$6)
       RETURNING *`,
       [
+        customerData.id,
         item_id,
-        item_name,
-        customer_name,
-        phone,
-        permanent_address || null,
-        delivery_address || null,
-        quantity || null,
-        unit || null
+        quantity,
+        unit,
+        permanent_address,
+        delivery_address
       ]
     );
 
     res.json(result.rows[0]);
 
   } catch (err) {
-    console.error("❌ ORDER ERROR FULL:", err); // 🔥 VERY IMPORTANT
-    res.status(500).send(err.message);
+    console.error("❌ ORDER ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 // --------------------
@@ -383,24 +411,26 @@ app.get("/orders", async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        id,
-        item_name,
-        customer_name,
-        phone,
-        quantity,
-        unit,
-        permanent_address,
-        delivery_address,
-        status,
-        order_date
-      FROM orders
-      ORDER BY id DESC
+        o.id,
+        i.name AS item_name,
+        c.name AS customer_name,
+        c.phone,
+        o.quantity,
+        o.unit,
+        o.permanent_address,
+        o.delivery_address,
+        o.status,
+        o.order_date
+      FROM orders o
+      JOIN customers c ON o.customer_id = c.id
+      JOIN items i ON o.item_id = i.id
+      ORDER BY o.id DESC
     `);
 
     res.json(result.rows);
 
   } catch (err) {
-    console.error("❌ Orders Fetch Error:", err.message);
+    console.error("❌ Orders Fetch Error:", err);
     res.status(500).json({ error: err.message });
   }
 });

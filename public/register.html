@@ -79,8 +79,15 @@ async function register() {
 
     const data = await res.json();
 
-    if (res.ok) {
-      alert("✅ Registered successfully");
+    if (data.message === "registered") {
+  alert("✅ Registered successfully");
+} 
+else if (data.message === "already_registered") {
+  alert("⚠️ You are already registered");
+} 
+else {
+  alert(data.error || "Something went wrong");
+}
 
       // clear inputs
       document.getElementById("name").value = "";
