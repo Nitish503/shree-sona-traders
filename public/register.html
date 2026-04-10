@@ -17,9 +17,9 @@
 
   <!-- CAPTCHA BOX -->
   <div class="captcha-container">
-  <div class="captcha-box" id="captchaText"></div>
-  <button type="button" onclick="loadCaptcha()" class="refresh-btn">↻</button>
-</div>
+    <div class="captcha-box" id="captchaText">----</div>
+    <button type="button" onclick="loadCaptcha()" class="refresh-btn">↻</button>
+  </div>
 
   <input type="text" id="captchaInput" placeholder="Enter CAPTCHA">
 
@@ -33,22 +33,38 @@
 const API = window.location.origin;
 let captchaId = "";
 
+// ======================
 // LOAD CAPTCHA
+// ======================
 async function loadCaptcha() {
-  const res = await fetch(`${API}/captcha`);
-  const data = await res.json();
+  try {
+    const box = document.getElementById("captchaText");
+    box.innerText = "Loading...";
 
-  captchaId = data.id;
-  document.getElementById("captchaText").innerText = data.captcha;
+    const res = await fetch(`${API}/captcha`);
+    const data = await res.json();
+
+    console.log("Captcha:", data); // debug
+
+    captchaId = data.id;
+    box.innerText = data.captcha;
+
+  } catch (err) {
+    console.error("Captcha error:", err);
+    document.getElementById("captchaText").innerText = "Error";
+  }
 }
 
+// Call on page load
 loadCaptcha();
 
+// ======================
 // REGISTER FUNCTION
+// ======================
 async function register() {
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const captcha = document.getElementById("captchaInput").value;
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const captcha = document.getElementById("captchaInput").value.trim();
 
   const loader = document.getElementById("loader");
   const btn = document.getElementById("registerBtn");
@@ -79,28 +95,27 @@ async function register() {
 
     const data = await res.json();
 
+    // ✅ HANDLE RESPONSE PROPERLY
     if (data.message === "registered") {
-  alert("✅ Registered successfully");
-} 
-else if (data.message === "already_registered") {
-  alert("⚠️ You are already registered");
-} 
-else {
-  alert(data.error || "Something went wrong");
-}
+      alert("✅ Registered successfully");
 
-      // clear inputs
-      document.getElementById("name").value = "";
-      document.getElementById("phone").value = "";
-      document.getElementById("captchaInput").value = "";
+    } else if (data.message === "already_registered") {
+      alert("⚠️ You are already registered");
 
     } else {
-      alert(data.error);
+      alert(data.error || "Something went wrong");
     }
 
+    // CLEAR INPUTS
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("captchaInput").value = "";
+
+    // RELOAD CAPTCHA
     loadCaptcha();
 
   } catch (err) {
+    console.error(err);
     alert("❌ Network error");
   }
 
