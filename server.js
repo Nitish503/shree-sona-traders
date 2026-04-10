@@ -262,6 +262,22 @@ app.post("/order", async (req, res) => {
 });
 
 // --------------------
+// GET ALL ORDERS
+// --------------------
+app.get("/orders", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM orders ORDER BY created_at DESC"
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ Orders Fetch Error:", err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+// --------------------
 // SERVER START
 // --------------------
 const PORT = process.env.PORT || 10000;
