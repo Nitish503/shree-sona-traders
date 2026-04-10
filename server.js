@@ -294,14 +294,30 @@ app.post("/order", async (req, res) => {
 // --------------------
 app.get("/orders", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM orders ORDER BY created_at DESC"
-    );
+    const result = await pool.query(`
+      SELECT 
+        id,
+        item_name,
+        customer_name,
+        phone,
+        quantity,
+        unit,
+        permanent_address,
+        delivery_address,
+        order_date
+      FROM orders
+      ORDER BY id DESC
+    `);
 
     res.json(result.rows);
+
   } catch (err) {
     console.error("❌ Orders Fetch Error:", err.message);
-    res.status(500).send(err.message);
+
+    // 🔥 VERY IMPORTANT FIX
+    res.status(500).json({
+      error: err.message
+    });
   }
 });
 
