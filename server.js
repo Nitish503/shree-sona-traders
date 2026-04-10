@@ -411,7 +411,10 @@ app.get("/orders", async (req, res) => {
 app.get("/customers", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, name, phone, created_at
+      SELECT 
+        id,
+        name,
+        phone
       FROM customers
       ORDER BY id DESC
     `);
@@ -419,7 +422,7 @@ app.get("/customers", async (req, res) => {
     res.json(result.rows);
 
   } catch (err) {
-    console.error("❌ Customers Fetch Error:", err.message);
+    console.error("❌ Customers Fetch Error FULL:", err); // 🔥 important
     res.status(500).json({ error: err.message });
   }
 });
