@@ -1,62 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Billing - SOMA TRADERS</title>
+  <title>Billing</title>
   <link rel="stylesheet" href="billing.css">
 </head>
 <body>
-  <h2>Billing</h2>
-  <form id="bill-form">
-    <label>Memo No:</label><input type="text" id="memo" required><br><br>
-    <label>Date:</label><input type="date" id="date" required><br><br>
-    <label>Customer Name (M/s):</label><input type="text" id="customer" required><br><br>
-    <label>Address:</label><input type="text" id="address" required><br><br>
 
-    <label>Select Items & Quantity:</label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Cement"> Cement
-      Qty: <input type="number" class="item-qty" data-item="Cement" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Bricks"> Bricks
-      Qty: <input type="number" class="item-qty" data-item="Bricks" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Sand"> Sand
-      Qty: <input type="number" class="item-qty" data-item="Sand" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Steel Rods"> Steel Rods
-      Qty: <input type="number" class="item-qty" data-item="Steel Rods" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Paint"> Paint
-      Qty: <input type="number" class="item-qty" data-item="Paint" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Tiles"> Tiles
-      Qty: <input type="number" class="item-qty" data-item="Tiles" min="1" value="1">
-    </label><br>
-    <label>
-      <input type="checkbox" class="item-check" value="Wood"> Wood
-      Qty: <input type="number" class="item-qty" data-item="Wood" min="1" value="1">
-    </label><br><br>
+<h2>Create Bill</h2>
 
-    <label>Total:</label><input type="number" id="total" readonly><br><br>
-    <label>Paid:</label><input type="number" id="paid" required><br><br>
-    <label>Due:</label><input type="number" id="due" readonly><br><br>
+<input id="phone" placeholder="Customer Phone">
+<input id="item" placeholder="Item Name">
+<input id="qty" type="number" placeholder="Quantity">
+<input id="rate" type="number" placeholder="Rate">
+<input id="paid" type="number" placeholder="Paid Amount">
 
-    <button type="submit" class="btn">Generate Bill</button>
-  </form>
+<p>Total: <span id="total">0</span></p>
 
-  <div id="bill-output" class="hidden">
-    <div id="bill-details"></div>
-    <button class="btn" onclick="window.print()">Print / Download PDF</button>
-  </div>
+<button onclick="createBill()">Generate Bill</button>
 
-  <a href="admin.html" class="btn">Back to Menu</a>
+<script>
+const API = window.location.origin;
 
-  <script src="billing.js"></script>
+function calculate() {
+  const q = document.getElementById("qty").value || 0;
+  const r = document.getElementById("rate").value || 0;
+  document.getElementById("total").innerText = q * r;
+}
+
+document.getElementById("qty").oninput = calculate;
+document.getElementById("rate").oninput = calculate;
+
+async function createBill() {
+  const phone = document.getElementById("phone").value;
+  const item = document.getElementById("item").value;
+  const quantity = document.getElementById("qty").value;
+  const rate = document.getElementById("rate").value;
+  const paid = document.getElementById("paid").value || 0;
+
+  const res = await fetch(`${API}/bill`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone,
+      item_name: item,
+      quantity,
+      rate,
+      paid
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    window.open(
+  `/invoice.html?name=${data.customer_name}&phone=${data.phone}&bill_no=${data.bill_no}&item=${data.item_name}&qty=${data.quantity}&rate=${data.rate}&total=${data.total}&paid=${data.paid}&remaining=${data.remaining}`
+);
+  } else {
+    alert(data.error);
+  }
+}
+</script>
+
 </body>
 </html>

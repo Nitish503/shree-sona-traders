@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice</title>
+  <link rel="stylesheet" href="invoice.css">
+</head>
+<body>
+
+<div class="invoice-box" id="invoice">
+
+  <div class="header">
+    <h1>SHREE SONA TRADERS</h1>
+    <p>Construction | Rental | Fuel Services</p>
+  </div>
+
+  <div class="top">
+    <div>
+      <h3>Customer Details</h3>
+      <p id="custName"></p>
+      <p id="custPhone"></p>
+    </div>
+
+    <div>
+      <h2>INVOICE</h2>
+      <p>Invoice No: <span id="billNo"></span></p>
+      <p>Date: <span id="billDate"></span></p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Qty</th>
+        <th>Rate</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <div class="summary">
+    <p>Total: ₹<span id="total"></span></p>
+    <p>Paid: ₹<span id="paid"></span></p>
+    <p>Remaining: ₹<span id="remaining"></span></p>
+  </div>
+
+  <div class="footer">
+    <p>Signature</p>
+  </div>
+
+</div>
+
+<button onclick="printInvoice()">Print</button>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+document.getElementById("custName").innerText = params.get("name");
+document.getElementById("custPhone").innerText = params.get("phone");
+document.getElementById("billNo").innerText = params.get("bill_no");
+document.getElementById("billDate").innerText = new Date().toLocaleString();
+
+const item = params.get("item");
+const qty = params.get("qty");
+const rate = params.get("rate");
+const total = params.get("total");
+const paid = params.get("paid");
+const remaining = params.get("remaining");
+
+document.getElementById("tableBody").innerHTML = `
+<tr>
+  <td>${item}</td>
+  <td>${qty}</td>
+  <td>${rate}</td>
+  <td>${total}</td>
+</tr>
+`;
+
+document.getElementById("total").innerText = total;
+document.getElementById("paid").innerText = paid;
+document.getElementById("remaining").innerText = remaining;
+
+function printInvoice() {
+  window.print();
+}
+</script>
+
+</body>
+</html>

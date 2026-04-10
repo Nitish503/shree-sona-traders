@@ -445,6 +445,112 @@ app.get("/orders", async (req, res) => {
 });
 
 // --------------------
+// CREATE BILL
+// --------------------
+app.post("/bill", async (req, res) => {
+  try {
+    const {
+      phone,
+      item_name,
+      quantity,
+      rate,
+      paid
+    } = req.body;
+
+    // 🔍 CHECK REGISTERED CUSTOMER
+    const customer = await pool.query(
+      "SELECT * FROM customers WHERE phone=$1",
+      [phone]
+    );
+
+    if (customer.rows.length === 0) {
+      return res.status(400).json({ error: "Customer not registered" });
+    }
+
+    const customerData = customer.rows[0];
+
+    const total = quantity * rate;
+    const remaining = total - paid;
+
+    const status = remaining > 0 ? "pending" : "completed";
+
+    const result = await pool.query(
+      `INSERT INTO bills 
+      (customer_id, customer_name, phone, item_name, quantity, rate, total, paid, remaining, status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      RETURNING *`,
+      [
+        customerData.id,
+        customerData.name,
+        phone,
+        item_name,
+        quantity,
+        rate,
+        total,
+        paid,
+        remaining,
+        status
+      ]
+    );
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error("❌ Billing Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// GET ALL BILLS
+// --------------------
+app.get("/bills", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM bills ORDER BY id DESC"
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// PAY REMAINING
+// --------------------
+app.put("/bills/:id/pay", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+
+    const bill = await pool.query(
+      "SELECT * FROM bills WHERE id=$1",
+      [id]
+    );
+
+    const b = bill.rows[0];
+
+    const newPaid = b.paid + amount;
+    const remaining = b.total - newPaid;
+
+    const status = remaining <= 0 ? "completed" : "pending";
+
+    const updated = await pool.query(
+      `UPDATE bills 
+       SET paid=$1, remaining=$2, status=$3 
+       WHERE id=$4 RETURNING *`,
+      [newPaid, remaining, status, id]
+    );
+
+    res.json(updated.rows[0]);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
 // GET ALL CUSTOMERS
 // --------------------
 app.get("/customers", async (req, res) => {

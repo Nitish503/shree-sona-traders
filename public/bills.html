@@ -1,0 +1,49 @@
+<h2>Billing Records</h2>
+<div id="billContainer"></div>
+
+<script>
+const API = window.location.origin;
+
+async function loadBills() {
+  const res = await fetch(`${API}/bills`);
+  const data = await res.json();
+
+  const container = document.getElementById("billContainer");
+  container.innerHTML = "";
+
+  data.forEach(b => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <h3>${b.customer_name}</h3>
+      <p>${b.item_name}</p>
+      <p>Total: ${b.total}</p>
+      <p>Paid: ${b.paid}</p>
+      <p>Remaining: ${b.remaining}</p>
+      <p>Status: ${b.status}</p>
+
+      ${b.status === "pending" ? `
+        <input type="number" id="pay${b.id}" placeholder="Pay amount">
+        <button onclick="pay(${b.id})">Pay</button>
+      ` : ""}
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+async function pay(id) {
+  const amount = document.getElementById("pay"+id).value;
+
+  await fetch(`${API}/bills/${id}/pay`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount })
+  });
+
+  alert("Payment updated");
+  loadBills();
+}
+
+loadBills();
+</script>
