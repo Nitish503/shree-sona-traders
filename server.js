@@ -11,6 +11,8 @@ const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
+// 🔥 CAPTCHA STORE
+let captchaStore = {};
 
 app.use(cors());
 app.use(express.json());
@@ -79,6 +81,13 @@ async function initDB() {
 initDB();
 
 // --------------------
+// CAPTCHA FUNCTION
+// --------------------
+function generateCaptcha() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// --------------------
 // STATIC FILES
 // --------------------
 app.use(express.static(path.join(__dirname, "public")));
@@ -93,6 +102,16 @@ app.get("/", (req, res) =>
 app.get("/stock", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "stock.html"))
 );
+
+// GET CAPTCHA
+app.get("/captcha", (req, res) => {
+  const captcha = generateCaptcha();
+  const id = Date.now().toString();
+
+  captchaStore[id] = captcha;
+
+  res.json({ captcha, id });
+});
 
 // --------------------
 // ITEMS API
@@ -276,6 +295,40 @@ app.delete("/orders/:id", async (req, res) => {
 });
 
 // --------------------
+// REGISTER CUSTOMER
+// --------------------
+app.post("/register", async (req, res) => {
+  try {
+    const { name, phone, captcha, captchaId } = req.body;
+
+    // 🔴 CAPTCHA CHECK
+    if (captchaStore[captchaId] !== captcha) {
+      return res.status(400).json({ error: "Invalid CAPTCHA" });
+    }
+
+    delete captchaStore[captchaId];
+
+    if (!name || !phone) {
+      return res.status(400).send("Missing fields");
+    }
+
+    const result = await pool.query(
+      `INSERT INTO customers (name, phone)
+       VALUES ($1,$2)
+       ON CONFLICT (phone) DO NOTHING
+       RETURNING *`,
+      [name, phone]
+    );
+
+    res.json({ message: "Registered successfully", user: result.rows[0] });
+
+  } catch (err) {
+    console.error("❌ Register Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
 // CREATE ORDER API
 // --------------------
 app.post("/order", async (req, res) => {
@@ -348,6 +401,42 @@ app.get("/orders", async (req, res) => {
 
   } catch (err) {
     console.error("❌ Orders Fetch Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// GET ALL CUSTOMERS
+// --------------------
+app.get("/customers", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name, phone, created_at
+      FROM customers
+      ORDER BY id DESC
+    `);
+
+    res.json(result.rows);
+
+  } catch (err) {
+    console.error("❌ Customers Fetch Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// DELETE CUSTOMER
+// --------------------
+app.delete("/customers/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM customers WHERE id=$1", [id]);
+
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.error("❌ Delete Customer Error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });

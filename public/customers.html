@@ -2,18 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Customers - SOMA TRADERS</title>
-  <link rel="stylesheet" href="customers.css">
+  <title>Customers</title>
+
+  <!-- ✅ External CSS -->
+  <link rel="stylesheet" href="/customers.css">
 </head>
 <body>
-  <h2>Customers</h2>
-  <p>Customer management will go here.</p>
 
-  <!-- Customer list container -->
-  <div id="customerList" class="dashboard-section"></div>
+<h1>Registered Customers</h1>
 
-  <a href="admin.html" class="btn">Back to Menu</a>
+<div id="customersContainer"></div>
 
-  <script src="customers.js"></script>
+<script>
+// LOAD CUSTOMERS
+async function loadCustomers() {
+  try {
+    const res = await fetch("/customers");
+
+    if (!res.ok) {
+      alert("Error loading customers");
+      return;
+    }
+
+    const data = await res.json();
+
+    const container = document.getElementById("customersContainer");
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+      container.innerHTML = "<p>No customers found</p>";
+      return;
+    }
+
+    data.forEach(cust => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const date = new Date(cust.created_at).toLocaleString();
+
+      card.innerHTML = `
+        <h3>${cust.name}</h3>
+        <p><b>Phone:</b> ${cust.phone}</p>
+        <p><b>Registered:</b> ${date}</p>
+
+        <button onclick="deleteCustomer(${cust.id})" class="delete-btn">
+          Delete
+        </button>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+}
+
+// DELETE CUSTOMER
+async function deleteCustomer(id) {
+  if (!confirm("Delete this customer?")) return;
+
+  try {
+    const res = await fetch(`/customers/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) {
+      alert("Delete failed");
+      return;
+    }
+
+    alert("🗑 Customer deleted");
+    loadCustomers(); // refresh
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// INIT
+loadCustomers();
+</script>
+
 </body>
 </html>
