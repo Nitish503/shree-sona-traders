@@ -242,6 +242,26 @@ app.delete("/items/:id", async (req, res) => {
 });
 
 // --------------------
+// CREATE ORDER API
+// --------------------
+app.post("/order", async (req, res) => {
+  try {
+    const { item_id, item_name, customer_name, address, phone } = req.body;
+
+    const result = await pool.query(
+      `INSERT INTO orders (item_id, item_name, customer_name, address, phone)
+       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+      [item_id, item_name, customer_name, address, phone]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ Order Error:", err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+// --------------------
 // SERVER START
 // --------------------
 const PORT = process.env.PORT || 10000;

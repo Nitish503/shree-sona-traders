@@ -37,6 +37,10 @@ async function loadItems() {
 
       <p class="price">${formatRupee(item.rate)}</p>
 
+      <button onclick="openOrderForm(${item.id}, '${item.name}')">
+  Order Now
+</button>
+
       <span class="${item.status}">${item.status}</span>
     `;
 
@@ -45,7 +49,71 @@ async function loadItems() {
 }
 
 loadItems();
+
+let selectedItemId = null;
+let selectedItemName = "";
+
+// OPEN FORM
+function openOrderForm(id, name) {
+  selectedItemId = id;
+  selectedItemName = name;
+  document.getElementById("orderModal").style.display = "block";
+}
+
+// CLOSE FORM
+function closeOrderForm() {
+  document.getElementById("orderModal").style.display = "none";
+}
+
+// SUBMIT ORDER
+async function submitOrder() {
+  const name = document.getElementById("custName").value;
+  const address = document.getElementById("custAddress").value;
+  const phone = document.getElementById("custPhone").value;
+
+  if (!name || !address || !phone) {
+    alert("Fill all details");
+    return;
+  }
+
+  await fetch("/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      item_id: selectedItemId,
+      item_name: selectedItemName,
+      customer_name: name,
+      address: address,
+      phone: phone
+    })
+  });
+
+  alert("✅ Order placed!");
+
+  closeOrderForm();
+
+  // clear form
+  document.getElementById("custName").value = "";
+  document.getElementById("custAddress").value = "";
+  document.getElementById("custPhone").value = "";
+}
 </script>
+
+<!-- ORDER MODAL -->
+<div id="orderModal" class="modal">
+  <div class="modal-content">
+    <h2>Place Order</h2>
+
+    <input type="text" id="custName" placeholder="Your Name">
+    <input type="text" id="custAddress" placeholder="Address">
+    <input type="text" id="custPhone" placeholder="Phone Number">
+
+    <button onclick="submitOrder()">Submit</button>
+    <button onclick="closeOrderForm()">Cancel</button>
+  </div>
+</div>
 
 </body>
 </html>
