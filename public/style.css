@@ -1,30 +1,19 @@
-/* ===================== */
-/* GLOBAL */
-/* ===================== */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: #0f172a;
   color: white;
 }
 
-/* ===================== */
 /* NAVBAR */
-/* ===================== */
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
+  padding: 15px;
   background: #1e293b;
   position: sticky;
   top: 0;
   z-index: 1000;
-}
-
-.logo {
-  font-weight: bold;
-  font-size: 16px;
 }
 
 .menu-toggle {
@@ -32,20 +21,22 @@ body {
   cursor: pointer;
 }
 
-/* ===================== */
 /* SIDE MENU */
-/* ===================== */
 .nav-links {
   position: fixed;
   top: 0;
-  right: -260px;   /* hidden by default */
+  right: -260px;
   width: 260px;
   height: 100%;
   background: #020617;
   list-style: none;
   padding: 60px 20px;
-  transition: 0.3s ease;
+  transition: 0.3s;
   z-index: 1001;
+}
+
+.nav-links.active {
+  right: 0;
 }
 
 .nav-links li {
@@ -55,75 +46,30 @@ body {
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 16px;
 }
 
-.nav-links a:hover {
-  color: cyan;
-}
-
-/* ACTIVE MENU */
-.nav-links.active {
-  right: 0;
-}
-
-/* ===================== */
 /* OVERLAY */
-/* ===================== */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.6);
   display: none;
-  z-index: 1000;
+  top: 0;
+  left: 0;
 }
 
 .overlay.show {
   display: block;
 }
 
-/* ===================== */
 /* HERO */
-/* ===================== */
 .hero {
   text-align: center;
-  padding: 80px 20px 40px;
+  padding: 60px 20px 20px;
 }
 
-.hero h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.hero p {
-  color: #cbd5f5;
-  font-size: 14px;
-}
-
-/* ===================== */
-/* BUTTON (kept if reused elsewhere) */
-/* ===================== */
-.btn {
-  display: inline-block;
-  margin: 10px;
-  padding: 10px 20px;
-  border-radius: 20px;
-  text-decoration: none;
-  border: 2px solid cyan;
-  color: cyan;
-}
-
-.secondary {
-  background: cyan;
-  color: black;
-}
-
-/* ===================== */
 /* SERVICES */
-/* ===================== */
 .services {
   padding: 20px;
   text-align: center;
@@ -131,7 +77,6 @@ body {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 15px;
 }
 
@@ -140,75 +85,48 @@ body {
   padding: 20px;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.05);
   background: #334155;
 }
 
-/* ===================== */
 /* SLIDER */
-/* ===================== */
 .slider {
   margin: 20px;
   overflow: hidden;
-  border-radius: 10px;
 }
 
 .slides {
   display: flex;
-  transition: 0.5s ease;
+  transition: 0.5s;
 }
 
 .slides img {
   width: 100%;
-  flex-shrink: 0;
-  border-radius: 10px;
 }
 
-/* ===================== */
 /* DOTS */
-/* ===================== */
 .dots {
   text-align: center;
-  margin-top: 10px;
 }
 
 .dots span {
   height: 8px;
   width: 8px;
   background: gray;
-  margin: 4px;
   display: inline-block;
+  margin: 5px;
   border-radius: 50%;
 }
 
-.dots span.active {
+.dots .active {
   background: white;
 }
 
-/* ===================== */
 /* FOOTER */
-/* ===================== */
 footer {
   text-align: center;
-  padding: 12px;
+  padding: 10px;
   background: #1e293b;
-  margin-top: 20px;
-  font-size: 13px;
-}
-
-/* ===================== */
-/* MOBILE */
-/* ===================== */
-@media (max-width: 600px) {
-  .hero h1 {
-    font-size: 18px;
-  }
-
-  .hero p {
-    font-size: 13px;
-  }
 }

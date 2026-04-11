@@ -1,54 +1,52 @@
-// =====================
-// MENU TOGGLE
-// =====================
+const menu = document.querySelector(".nav-links");
 const toggle = document.querySelector(".menu-toggle");
-const nav = document.querySelector(".nav-links");
 const overlay = document.querySelector(".overlay");
 
-toggle.onclick = () => {
-  nav.classList.toggle("active");
-  overlay.classList.toggle("show");
-};
+// MENU TOGGLE
+toggle.addEventListener("click", () => {
+  menu.classList.add("active");
+  overlay.classList.add("show");
+});
 
-overlay.onclick = () => {
-  nav.classList.remove("active");
+// CLOSE MENU
+overlay.addEventListener("click", () => {
+  menu.classList.remove("active");
   overlay.classList.remove("show");
-};
+});
 
-// =====================
 // NAVIGATION
-// =====================
 function goTo(page) {
   window.location.href = page;
 }
 
-// =====================
-// SLIDER
-// =====================
+/* ===================== */
+/* SLIDER */
+/* ===================== */
 let index = 0;
 const slides = document.getElementById("slides");
-const total = slides.children.length;
-
 const dotsContainer = document.getElementById("dots");
 
+const totalSlides = slides.children.length;
+
 // CREATE DOTS
-for (let i = 0; i < total; i++) {
+for (let i = 0; i < totalSlides; i++) {
   const dot = document.createElement("span");
   dotsContainer.appendChild(dot);
 }
 
+const dots = dotsContainer.children;
+
 function showSlide(i) {
   slides.style.transform = `translateX(-${i * 100}%)`;
 
-  document.querySelectorAll(".dots span").forEach((d, idx) => {
-    d.classList.toggle("active", idx === i);
-  });
+  for (let d of dots) d.classList.remove("active");
+  dots[i].classList.add("active");
 }
 
-// AUTO SLIDE
-setInterval(() => {
-  index = (index + 1) % total;
+function autoSlide() {
+  index = (index + 1) % totalSlides;
   showSlide(index);
-}, 3000);
+}
 
+setInterval(autoSlide, 3000);
 showSlide(0);
