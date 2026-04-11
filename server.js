@@ -572,9 +572,13 @@ app.get("/bills/pending", async (req, res) => {
 // --------------------
 app.get("/bills/completed", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM bills WHERE status='paid' ORDER BY id DESC"
-    );
+    const result = await pool.query(`
+      SELECT * FROM bills 
+      WHERE TRIM(LOWER(status)) = 'completed'
+      ORDER BY id DESC
+    `);
+
+    console.log("Completed Bills:", result.rows); // 🔥 debug
 
     res.json(result.rows);
 
@@ -614,6 +618,7 @@ app.put("/bills/:id/pay", async (req, res) => {
 
     // 🔹 FIXED STATUS (IMPORTANT)
     const status = newPaid >= total ? "completed" : "pending";
+
 
     // 🔹 UPDATE DB
     const updated = await pool.query(
