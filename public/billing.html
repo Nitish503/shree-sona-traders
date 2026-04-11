@@ -5,7 +5,6 @@
   <title>Billing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- CSS -->
   <link rel="stylesheet" href="billing.css">
 </head>
 
@@ -14,7 +13,7 @@
 <div class="container">
 
   <!-- ===================== -->
-  <!-- CREATE BILL SECTION -->
+  <!-- CREATE BILL -->
   <!-- ===================== -->
   <h2>Create Bill</h2>
 
@@ -23,7 +22,7 @@
     <input id="paid" type="number" placeholder="Paid Amount">
   </div>
 
-  <!-- ITEMS TABLE -->
+  <!-- ITEMS -->
   <table>
     <thead>
       <tr>
@@ -45,7 +44,7 @@
 
 
   <!-- ===================== -->
-  <!-- SEARCH + FILTER -->
+  <!-- SEARCH FILTER -->
   <!-- ===================== -->
   <div class="filters">
     <input id="searchInput" placeholder="Search name or phone" oninput="applyFilters()">
@@ -61,29 +60,20 @@
 
 
   <!-- ===================== -->
-  <!-- PENDING PAYMENTS -->
+  <!-- PENDING -->
   <!-- ===================== -->
-  <h2 class="section-title pending">
-    🟡 Pending Payments
-  </h2>
-
+  <h2 class="section-title pending">🟡 Pending Payments</h2>
   <div id="pendingList" class="cards"></div>
 
 
   <!-- ===================== -->
-  <!-- COMPLETED PAYMENTS -->
+  <!-- COMPLETED -->
   <!-- ===================== -->
-  <h2 class="section-title completed">
-    🟢 Completed Payments
-  </h2>
-
+  <h2 class="section-title completed">🟢 Completed Payments</h2>
   <div id="completedList" class="cards"></div>
 
 </div>
 
-<!-- ===================== -->
-<!-- LINK JS FILE -->
-<!-- ===================== -->
 <script src="billing.js"></script>
 
 </body>

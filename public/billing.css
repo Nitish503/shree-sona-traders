@@ -1,188 +1,171 @@
-/* ===== BODY ===== */
+/* BODY */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f7fb;
+  font-family: Arial;
+  background: #f4f6f9;
 }
 
-/* ===== CONTAINER ===== */
+/* CONTAINER */
 .container {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: auto;
-  padding: 20px;
+  padding: 15px;
 }
 
-/* ===== HEADINGS ===== */
+/* HEADINGS */
 h2 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
 }
 
-/* ===== TOP INPUTS ===== */
+/* INPUTS */
 .top-inputs {
   display: flex;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .top-inputs input {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-/* ===== TABLE ===== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-}
-
-th {
-  background: #f1f3f6;
-  font-weight: bold;
-}
-
-td input, td select {
-  width: 90%;
-  padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-/* ===== BUTTONS ===== */
-.btn {
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+  padding: 10px;
+}
+
+td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+select, input[type="number"] {
+  width: 100%;
+  padding: 6px;
+}
+
+/* BUTTONS */
+.btn {
   padding: 10px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
+  margin-top: 10px;
   cursor: pointer;
+}
+
+.add {
+  background: #27ae60;
+  color: white;
   width: 100%;
-  font-size: 14px;
 }
 
-.btn.add {
-  background: #2ecc71;
+.primary {
+  background: #2980b9;
   color: white;
+  width: 100%;
 }
 
-.btn.primary {
-  background: #3498db;
-  color: white;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* ===== TOTAL ===== */
-h3 {
-  margin-top: 15px;
-  color: #333;
-}
-
-/* ===== FILTERS ===== */
+/* FILTER */
 .filters {
   display: flex;
   gap: 10px;
-  margin: 20px 0;
-  flex-wrap: wrap;
+  margin-top: 20px;
 }
 
 .filters input,
 .filters select {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
   flex: 1;
-  min-width: 150px;
+  padding: 8px;
 }
 
-/* ===== SECTION TITLES ===== */
+/* SECTION TITLES */
 .section-title {
   margin-top: 20px;
-  font-size: 20px;
-  text-align: center;
 }
 
-.section-title.pending {
-  color: #e67e22;
+.pending {
+  color: #f39c12;
 }
 
-.section-title.completed {
+.completed {
   color: #27ae60;
 }
 
-/* ===== CARDS ===== */
+/* CARDS */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
 }
 
-/* ===== CARD STYLE ===== */
+/* CARD */
 .card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 5px solid;
 }
 
-.card h3 {
-  margin: 0 0 5px;
-}
-
-.card p {
-  margin: 5px 0;
-  font-size: 14px;
-}
-
-/* ===== STATUS COLORS ===== */
 .card.pending {
-  border-left: 5px solid #f39c12;
+  border-color: orange;
 }
 
 .card.completed {
-  border-left: 5px solid #2ecc71;
+  border-color: green;
 }
 
-/* ===== PAY INPUT ===== */
-.card input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+/* CARD TEXT */
+.card p {
+  margin: 4px 0;
 }
 
-/* ===== PAY BUTTON ===== */
-.card button {
-  margin-top: 8px;
-  padding: 8px;
+/* ACTION BUTTONS */
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 6px;
   border: none;
-  border-radius: 6px;
-  background: #27ae60;
-  color: white;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.card button:hover {
-  background: #219150;
+/* VIEW BUTTON */
+.actions button:first-child {
+  background: #3498db;
+  color: white;
 }
 
-/* ===== MOBILE RESPONSIVE ===== */
-@media (max-width: 768px) {
+/* DELETE BUTTON */
+.actions .delete {
+  background: #e74c3c;
+  color: white;
+}
+
+/* PAY BUTTON */
+.card button {
+  margin-top: 5px;
+  background: #27ae60;
+  color: white;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
 
   .top-inputs {
     flex-direction: column;
@@ -192,31 +175,7 @@ h3 {
     flex-direction: column;
   }
 
-  table, thead, tbody, th, td, tr {
-    display: block;
+  table {
+    font-size: 12px;
   }
-
-  thead {
-    display: none;
-  }
-
-  tr {
-    background: #fff;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 10px;
-  }
-
-  td {
-    text-align: left;
-    padding: 8px;
-    border: none;
-  }
-
-  td::before {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 3px;
-  }
-
 }
