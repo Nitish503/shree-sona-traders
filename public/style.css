@@ -11,9 +11,6 @@ body {
   justify-content: space-between;
   padding: 15px;
   background: #1e293b;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
 .menu-toggle {
@@ -21,18 +18,17 @@ body {
   cursor: pointer;
 }
 
-/* SIDE MENU */
+/* MENU FIX */
 .nav-links {
   position: fixed;
   top: 0;
-  right: -260px;
+  right: -100%;
   width: 260px;
   height: 100%;
   background: #020617;
   list-style: none;
   padding: 60px 20px;
-  transition: 0.3s;
-  z-index: 1001;
+  transition: 0.3s ease;
 }
 
 .nav-links.active {
@@ -53,10 +49,8 @@ body {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
   display: none;
-  top: 0;
-  left: 0;
 }
 
 .overlay.show {
@@ -66,7 +60,30 @@ body {
 /* HERO */
 .hero {
   text-align: center;
-  padding: 60px 20px 20px;
+  padding: 60px 20px;
+}
+
+/* BUTTONS */
+.hero-buttons {
+  margin-top: 20px;
+}
+
+.btn {
+  display: inline-block;
+  margin: 8px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+}
+
+.btn.outline {
+  border: 2px solid cyan;
+  color: cyan;
+}
+
+.btn.solid {
+  background: cyan;
+  color: black;
 }
 
 /* SERVICES */
@@ -84,17 +101,13 @@ body {
   background: #1e293b;
   padding: 20px;
   border-radius: 10px;
-  cursor: pointer;
 }
 
-.card:hover {
-  background: #334155;
-}
-
-/* SLIDER */
+/* 🔥 SLIDER */
 .slider {
   margin: 20px;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .slides {
@@ -104,29 +117,24 @@ body {
 
 .slides img {
   width: 100%;
+  flex-shrink: 0;
 }
 
 /* DOTS */
 .dots {
   text-align: center;
+  margin-top: 10px;
 }
 
 .dots span {
   height: 8px;
   width: 8px;
   background: gray;
+  margin: 4px;
   display: inline-block;
-  margin: 5px;
   border-radius: 50%;
 }
 
 .dots .active {
   background: white;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 10px;
-  background: #1e293b;
 }

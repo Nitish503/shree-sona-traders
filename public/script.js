@@ -1,52 +1,53 @@
-const menu = document.querySelector(".nav-links");
-const toggle = document.querySelector(".menu-toggle");
-const overlay = document.querySelector(".overlay");
+const menu = document.getElementById("menu");
+const btn = document.getElementById("menuBtn");
+const overlay = document.getElementById("overlay");
 
-// MENU TOGGLE
-toggle.addEventListener("click", () => {
-  menu.classList.add("active");
-  overlay.classList.add("show");
-});
+// MENU
+btn.onclick = () => {
+  menu.classList.toggle("active");
+  overlay.classList.toggle("show");
+};
 
-// CLOSE MENU
-overlay.addEventListener("click", () => {
+overlay.onclick = () => {
   menu.classList.remove("active");
   overlay.classList.remove("show");
-});
+};
 
 // NAVIGATION
 function goTo(page) {
   window.location.href = page;
 }
 
-/* ===================== */
-/* SLIDER */
-/* ===================== */
+// 🔥 SLIDER
 let index = 0;
 const slides = document.getElementById("slides");
+const total = slides.children.length;
+
 const dotsContainer = document.getElementById("dots");
 
-const totalSlides = slides.children.length;
-
 // CREATE DOTS
-for (let i = 0; i < totalSlides; i++) {
+for (let i = 0; i < total; i++) {
   const dot = document.createElement("span");
+  if (i === 0) dot.classList.add("active");
+
+  dot.onclick = () => {
+    index = i;
+    updateSlider();
+  };
+
   dotsContainer.appendChild(dot);
 }
 
-const dots = dotsContainer.children;
+function updateSlider() {
+  slides.style.transform = `translateX(-${index * 100}%)`;
 
-function showSlide(i) {
-  slides.style.transform = `translateX(-${i * 100}%)`;
-
-  for (let d of dots) d.classList.remove("active");
-  dots[i].classList.add("active");
+  document.querySelectorAll(".dots span").forEach((d, i) => {
+    d.classList.toggle("active", i === index);
+  });
 }
 
-function autoSlide() {
-  index = (index + 1) % totalSlides;
-  showSlide(index);
-}
-
-setInterval(autoSlide, 3000);
-showSlide(0);
+// AUTO SLIDE
+setInterval(() => {
+  index = (index + 1) % total;
+  updateSlider();
+}, 3000);
