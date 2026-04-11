@@ -116,11 +116,10 @@ async function createBill() {
   if (res.ok) {
     alert("✅ Bill Generated");
 
-    // clear UI
     document.getElementById("itemsTable").innerHTML = "";
     document.getElementById("total").innerText = "0";
 
-    loadAllBills(); // 🔥 refresh
+    loadAllBills();
   } else {
     alert(data.error);
   }
@@ -183,7 +182,13 @@ function renderBills() {
           <p>Remaining: ₹${b.total - b.paid}</p>
           <input type="number" id="pay_${b.id}" placeholder="Pay amount">
           <button onclick="payNow(${b.id})">Pay</button>
-        ` : `<p>✅ Completed</p>`}
+        ` : `<p class="completed-text">✅ Completed</p>`}
+
+        <!-- 🔥 NEW BUTTONS -->
+        <div class="actions">
+          <button onclick="viewInvoice(${b.id})">View</button>
+          <button onclick="deleteBill(${b.id})" class="delete">Delete</button>
+        </div>
       </div>
     `;
 
@@ -203,7 +208,7 @@ function applyFilters() {
 }
 
 // =====================
-// PAY FUNCTION (🔥 FIXED)
+// PAY FUNCTION
 // =====================
 async function payNow(id) {
   const amount = document.getElementById(`pay_${id}`).value;
@@ -211,7 +216,7 @@ async function payNow(id) {
   if (!amount) return alert("Enter amount");
 
   try {
-    const res = await fetch(`${API}/bills/${id}/pay`, {  // ✅ FIXED
+    const res = await fetch(`${API}/bills/${id}/pay`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: Number(amount) })
@@ -221,7 +226,7 @@ async function payNow(id) {
 
     if (res.ok) {
       alert("✅ Payment updated");
-      loadAllBills(); // 🔥 refresh UI
+      loadAllBills();
     } else {
       alert(data.error);
     }
@@ -229,6 +234,27 @@ async function payNow(id) {
   } catch (err) {
     alert("❌ Network error");
   }
+}
+
+// =====================
+// VIEW INVOICE (🔥 FINAL)
+// =====================
+function viewInvoice(id) {
+  window.open(`/invoice.html?bill_id=${id}`, "_blank");
+}
+
+// =====================
+// DELETE BILL
+// =====================
+async function deleteBill(id) {
+  if (!confirm("Delete this invoice?")) return;
+
+  await fetch(`${API}/bills/${id}`, {
+    method: "DELETE"
+  });
+
+  alert("🗑 Invoice deleted");
+  loadAllBills();
 }
 
 // =====================

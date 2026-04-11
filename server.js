@@ -637,6 +637,65 @@ app.put("/bills/:id/pay", async (req, res) => {
 });
 
 // --------------------
+// GET CUSTOMER INVOICES
+// --------------------
+app.get("/bills/customer/:phone", async (req, res) => {
+  try {
+    const { phone } = req.params;
+
+    const result = await pool.query(
+      `SELECT * FROM bills 
+       WHERE phone=$1 
+       ORDER BY id DESC`,
+      [phone]
+    );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    console.error("❌ Fetch Customer Bills Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// DELETE BILL
+// --------------------
+app.delete("/bills/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM bills WHERE id=$1", [id]);
+
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.error("❌ Delete Bill Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// GET SINGLE BILL
+// --------------------
+app.get("/bills/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      "SELECT * FROM bills WHERE id=$1",
+      [id]
+    );
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error("❌ Fetch Bill Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
 // GET ALL CUSTOMERS
 // --------------------
 app.get("/customers", async (req, res) => {

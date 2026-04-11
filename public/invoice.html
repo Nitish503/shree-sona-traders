@@ -58,47 +58,12 @@
 
 </div>
 
-<button onclick="window.print()" class="print-btn">Print Invoice</button>
+<div class="btns">
+  <button onclick="printInvoice()">🖨 Print</button>
+</div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-
-// BASIC INFO
-document.getElementById("custName").innerText = params.get("name");
-document.getElementById("custPhone").innerText = params.get("phone");
-document.getElementById("billNo").innerText = params.get("bill_no");
-document.getElementById("billDate").innerText = new Date().toLocaleString();
-
-// MULTI ITEMS
-const itemsParam = params.get("items");
-
-let rowsHTML = "";
-
-if (itemsParam) {
-  const items = JSON.parse(decodeURIComponent(itemsParam));
-
-  items.forEach((i, index) => {
-    const total = i.quantity * i.rate;
-
-    rowsHTML += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${i.name}</td>
-        <td>${i.quantity}</td>
-        <td>${i.rate}</td>
-        <td>${total}</td>
-      </tr>
-    `;
-  });
-}
-
-document.getElementById("tableBody").innerHTML = rowsHTML;
-
-// SUMMARY
-document.getElementById("total").innerText = params.get("total");
-document.getElementById("paid").innerText = params.get("paid");
-document.getElementById("remaining").innerText = params.get("remaining");
-</script>
+<!-- JS FILE -->
+<script src="invoice.js"></script>
 
 </body>
 </html>
