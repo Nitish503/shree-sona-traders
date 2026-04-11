@@ -445,54 +445,92 @@ app.get("/orders", async (req, res) => {
 });
 
 // --------------------
-// CREATE BILL
+// CREATE BILL (MULTI-ITEM)
 // --------------------
 app.post("/bill", async (req, res) => {
   try {
     const { phone, items, paid } = req.body;
 
-    // 🔍 CHECK REGISTERED CUSTOMER
+    // --------------------
+    // VALIDATION
+    // --------------------
+    if (!phone || !items || items.length === 0) {
+      return res.status(400).json({ error: "Missing required data" });
+    }
+
+    // --------------------
+    // CHECK CUSTOMER
+    // --------------------
     const customer = await pool.query(
       "SELECT * FROM customers WHERE phone=$1",
       [phone]
     );
 
     if (customer.rows.length === 0) {
-      return res.status(400).json({ error: "Customer not registered" });
+      return res.status(400).json({
+        error: "Customer not registered"
+      });
     }
 
     const customerData = customer.rows[0];
 
+    // --------------------
+    // CALCULATE TOTAL
+    // --------------------
     let total = 0;
 
-items.forEach(i => {
-  total += i.quantity * i.rate;
-});
-    const remaining = total - paid;
+    items.forEach(item => {
+      const qty = Number(item.quantity) || 0;
+      const rate = Number(item.rate) || 0;
+      total += qty * rate;
+    });
 
-    const status = remaining > 0 ? "pending" : "completed";
+    const paidAmount = Number(paid) || 0;
+    const remaining = total - paidAmount;
 
+    const status = remaining > 0 ? "pending" : "paid";
+
+    // --------------------
+    // GENERATE BILL NUMBER
+    // --------------------
+    const billNo = "INV-" + Date.now();
+
+    // --------------------
+    // INSERT INTO DB
+    // --------------------
     const result = await pool.query(
-      `INSERT INTO bills 
-      (items, total, paid, remaining, status)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      `INSERT INTO bills
+      (customer_id, customer_name, phone, items, total, paid, remaining, status, bill_no)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING *`,
       [
-  customerData.id,
-  customerData.name,
-  phone,
-  JSON.stringify(items),
-  total,
-  paid,
-  remaining,
-  status
-]
+        customerData.id,
+        customerData.name,
+        phone,
+        JSON.stringify(items), // 🔥 IMPORTANT
+        total,
+        paidAmount,
+        remaining,
+        status,
+        billNo
+      ]
     );
 
-    res.json(result.rows[0]);
+    // --------------------
+    // SUCCESS RESPONSE
+    // --------------------
+    res.json({
+      message: "Bill created",
+      bill_no: billNo,
+      customer_name: customerData.name,
+      phone,
+      total,
+      paid: paidAmount,
+      remaining
+    });
 
   } catch (err) {
-    console.error("❌ Billing Error:", err.message);
+    console.error("❌ BILL ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
