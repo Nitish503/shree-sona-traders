@@ -551,40 +551,6 @@ app.get("/bills", async (req, res) => {
 });
 
 // --------------------
-// PAY REMAINING
-// --------------------
-app.put("/bills/:id/pay", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { amount } = req.body;
-
-    const bill = await pool.query(
-      "SELECT * FROM bills WHERE id=$1",
-      [id]
-    );
-
-    const b = bill.rows[0];
-
-    const newPaid = b.paid + amount;
-    const remaining = b.total - newPaid;
-
-    const status = remaining <= 0 ? "completed" : "pending";
-
-    const updated = await pool.query(
-      `UPDATE bills 
-       SET paid=$1, remaining=$2, status=$3 
-       WHERE id=$4 RETURNING *`,
-      [newPaid, remaining, status, id]
-    );
-
-    res.json(updated.rows[0]);
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --------------------
 // GET PENDING BILLS
 // --------------------
 app.get("/bills/pending", async (req, res) => {
@@ -619,14 +585,14 @@ app.get("/bills/completed", async (req, res) => {
 });
 
 // --------------------
-// REBILL REMAINING AMOUNT
+// PAY / REBILL AMOUNT (FINAL CLEAN)
 // --------------------
 app.put("/bills/:id/pay", async (req, res) => {
   try {
     const { id } = req.params;
     const { amount } = req.body;
 
-    // GET BILL
+    // 🔹 GET BILL
     const bill = await pool.query(
       "SELECT * FROM bills WHERE id=$1",
       [id]
@@ -638,14 +604,21 @@ app.put("/bills/:id/pay", async (req, res) => {
 
     const current = bill.rows[0];
 
-    const newPaid = Number(current.paid) + Number(amount);
-    const remaining = Number(current.total) - newPaid;
+    // 🔹 SAFE NUMBER CONVERSION
+    const currentPaid = Number(current.paid) || 0;
+    const total = Number(current.total) || 0;
+    const payAmount = Number(amount) || 0;
 
-    const status = remaining <= 0 ? "paid" : "pending";
+    const newPaid = currentPaid + payAmount;
+    const remaining = total - newPaid;
 
+    // 🔹 FIXED STATUS (IMPORTANT)
+    const status = newPaid >= total ? "completed" : "pending";
+
+    // 🔹 UPDATE DB
     const updated = await pool.query(
       `UPDATE bills 
-       SET paid=$1, remaining=$2, status=$3
+       SET paid=$1, remaining=$2, status=$3 
        WHERE id=$4 RETURNING *`,
       [newPaid, remaining, status, id]
     );
@@ -653,7 +626,7 @@ app.put("/bills/:id/pay", async (req, res) => {
     res.json(updated.rows[0]);
 
   } catch (err) {
-    console.error("❌ Rebill Error:", err.message);
+    console.error("❌ Payment Error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
