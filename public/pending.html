@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pending Payments</title>
+  <link rel="stylesheet" href="pending.css">
+</head>
+<body>
+
+<h2>Pending Payments</h2>
+
+<div id="pendingContainer"></div>
+
+<script>
+const API = window.location.origin;
+
+async function loadPending() {
+  const res = await fetch(`${API}/bills/pending`);
+  const data = await res.json();
+
+  const container = document.getElementById("pendingContainer");
+  container.innerHTML = "";
+
+  data.forEach(bill => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h3>${bill.customer_name}</h3>
+      <p>Phone: ${bill.phone}</p>
+      <p>Total: ₹${bill.total}</p>
+      <p>Paid: ₹${bill.paid}</p>
+      <p>Remaining: ₹${bill.remaining}</p>
+
+      <input type="number" placeholder="Enter amount" id="pay-${bill.id}">
+      <button onclick="payNow(${bill.id})">Pay</button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+async function payNow(id) {
+  const amount = document.getElementById(`pay-${id}`).value;
+
+  if (!amount) {
+    alert("Enter amount");
+    return;
+  }
+
+  await fetch(`${API}/bills/${id}/pay`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount })
+  });
+
+  alert("Payment updated");
+  loadPending();
+}
+
+loadPending();
+</script>
+
+</body>
+</html>

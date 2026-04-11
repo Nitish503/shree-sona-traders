@@ -585,6 +585,80 @@ app.put("/bills/:id/pay", async (req, res) => {
 });
 
 // --------------------
+// GET PENDING BILLS
+// --------------------
+app.get("/bills/pending", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM bills WHERE status='pending' ORDER BY id DESC"
+    );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    console.error("❌ Pending Fetch Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// GET COMPLETED BILLS
+// --------------------
+app.get("/bills/completed", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM bills WHERE status='paid' ORDER BY id DESC"
+    );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    console.error("❌ Completed Fetch Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
+// REBILL REMAINING AMOUNT
+// --------------------
+app.put("/bills/:id/pay", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+
+    // GET BILL
+    const bill = await pool.query(
+      "SELECT * FROM bills WHERE id=$1",
+      [id]
+    );
+
+    if (bill.rows.length === 0) {
+      return res.status(404).json({ error: "Bill not found" });
+    }
+
+    const current = bill.rows[0];
+
+    const newPaid = Number(current.paid) + Number(amount);
+    const remaining = Number(current.total) - newPaid;
+
+    const status = remaining <= 0 ? "paid" : "pending";
+
+    const updated = await pool.query(
+      `UPDATE bills 
+       SET paid=$1, remaining=$2, status=$3
+       WHERE id=$4 RETURNING *`,
+      [newPaid, remaining, status, id]
+    );
+
+    res.json(updated.rows[0]);
+
+  } catch (err) {
+    console.error("❌ Rebill Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --------------------
 // GET ALL CUSTOMERS
 // --------------------
 app.get("/customers", async (req, res) => {
