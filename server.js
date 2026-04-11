@@ -449,13 +449,7 @@ app.get("/orders", async (req, res) => {
 // --------------------
 app.post("/bill", async (req, res) => {
   try {
-    const {
-      phone,
-      item_name,
-      quantity,
-      rate,
-      paid
-    } = req.body;
+    const { phone, items, paid } = req.body;
 
     // 🔍 CHECK REGISTERED CUSTOMER
     const customer = await pool.query(
@@ -469,28 +463,30 @@ app.post("/bill", async (req, res) => {
 
     const customerData = customer.rows[0];
 
-    const total = quantity * rate;
+    let total = 0;
+
+items.forEach(i => {
+  total += i.quantity * i.rate;
+});
     const remaining = total - paid;
 
     const status = remaining > 0 ? "pending" : "completed";
 
     const result = await pool.query(
       `INSERT INTO bills 
-      (customer_id, customer_name, phone, item_name, quantity, rate, total, paid, remaining, status)
+      (items, total, paid, remaining, status)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
       RETURNING *`,
       [
-        customerData.id,
-        customerData.name,
-        phone,
-        item_name,
-        quantity,
-        rate,
-        total,
-        paid,
-        remaining,
-        status
-      ]
+  customerData.id,
+  customerData.name,
+  phone,
+  JSON.stringify(items),
+  total,
+  paid,
+  remaining,
+  status
+]
     );
 
     res.json(result.rows[0]);

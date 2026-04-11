@@ -6,84 +6,98 @@
 </head>
 <body>
 
-<div class="invoice-box" id="invoice">
+<div class="invoice">
 
+  <!-- HEADER -->
   <div class="header">
     <h1>SHREE SONA TRADERS</h1>
     <p>Construction | Rental | Fuel Services</p>
   </div>
 
-  <div class="top">
-    <div>
-      <h3>Customer Details</h3>
-      <p id="custName"></p>
-      <p id="custPhone"></p>
+  <!-- INFO -->
+  <div class="info">
+    <div class="left">
+      <p><b>Customer:</b> <span id="custName"></span></p>
+      <p><b>Phone:</b> <span id="custPhone"></span></p>
     </div>
 
-    <div>
-      <h2>INVOICE</h2>
-      <p>Invoice No: <span id="billNo"></span></p>
-      <p>Date: <span id="billDate"></span></p>
+    <div class="right">
+      <p><b>Invoice No:</b> <span id="billNo"></span></p>
+      <p><b>Date:</b> <span id="billDate"></span></p>
     </div>
   </div>
 
+  <!-- TABLE -->
   <table>
     <thead>
       <tr>
+        <th>Sl</th>
         <th>Description</th>
         <th>Qty</th>
         <th>Rate</th>
         <th>Total</th>
       </tr>
     </thead>
+
     <tbody id="tableBody"></tbody>
   </table>
 
+  <!-- SUMMARY -->
   <div class="summary">
-    <p>Total: ₹<span id="total"></span></p>
-    <p>Paid: ₹<span id="paid"></span></p>
-    <p>Remaining: ₹<span id="remaining"></span></p>
+    <div class="box">
+      <p>Total: ₹<span id="total"></span></p>
+      <p>Paid: ₹<span id="paid"></span></p>
+      <p>Remaining: ₹<span id="remaining"></span></p>
+    </div>
   </div>
 
+  <!-- FOOTER -->
   <div class="footer">
-    <p>Signature</p>
+    <p>Authorized Signature</p>
   </div>
 
 </div>
 
-<button onclick="printInvoice()">Print</button>
+<button onclick="window.print()" class="print-btn">Print Invoice</button>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 
+// BASIC INFO
 document.getElementById("custName").innerText = params.get("name");
 document.getElementById("custPhone").innerText = params.get("phone");
 document.getElementById("billNo").innerText = params.get("bill_no");
 document.getElementById("billDate").innerText = new Date().toLocaleString();
 
-const item = params.get("item");
-const qty = params.get("qty");
-const rate = params.get("rate");
-const total = params.get("total");
-const paid = params.get("paid");
-const remaining = params.get("remaining");
+// MULTI ITEMS
+const itemsParam = params.get("items");
 
-document.getElementById("tableBody").innerHTML = `
-<tr>
-  <td>${item}</td>
-  <td>${qty}</td>
-  <td>${rate}</td>
-  <td>${total}</td>
-</tr>
-`;
+let rowsHTML = "";
 
-document.getElementById("total").innerText = total;
-document.getElementById("paid").innerText = paid;
-document.getElementById("remaining").innerText = remaining;
+if (itemsParam) {
+  const items = JSON.parse(decodeURIComponent(itemsParam));
 
-function printInvoice() {
-  window.print();
+  items.forEach((i, index) => {
+    const total = i.quantity * i.rate;
+
+    rowsHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${i.name}</td>
+        <td>${i.quantity}</td>
+        <td>${i.rate}</td>
+        <td>${total}</td>
+      </tr>
+    `;
+  });
 }
+
+document.getElementById("tableBody").innerHTML = rowsHTML;
+
+// SUMMARY
+document.getElementById("total").innerText = params.get("total");
+document.getElementById("paid").innerText = params.get("paid");
+document.getElementById("remaining").innerText = params.get("remaining");
 </script>
 
 </body>

@@ -1,59 +1,91 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
   padding: 20px;
 }
 
-.invoice-box {
+/* MAIN BOX */
+.invoice {
   width: 800px;
   margin: auto;
-  border: 2px solid #000;
+  background: white;
   padding: 20px;
+  border: 2px solid black;
 }
 
+/* HEADER */
 .header {
   text-align: center;
   color: red;
 }
 
-.top {
+.header h1 {
+  margin-bottom: 5px;
+}
+
+/* INFO */
+.info {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-table, th, td {
-  border: 1px solid #000;
-}
-
 th, td {
+  border: 1px solid black;
   padding: 10px;
   text-align: center;
 }
 
-.summary {
-  margin-top: 20px;
-  text-align: right;
-  font-size: 18px;
+th {
+  background: #eee;
 }
 
+/* SUMMARY */
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.summary .box {
+  border: 1px solid black;
+  padding: 10px;
+  width: 250px;
+}
+
+.summary p {
+  margin: 5px 0;
+  font-weight: bold;
+}
+
+/* FOOTER */
 .footer {
   margin-top: 40px;
   text-align: right;
 }
 
-button {
-  margin-top: 20px;
+/* PRINT BUTTON */
+.print-btn {
+  display: block;
+  margin: 20px auto;
   padding: 10px 20px;
+  font-size: 16px;
 }
 
+/* PRINT MODE */
 @media print {
-  button {
+  body {
+    background: white;
+  }
+
+  .print-btn {
     display: none;
   }
 }

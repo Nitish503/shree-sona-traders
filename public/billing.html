@@ -9,42 +9,152 @@
 <h2>Create Bill</h2>
 
 <input id="phone" placeholder="Customer Phone">
-<input id="item" placeholder="Item Name">
-<input id="qty" type="number" placeholder="Quantity">
-<input id="rate" type="number" placeholder="Rate">
 <input id="paid" type="number" placeholder="Paid Amount">
 
-<p>Total: <span id="total">0</span></p>
+<!-- ITEMS TABLE -->
+<table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Qty</th>
+      <th>Rate</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="itemsTable"></tbody>
+</table>
+
+<br>
+<button onclick="addRow()">+ Add Item</button>
+
+<h3>Total: ₹ <span id="total">0</span></h3>
 
 <button onclick="createBill()">Generate Bill</button>
 
 <script>
 const API = window.location.origin;
 
-function calculate() {
-  const q = document.getElementById("qty").value || 0;
-  const r = document.getElementById("rate").value || 0;
-  document.getElementById("total").innerText = q * r;
+// =====================
+// ADD NEW ROW
+// =====================
+async function addRow() {
+  const res = await fetch(`${API}/items`);
+  const data = await res.json();
+
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td>
+      <select onchange="setRate(this)">
+        <option value="">Select Item</option>
+        ${data.map(i => `<option value="${i.rate}">${i.name}</option>`).join("")}
+      </select>
+    </td>
+
+    <td><input type="number" min="1" oninput="calcRow(this)"></td>
+    <td><input type="number" value="0" oninput="calcRow(this)"></td>
+    <td class="rowTotal">0</td>
+
+    <td>
+      <button onclick="removeRow(this)">X</button>
+    </td>
+  `;
+
+  document.getElementById("itemsTable").appendChild(row);
 }
 
-document.getElementById("qty").oninput = calculate;
-document.getElementById("rate").oninput = calculate;
+// =====================
+// AUTO SET RATE
+// =====================
+function setRate(select) {
+  const rate = select.value;
+  const row = select.parentElement.parentElement;
 
+  row.children[2].children[0].value = rate;
+  calcRow(select);
+}
+
+// =====================
+// CALCULATE ROW
+// =====================
+function calcRow(el) {
+  const row = el.parentElement.parentElement;
+
+  const qty = row.children[1].children[0].value || 0;
+  const rate = row.children[2].children[0].value || 0;
+
+  const total = qty * rate;
+
+  row.querySelector(".rowTotal").innerText = total;
+
+  calcTotal();
+}
+
+// =====================
+// TOTAL CALCULATION
+// =====================
+function calcTotal() {
+  let total = 0;
+
+  document.querySelectorAll(".rowTotal").forEach(el => {
+    total += Number(el.innerText);
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+// =====================
+// REMOVE ROW
+// =====================
+function removeRow(btn) {
+  btn.parentElement.parentElement.remove();
+  calcTotal();
+}
+
+// =====================
+// CREATE BILL
+// =====================
 async function createBill() {
   const phone = document.getElementById("phone").value;
-  const item = document.getElementById("item").value;
-  const quantity = document.getElementById("qty").value;
-  const rate = document.getElementById("rate").value;
   const paid = document.getElementById("paid").value || 0;
+
+  const rows = document.querySelectorAll("#itemsTable tr");
+
+  if (!phone || rows.length === 0) {
+    alert("Enter phone and add items");
+    return;
+  }
+
+  let items = [];
+
+  rows.forEach(row => {
+    const name = row.querySelector("select").selectedOptions[0].text;
+    const qty = row.children[1].children[0].value;
+    const rate = row.children[2].children[0].value;
+
+    if (!qty || !rate) return;
+
+    items.push({
+      name,
+      quantity: qty,
+      rate
+    });
+  });
+
+  if (items.length === 0) {
+    alert("Add valid items");
+    return;
+  }
 
   const res = await fetch(`${API}/bill`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       phone,
-      item_name: item,
-      quantity,
-      rate,
+      items,
       paid
     })
   });
@@ -52,9 +162,19 @@ async function createBill() {
   const data = await res.json();
 
   if (res.ok) {
+    alert("✅ Bill Generated");
+
+    // OPEN INVOICE
     window.open(
-  `/invoice.html?name=${data.customer_name}&phone=${data.phone}&bill_no=${data.bill_no}&item=${data.item_name}&qty=${data.quantity}&rate=${data.rate}&total=${data.total}&paid=${data.paid}&remaining=${data.remaining}`
-);
+      `/invoice.html?name=${data.customer_name}
+      &phone=${data.phone}
+      &bill_no=${data.bill_no}
+      &items=${encodeURIComponent(JSON.stringify(items))}
+      &total=${data.total}
+      &paid=${data.paid}
+      &remaining=${data.remaining}`
+    );
+
   } else {
     alert(data.error);
   }
