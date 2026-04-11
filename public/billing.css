@@ -1,95 +1,85 @@
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* BODY */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #eef2f7, #dbe6f6);
-  padding: 20px;
+  font-family: Arial;
+  padding: 15px;
+  background: #f4f6f9;
 }
 
-/* CONTAINER STYLE */
-body > * {
-  max-width: 420px;
-  margin: auto;
-}
-
-/* HEADING */
 h2 {
   text-align: center;
-  margin-bottom: 20px;
-  font-weight: bold;
-  color: #333;
 }
 
-/* INPUT FIELDS */
-input {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
+input, select {
+  padding: 10px;
+  margin: 5px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 15px;
-  transition: 0.2s;
 }
 
-input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0,123,255,0.3);
-}
-
-/* TOTAL TEXT */
-p {
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
+  background: white;
 }
 
-#total {
-  color: green;
+th, td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
 }
 
 /* BUTTON */
 button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
+  padding: 10px;
   border: none;
   border-radius: 8px;
   background: #28a745;
   color: white;
-  font-size: 16px;
-  font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  margin-top: 10px;
 }
 
 button:hover {
   background: #218838;
 }
 
-/* MOBILE RESPONSIVE */
-@media (max-width: 480px) {
-  body {
-    padding: 15px;
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.filters input,
+.filters select {
+  flex: 1;
+}
+
+/* CARDS */
+.card {
+  background: white;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+.pending {
+  border-left: 5px solid orange;
+}
+
+.completed {
+  border-left: 5px solid green;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  input, select {
+    width: 100%;
   }
 
-  h2 {
-    font-size: 20px;
-  }
-
-  input {
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  button {
-    font-size: 15px;
+  .filters {
+    flex-direction: column;
   }
 }
