@@ -172,17 +172,22 @@ function renderBills() {
     if (!matchSearch || !matchStatus || !matchDate) return;
 
     const card = `
-      <div class="card ${billStatus}">
-        <h3>${b.customer_name}</h3>
-        <p>Phone: ${b.phone}</p>
-        <p>Total: ₹${b.total}</p>
-        <p>Paid: ₹${b.paid}</p>
+  <div class="card ${billStatus}">
+    <h3>${b.customer_name}</h3>
+    <p>Phone: ${b.phone}</p>
+    <p>Total: ₹${b.total}</p>
+    <p>Paid: ₹${b.paid}</p>
 
-        ${billStatus === "pending" ? `
-          <p>Remaining: ₹${b.total - b.paid}</p>
-          <input type="number" id="pay_${b.id}" placeholder="Pay amount">
-          <button onclick="payNow(${b.id})">Pay</button>
-        ` : `<p class="completed-text">✅ Completed</p>`}
+    <button onclick="viewInvoice(${b.id})">View</button>
+    <button onclick="viewHistory('${b.phone}')">📜 History</button>
+
+    ${billStatus === "pending" ? `
+      <p>Remaining: ₹${b.total - b.paid}</p>
+      <input type="number" id="pay_${b.id}" placeholder="Pay amount">
+      <button onclick="payNow(${b.id})">Pay</button>
+    ` : `<p>✅ Completed</p>`}
+  </div>
+`;
 
         <!-- 🔥 NEW BUTTONS -->
         <div class="actions">
@@ -255,6 +260,38 @@ async function deleteBill(id) {
 
   alert("🗑 Invoice deleted");
   loadAllBills();
+}
+
+// =====================
+// VIEW HISTORY
+// =====================
+async function viewHistory(phone) {
+  try {
+    const res = await fetch(`${API}/bills/customer/${phone}`);
+    const data = await res.json();
+
+    let html = `<h3>Invoice History</h3>`;
+
+    data.forEach(b => {
+      html += `
+        <div class="history-card">
+          <p><b>Invoice:</b> ${b.id}</p>
+          <p>Total: ₹${b.total}</p>
+          <p>Paid: ₹${b.paid}</p>
+          <p>Status: ${b.status}</p>
+          <p>Date: ${new Date(b.created_at).toLocaleString()}</p>
+
+          <button onclick="viewInvoice(${b.id})">View</button>
+        </div>
+      `;
+    });
+
+    document.getElementById("historyModalContent").innerHTML = html;
+    document.getElementById("historyModal").style.display = "flex";
+
+  } catch (err) {
+    alert("Error loading history");
+  }
 }
 
 // =====================

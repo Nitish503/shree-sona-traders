@@ -588,6 +588,24 @@ app.get("/bills/completed", async (req, res) => {
   }
 });
 
+// =====================
+// CUSTOMER HISTORY API
+// =====================
+app.get("/bills/customer/:phone", async (req, res) => {
+  const { phone } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM bills WHERE phone = $1 ORDER BY id DESC",
+      [phone]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // --------------------
 // PAY / REBILL AMOUNT (FINAL CLEAN)
 // --------------------
