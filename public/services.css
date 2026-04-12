@@ -15,10 +15,9 @@ h1 {
 }
 
 /* ================= GRID ================= */
-/* 🔥 FORCE 2 CARDS ALWAYS */
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-columns: repeat(2, 1fr); /* ✅ FORCE 2 CARDS */
   gap: 14px;
 }
 
@@ -30,8 +29,7 @@ h1 {
   padding: 14px;
   text-align: center;
   border: 1px solid rgba(255,255,255,0.15);
-
-  min-height: 340px;
+  min-height: 360px;
 
   display: flex;
   flex-direction: column;
@@ -74,6 +72,7 @@ h1 {
   font-weight: bold;
   border: none;
   font-size: 14px;
+  cursor: pointer;
 }
 
 /* ================= STATUS ================= */
@@ -87,9 +86,9 @@ h1 {
   font-weight: bold;
 }
 
-/* ================= MODAL ================= */
+/* ================= MODAL FIX ================= */
 .modal {
-  display: none; /* important */
+  display: none; /* 🔥 Controlled by JS */
   position: fixed;
   top: 0;
   left: 0;
@@ -97,73 +96,68 @@ h1 {
   height: 100%;
 
   background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(8px);
-
-  justify-content: center;
-  align-items: center;
+  backdrop-filter: blur(6px);
 
   z-index: 1000;
 }
 
-/* SHOW MODAL */
-.modal.active {
-  display: flex;
+/* 🔥 THIS IS THE KEY FIX */
+.modal[style*="block"] {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ================= MODAL CONTENT ================= */
 .modal-content {
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(20px);
-  padding: 22px;
+  padding: 20px;
 
   width: 90%;
-  max-width: 400px;
+  max-width: 380px;
 
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.2);
 
   animation: popup 0.3s ease;
 }
 
 /* ================= INPUT ================= */
-.modal-content input,
-.modal-content textarea {
+.modal input,
+.modal textarea {
   width: 100%;
   padding: 12px;
-  margin: 10px 0;
-
+  margin: 8px 0;
   border-radius: 10px;
   border: none;
   outline: none;
-
   font-size: 14px;
 }
 
-/* ================= BUTTONS ================= */
+/* ================= BUTTON GROUP ================= */
 .modal-actions {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   margin-top: 10px;
 }
 
 .modal-actions button {
   flex: 1;
+  margin: 5px;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
   border: none;
-  font-weight: bold;
   cursor: pointer;
 }
 
-/* SUBMIT */
-.modal-actions .submit {
+.submit {
   background: cyan;
   color: black;
 }
 
-/* CANCEL */
-.modal-actions .cancel {
-  background: #444;
+.cancel {
+  background: #ff4d4d;
   color: white;
 }
 
