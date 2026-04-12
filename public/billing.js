@@ -378,6 +378,13 @@ async function openLedger(phone) {
 }
 
 // =====================
+// CLOSE HISTORY / LEDGER
+// =====================
+function closeHistory() {
+  document.getElementById("historyModal").style.display = "none";
+}
+
+// =====================
 // INITIAL LOAD
 // =====================
 loadAllBills();

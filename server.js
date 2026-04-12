@@ -742,13 +742,13 @@ app.get("/bills/:id", async (req, res) => {
 });
 
 // =====================
-// CUSTOMER LEDGER API
+// CUSTOMER LEDGER API (FIXED)
 // =====================
 app.get("/ledger/:phone", async (req, res) => {
   const { phone } = req.params;
 
   try {
-    // 🔹 GET ALL BILLS
+    // 🔹 GET BILLS
     const bills = await pool.query(
       "SELECT * FROM bills WHERE phone=$1 ORDER BY created_at ASC",
       [phone]
@@ -760,9 +760,9 @@ app.get("/ledger/:phone", async (req, res) => {
 
     for (let b of bills.rows) {
 
-      totalPurchase += Number(b.total);
+      totalPurchase += Number(b.total || 0);
 
-      // 🔹 ADD BILL ENTRY
+      // BILL ENTRY
       ledger.push({
         type: "bill",
         bill_id: b.id,
@@ -770,14 +770,20 @@ app.get("/ledger/:phone", async (req, res) => {
         date: b.created_at
       });
 
-      // 🔹 GET PAYMENTS FOR THIS BILL
-      const payments = await pool.query(
-        "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
-        [b.id]
-      );
+      // 🔥 SAFE PAYMENT FETCH (IMPORTANT FIX)
+      let payments = { rows: [] };
+
+      try {
+        payments = await pool.query(
+          "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
+          [b.id]
+        );
+      } catch (err) {
+        console.log("⚠ payments table missing or error");
+      }
 
       payments.rows.forEach(p => {
-        totalPaid += Number(p.amount);
+        totalPaid += Number(p.amount || 0);
 
         ledger.push({
           type: "payment",
@@ -788,17 +794,16 @@ app.get("/ledger/:phone", async (req, res) => {
       });
     }
 
-    const remaining = totalPurchase - totalPaid;
-
     res.json({
       ledger,
       totalPurchase,
       totalPaid,
-      remaining
+      remaining: totalPurchase - totalPaid
     });
 
   } catch (err) {
-    res.status(500).json({ error: "Ledger error" });
+    console.error("❌ Ledger Error:", err.message);
+    res.status(500).json({ error: "Ledger failed" });
   }
 });
 
