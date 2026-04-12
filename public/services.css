@@ -3,95 +3,118 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #020617, #0f172a);
   margin: 0;
-  padding: 20px;
+  padding: 12px;
   color: white;
 }
 
 /* ================= TITLE ================= */
 h1 {
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 26px;
+  margin-bottom: 18px;
+  font-size: 22px;
 }
 
 /* ================= GRID ================= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr); /* Desktop */
+  gap: 16px;
 }
 
-/* ================= CARD (GLASS) ================= */
+/* Tablet */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 🔥 MOBILE FIX → 2 CARDS */
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ 2 cards */
+    gap: 12px;
+  }
+}
+
+/* ================= CARD ================= */
 .card {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(12px);
-  border-radius: 15px;
-  padding: 15px;
+  border-radius: 14px;
+  padding: 12px;
   text-align: center;
   border: 1px solid rgba(255,255,255,0.1);
-  transition: 0.4s;
+  transition: 0.3s;
   cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* HOVER EFFECT */
+/* HOVER */
 .card:hover {
-  transform: translateY(-8px) scale(1.03);
+  transform: translateY(-5px);
   background: rgba(255,255,255,0.08);
-  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  box-shadow: 0 0 15px rgba(0,255,255,0.2);
 }
 
 /* ================= IMAGE ================= */
 .card img {
   width: 100%;
-  height: 150px;
+  height: 140px; /* 🔥 balanced for 2 cards */
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 /* ================= TEXT ================= */
 .card h3 {
-  margin: 10px 0 5px;
+  margin: 8px 0 4px;
+  font-size: 15px;
 }
 
 .card p {
-  font-size: 14px;
+  font-size: 12px;
   color: #cbd5f5;
 }
 
 /* ================= PRICE ================= */
 .price {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: cyan;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 /* ================= STATUS ================= */
 .available {
   color: #00ff9c;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .out {
   color: #ff4d4d;
+  font-size: 12px;
   font-weight: bold;
 }
 
 /* ================= BUTTON ================= */
 .card button {
-  margin-top: 10px;
-  padding: 8px 12px;
+  margin-top: 8px;
+  padding: 6px 10px;
   border: none;
   border-radius: 20px;
-  background: rgba(0,255,255,0.8);
+  background: cyan;
   color: black;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
   transition: 0.3s;
 }
 
 .card button:hover {
-  box-shadow: 0 0 12px cyan;
-  transform: scale(1.05);
+  box-shadow: 0 0 10px cyan;
 }
 
 /* ================= MODAL ================= */
@@ -111,10 +134,11 @@ h1 {
 .modal-content {
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(15px);
-  padding: 20px;
-  width: 300px;
-  margin: 100px auto;
-  border-radius: 15px;
+  padding: 18px;
+  width: 90%;
+  max-width: 300px;
+  margin: 80px auto;
+  border-radius: 12px;
   text-align: center;
   border: 1px solid rgba(255,255,255,0.1);
 }
@@ -122,17 +146,10 @@ h1 {
 /* ================= INPUT ================= */
 .modal input,
 textarea {
-  width: 90%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 8px;
+  width: 95%;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
   border: none;
   outline: none;
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 20px;
-  }
 }
