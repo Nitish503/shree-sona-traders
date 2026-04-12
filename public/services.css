@@ -3,23 +3,22 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #020617, #0f172a);
   margin: 0;
-  padding: 16px;
+  padding: 14px;
   color: white;
 }
 
 /* ================= TITLE ================= */
 h1 {
   text-align: center;
-  margin-bottom: 22px;
-  font-size: 26px;
-  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
 
 /* ================= GRID ================= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Desktop */
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
 
 /* 🔥 MOBILE FIX → BIG 2 CARDS */
@@ -45,29 +44,28 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
 
-  /* 🔥 Bigger card feel */
-  min-height: 300px;
+  min-height: 320px; /* 🔥 BIGGER CARD */
 }
 
 /* HOVER */
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-6px);
   background: rgba(255,255,255,0.09);
-  box-shadow: 0 0 25px rgba(0,255,255,0.25);
+  box-shadow: 0 0 20px rgba(0,255,255,0.25);
 }
 
 /* ================= IMAGE ================= */
 .card img {
   width: 100%;
-  height: 180px; /* 🔥 BIG IMAGE */
+  height: 170px; /* 🔥 BIG IMAGE */
   object-fit: cover;
   border-radius: 12px;
 }
 
 /* ================= TEXT ================= */
 .card h3 {
-  margin: 12px 0 6px;
-  font-size: 18px;
+  margin: 10px 0 5px;
+  font-size: 17px;
   font-weight: bold;
 }
 
@@ -81,19 +79,19 @@ h1 {
   font-size: 20px;
   font-weight: bold;
   color: cyan;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 /* ================= STATUS ================= */
 .available {
   color: #00ff9c;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
 }
 
 .out {
   color: #ff4d4d;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
 }
 
@@ -112,7 +110,7 @@ h1 {
 }
 
 .card button:hover {
-  box-shadow: 0 0 15px cyan;
+  box-shadow: 0 0 12px cyan;
   transform: scale(1.05);
 }
 
@@ -124,32 +122,110 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   backdrop-filter: blur(6px);
   z-index: 1000;
+
+  /* 🔥 CENTER FIX */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ================= MODAL CONTENT ================= */
 .modal-content {
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(18px);
-  padding: 20px;
-  width: 90%;
-  max-width: 340px;
-  margin: 80px auto;
-  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  padding: 22px;
+  width: 92%;
+  max-width: 360px;
+  border-radius: 18px;
   text-align: center;
   border: 1px solid rgba(255,255,255,0.15);
+
+  animation: fadeIn 0.3s ease;
 }
 
 /* ================= INPUT ================= */
 .modal input,
 textarea {
-  width: 95%;
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
   margin: 8px 0;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   outline: none;
   font-size: 14px;
+}
+
+/* ================= MODAL BUTTONS ================= */
+.modal-content button {
+  margin: 10px 5px 0;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-content button:first-child {
+  background: cyan;
+  color: black;
+}
+
+.modal-content button:last-child {
+  background: #444;
+  color: white;
+}
+
+/* ================= MOBILE EXTRA FIX ================= */
+@media (max-width: 500px) {
+
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .card {
+    padding: 14px;
+    min-height: 300px;
+  }
+
+  .card img {
+    height: 190px; /* 🔥 EVEN BIGGER FOR MOBILE */
+  }
+
+  .card h3 {
+    font-size: 16px;
+  }
+
+  .price {
+    font-size: 18px;
+  }
+
+  .card button {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* 🔥 FULL WIDTH MODAL */
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
