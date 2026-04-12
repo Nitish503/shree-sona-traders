@@ -1,128 +1,206 @@
-/* BACKGROUND */
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #020617, #0f172a);
   color: white;
+  overflow-x: hidden;
 }
 
-/* NAVBAR */
+/* ================= NAVBAR (GLASS) ================= */
 .navbar {
   display: flex;
   justify-content: space-between;
-  padding: 15px 20px;
-  backdrop-filter: blur(10px);
+  padding: 15px;
   background: rgba(255,255,255,0.05);
-  position: sticky;
-  top: 0;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
+.logo {
+  font-weight: bold;
+}
+
+/* MENU BUTTON */
 .menu-toggle {
   font-size: 24px;
   cursor: pointer;
 }
 
-/* MENU */
+/* ================= MENU ================= */
 .nav-links {
   position: fixed;
-  right: -100%;
   top: 0;
+  right: -100%;
   width: 260px;
   height: 100%;
-  background: #020617;
+  background: rgba(2,6,23,0.9);
+  backdrop-filter: blur(15px);
   padding: 60px 20px;
-  transition: 0.3s;
+  list-style: none;
+  transition: 0.4s ease;
+  z-index: 1000;
 }
 
 .nav-links.active {
   right: 0;
 }
 
+.nav-links li {
+  margin: 20px 0;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: cyan;
+}
+
+/* OVERLAY */
 .overlay {
   position: fixed;
   width: 100%;
   height: 100%;
   display: none;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
+  z-index: 900;
 }
 
 .overlay.show {
   display: block;
 }
 
-/* HERO */
+/* ================= HERO ================= */
 .hero {
   text-align: center;
-  padding: 80px 20px;
+  padding: 70px 20px;
 }
 
 .hero h1 {
-  font-size: 32px;
+  font-size: 26px;
 }
 
 .hero p {
-  opacity: 0.7;
+  color: #cbd5f5;
 }
 
-/* BUTTONS */
+/* ================= BUTTONS (GLASS) ================= */
 .hero-buttons {
   margin-top: 20px;
 }
 
 .btn {
   padding: 10px 20px;
-  margin: 8px;
   border-radius: 30px;
+  margin: 8px;
   text-decoration: none;
+  transition: 0.3s;
+  backdrop-filter: blur(10px);
 }
 
-.glow {
-  border: 2px solid cyan;
-  box-shadow: 0 0 10px cyan;
+/* GLASS OUTLINE */
+.outline {
+  border: 1px solid rgba(0,255,255,0.6);
   color: cyan;
+  background: rgba(255,255,255,0.05);
 }
 
+.outline:hover {
+  background: rgba(0,255,255,0.2);
+  box-shadow: 0 0 15px cyan;
+}
+
+/* SOLID GLASS */
 .solid {
-  background: cyan;
+  background: rgba(0,255,255,0.7);
   color: black;
 }
 
-/* SERVICES */
+.solid:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px cyan;
+}
+
+/* ================= SERVICES ================= */
 .services {
-  padding: 20px;
   text-align: center;
+  padding: 20px;
 }
 
 .cards {
   display: grid;
   gap: 15px;
+  padding: 10px;
 }
 
+/* GLASS CARD */
 .card {
-  padding: 20px;
-  border-radius: 12px;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  transition: 0.3s;
+  border-radius: 15px;
+  padding: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: 0.4s;
 }
 
 .card:hover {
-  transform: translateY(-5px) scale(1.05);
-  background: rgba(255,255,255,0.1);
+  transform: translateY(-8px) scale(1.04);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
 }
 
-/* SLIDER */
+.icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* ================= SLIDER ================= */
 .slider {
   margin: 20px;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
 }
 
 .slides {
   display: flex;
-  transition: 0.5s;
+  transition: 0.6s ease;
 }
 
 .slides img {
   width: 100%;
+  border-radius: 15px;
+}
+
+/* DOTS */
+.dots {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.dots span {
+  height: 8px;
+  width: 8px;
+  background: gray;
+  margin: 4px;
+  display: inline-block;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.dots .active {
+  background: cyan;
+  transform: scale(1.3);
+}
+
+/* ================= FOOTER ================= */
+footer {
+  text-align: center;
+  padding: 12px;
+  opacity: 0.7;
 }

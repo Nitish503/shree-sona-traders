@@ -12,17 +12,18 @@
 
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="logo">SONA TRADERS</div>
+  <div class="logo">SHREE SONA TRADERS</div>
   <div class="menu-toggle" id="menuBtn">☰</div>
 </nav>
 
 <!-- MENU -->
 <ul class="nav-links" id="menu">
-  <li><a href="#">Home</a></li>
-  <li><a href="#">Construction</a></li>
-  <li><a href="#">Rental</a></li>
-  <li><a href="#">Fuel</a></li>
-  <li><a href="#">About</a></li>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="construction.html">Construction</a></li>
+  <li><a href="rental.html">Rental</a></li>
+  <li><a href="fuel.html">Fuel</a></li>
+  <li><a href="about.html">About</a></li>
+  <li><a href="admin.html">Admin</a></li>
 </ul>
 
 <div class="overlay" id="overlay"></div>
@@ -31,7 +32,6 @@
 <section class="hero">
   <h1>Welcome to SHREE SONA TRADERS</h1>
   <p>Your trusted partner for construction, rental, and fuel services.</p>
-  
 </section>
 
 <!-- SERVICES -->
@@ -39,9 +39,23 @@
   <h2>Our Services</h2>
 
   <div class="cards">
-    <div class="card">🏗 Construction</div>
-    <div class="card">🚜 Rental</div>
-    <div class="card">⛽ Fuel</div>
+    <div class="card" onclick="goTo('construction.html')">
+      <div class="icon">🏗</div>
+      <h3>Construction</h3>
+      <p>All materials available</p>
+    </div>
+
+    <div class="card" onclick="goTo('rental.html')">
+      <div class="icon">🚜</div>
+      <h3>Rental</h3>
+      <p>Machines on rent</p>
+    </div>
+
+    <div class="card" onclick="goTo('fuel.html')">
+      <div class="icon">⛽</div>
+      <h3>Fuel</h3>
+      <p>Reliable fuel supply</p>
+    </div>
   </div>
 </section>
 
@@ -52,7 +66,14 @@
     <img src="/images/slide2.jpg">
     <img src="/images/slide3.jpg">
   </div>
+
+  <div class="dots" id="dots"></div>
 </section>
+
+<!-- FOOTER -->
+<footer>
+  © 2026 SONA TRADER. All rights reserved.
+</footer>
 
 <script src="script.js"></script>
 
