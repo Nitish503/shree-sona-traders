@@ -589,6 +589,24 @@ app.get("/bills/completed", async (req, res) => {
 });
 
 // =====================
+// GET PAYMENT HISTORY
+// =====================
+app.get("/payments/:bill_id", async (req, res) => {
+  const { bill_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM payments WHERE bill_id = $1 ORDER BY created_at ASC",
+      [bill_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching payments" });
+  }
+});
+
+// =====================
 // CUSTOMER HISTORY API
 // =====================
 app.get("/bills/customer/:phone", async (req, res) => {
@@ -607,12 +625,18 @@ app.get("/bills/customer/:phone", async (req, res) => {
 });
 
 // --------------------
-// PAY / REBILL AMOUNT (FINAL CLEAN)
+// PAY / REBILL AMOUNT (FINAL WITH HISTORY)
 // --------------------
 app.put("/bills/:id/pay", async (req, res) => {
   try {
     const { id } = req.params;
     const { amount } = req.body;
+
+    // 🔹 VALIDATION
+    const payAmount = Number(amount);
+    if (!payAmount || payAmount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
 
     // 🔹 GET BILL
     const bill = await pool.query(
@@ -629,16 +653,20 @@ app.put("/bills/:id/pay", async (req, res) => {
     // 🔹 SAFE NUMBER CONVERSION
     const currentPaid = Number(current.paid) || 0;
     const total = Number(current.total) || 0;
-    const payAmount = Number(amount) || 0;
 
     const newPaid = currentPaid + payAmount;
     const remaining = total - newPaid;
 
-    // 🔹 FIXED STATUS (IMPORTANT)
+    // 🔹 STATUS FIX
     const status = newPaid >= total ? "completed" : "pending";
 
+    // 🔥 STEP 1: SAVE PAYMENT HISTORY
+    await pool.query(
+      "INSERT INTO payments (bill_id, amount) VALUES ($1, $2)",
+      [id, payAmount]
+    );
 
-    // 🔹 UPDATE DB
+    // 🔥 STEP 2: UPDATE BILL
     const updated = await pool.query(
       `UPDATE bills 
        SET paid=$1, remaining=$2, status=$3 

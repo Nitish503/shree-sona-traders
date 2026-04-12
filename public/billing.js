@@ -71,7 +71,7 @@ function removeRow(btn) {
 }
 
 // =====================
-// CREATE BILL
+// CREATE BILL (UPDATED WITH PAYMENT HISTORY)
 // =====================
 async function createBill() {
   const phone = document.getElementById("phone").value;
@@ -105,23 +105,51 @@ async function createBill() {
     return;
   }
 
-  const res = await fetch(`${API}/bill`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, items, paid: Number(paid) })
-  });
+  try {
+    // 🔥 CREATE BILL
+    const res = await fetch(`${API}/bill`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        items,
+        paid: Number(paid)
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (res.ok) {
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
+
+    // =========================
+    // 🔥 ADD INITIAL PAYMENT ENTRY
+    // =========================
+    if (paid > 0) {
+      await fetch(`${API}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bill_id: data.id,   // 🔥 IMPORTANT (bill id from backend)
+          amount: Number(paid)
+        })
+      });
+    }
+
     alert("✅ Bill Generated");
 
+    // CLEAR UI
     document.getElementById("itemsTable").innerHTML = "";
     document.getElementById("total").innerText = "0";
+    document.getElementById("paid").value = "";
+    document.getElementById("phone").value = "";
 
     loadAllBills();
-  } else {
-    alert(data.error);
+
+  } catch (err) {
+    alert("❌ Network error");
   }
 }
 
@@ -258,28 +286,44 @@ async function deleteBill(id) {
 }
 
 // =====================
-// VIEW HISTORY
+// VIEW HISTORY (INSTALLMENTS)
 // =====================
 async function viewHistory(phone) {
   try {
     const res = await fetch(`${API}/bills/customer/${phone}`);
-    const data = await res.json();
+    const bills = await res.json();
 
-    let html = `<h3>Invoice History</h3>`;
+    let html = `<h3>Payment History</h3>`;
 
-    data.forEach(b => {
+    for (let b of bills) {
+
+      // 🔥 GET PAYMENTS OF THIS BILL
+      const payRes = await fetch(`${API}/payments/${b.id}`);
+      const payments = await payRes.json();
+
       html += `
         <div class="history-card">
           <p><b>Invoice:</b> ${b.id}</p>
           <p>Total: ₹${b.total}</p>
-          <p>Paid: ₹${b.paid}</p>
-          <p>Status: ${b.status}</p>
-          <p>Date: ${new Date(b.created_at).toLocaleString()}</p>
+          <p><b>Payments:</b></p>
+      `;
 
-          <button onclick="viewInvoice(${b.id})">View</button>
+      if (payments.length === 0) {
+        html += `<p>No payments yet</p>`;
+      }
+
+      payments.forEach(p => {
+        html += `
+          <p>₹${p.amount} → ${new Date(p.created_at).toLocaleString()}</p>
+        `;
+      });
+
+      html += `
+          <p><b>Total Paid:</b> ₹${b.paid}</p>
+          <p><b>Remaining:</b> ₹${b.total - b.paid}</p>
         </div>
       `;
-    });
+    }
 
     document.getElementById("historyModalContent").innerHTML = html;
     document.getElementById("historyModal").style.display = "flex";
