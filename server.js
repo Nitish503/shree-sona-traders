@@ -748,50 +748,47 @@ app.get("/ledger/:phone", async (req, res) => {
   const { phone } = req.params;
 
   try {
-    // 🔹 GET BILLS
-    const bills = await pool.query(
-      "SELECT * FROM bills WHERE phone=$1 ORDER BY created_at ASC",
+    const billsResult = await pool.query(
+      "SELECT * FROM bills WHERE phone=$1 ORDER BY id ASC",
       [phone]
     );
+
+    const bills = billsResult.rows;
 
     let ledger = [];
     let totalPurchase = 0;
     let totalPaid = 0;
 
-    for (let b of bills.rows) {
+    for (const bill of bills) {
 
-      totalPurchase += Number(b.total || 0);
+      const billTotal = Number(bill.total) || 0;
+      totalPurchase += billTotal;
 
-      // BILL ENTRY
+      // ✅ FIXED: bill_date instead of created_at
       ledger.push({
         type: "bill",
-        bill_id: b.id,
-        amount: b.total,
-        date: b.created_at
+        bill_id: bill.id,
+        amount: billTotal,
+        date: bill.bill_date   // 🔥 FIX HERE
       });
 
-      // 🔥 SAFE PAYMENT FETCH (IMPORTANT FIX)
-      let payments = { rows: [] };
+      // PAYMENTS
+      const payResult = await pool.query(
+        "SELECT * FROM payments WHERE bill_id=$1 ORDER BY id ASC",
+        [bill.id]
+      );
 
-      try {
-        payments = await pool.query(
-          "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
-          [b.id]
-        );
-      } catch (err) {
-        console.log("⚠ payments table missing or error");
-      }
-
-      payments.rows.forEach(p => {
-        totalPaid += Number(p.amount || 0);
+      for (const p of payResult.rows) {
+        const amt = Number(p.amount) || 0;
+        totalPaid += amt;
 
         ledger.push({
           type: "payment",
-          bill_id: b.id,
-          amount: p.amount,
-          date: p.created_at
+          bill_id: bill.id,
+          amount: amt,
+          date: p.created_at   // ✅ correct
         });
-      });
+      }
     }
 
     res.json({
@@ -802,7 +799,7 @@ app.get("/ledger/:phone", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Ledger Error:", err.message);
+    console.error("❌ LEDGER ERROR:", err.message);
     res.status(500).json({ error: "Ledger failed" });
   }
 });
