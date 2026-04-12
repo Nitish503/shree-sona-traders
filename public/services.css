@@ -3,7 +3,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #020617, #0f172a);
   margin: 0;
-  padding: 14px;
+  padding: 15px;
   color: white;
 }
 
@@ -14,59 +14,63 @@ h1 {
   font-size: 24px;
 }
 
-/* ================= GRID ================= */
+/* ================= GRID (FIXED) ================= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(3, 1fr); /* Desktop */
+  gap: 16px;
 }
 
-/* 🔥 MOBILE FIX → BIG 2 CARDS */
-@media (max-width: 768px) {
+/* Tablet */
+@media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+  }
+}
+
+/* Mobile (IMPORTANT FIX) */
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: 1fr; /* 1 card per row */
   }
 }
 
 /* ================= CARD ================= */
 .card {
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(15px);
-  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
   padding: 16px;
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.12);
-  transition: 0.35s;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: 0.3s;
   cursor: pointer;
 
+  /* 🔥 Equal height cards */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  min-height: 320px; /* 🔥 BIGGER CARD */
 }
 
 /* HOVER */
 .card:hover {
-  transform: translateY(-6px);
-  background: rgba(255,255,255,0.09);
-  box-shadow: 0 0 20px rgba(0,255,255,0.25);
+  transform: translateY(-6px) scale(1.02);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 18px rgba(0,255,255,0.2);
 }
 
 /* ================= IMAGE ================= */
 .card img {
   width: 100%;
-  height: 170px; /* 🔥 BIG IMAGE */
+  height: 180px; /* bigger */
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 /* ================= TEXT ================= */
 .card h3 {
   margin: 10px 0 5px;
-  font-size: 17px;
-  font-weight: bold;
+  font-size: 18px;
 }
 
 .card p {
@@ -79,32 +83,29 @@ h1 {
   font-size: 20px;
   font-weight: bold;
   color: cyan;
-  margin: 8px 0;
+  margin: 10px 0;
 }
 
 /* ================= STATUS ================= */
 .available {
   color: #00ff9c;
-  font-size: 13px;
   font-weight: bold;
 }
 
 .out {
   color: #ff4d4d;
-  font-size: 13px;
   font-weight: bold;
 }
 
 /* ================= BUTTON ================= */
 .card button {
   margin-top: 12px;
-  padding: 10px;
+  padding: 10px 16px;
   border: none;
   border-radius: 25px;
-  background: linear-gradient(135deg, cyan, #00c6ff);
+  background: cyan;
   color: black;
   cursor: pointer;
-  font-size: 14px;
   font-weight: bold;
   transition: 0.3s;
 }
@@ -122,110 +123,50 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
   z-index: 1000;
-
-  /* 🔥 CENTER FIX */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* ================= MODAL CONTENT ================= */
 .modal-content {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  padding: 22px;
-  width: 92%;
-  max-width: 360px;
-  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  width: 90%;
+  max-width: 320px;
+  margin: 80px auto;
+  border-radius: 15px;
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.15);
-
-  animation: fadeIn 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* ================= INPUT ================= */
 .modal input,
 textarea {
-  width: 100%;
-  padding: 12px;
+  width: 95%;
+  padding: 10px;
   margin: 8px 0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
   outline: none;
-  font-size: 14px;
 }
 
-/* ================= MODAL BUTTONS ================= */
-.modal-content button {
-  margin: 10px 5px 0;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.modal-content button:first-child {
-  background: cyan;
-  color: black;
-}
-
-.modal-content button:last-child {
-  background: #444;
-  color: white;
-}
-
-/* ================= MOBILE EXTRA FIX ================= */
+/* ================= EXTRA MOBILE IMPROVEMENT ================= */
 @media (max-width: 500px) {
-
   body {
     padding: 10px;
   }
 
-  h1 {
-    font-size: 20px;
-  }
-
   .card {
     padding: 14px;
-    min-height: 300px;
   }
 
   .card img {
-    height: 190px; /* 🔥 EVEN BIGGER FOR MOBILE */
+    height: 200px; /* bigger image for mobile */
   }
 
-  .card h3 {
-    font-size: 16px;
-  }
-
-  .price {
-    font-size: 18px;
-  }
-
-  .card button {
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  /* 🔥 FULL WIDTH MODAL */
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-  }
-}
-
-/* ================= ANIMATION ================= */
-@keyframes fadeIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
+  h1 {
+    font-size: 20px;
   }
 }
