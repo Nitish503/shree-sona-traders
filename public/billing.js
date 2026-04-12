@@ -277,6 +277,10 @@ function viewInvoice(id) {
   window.open(`/invoice.html?bill_id=${id}`, "_blank");
 }
 
+function viewPaymentInvoice(billId, amount) {
+  window.open(`/invoice.html?bill_id=${billId}&payment=${amount}`, "_blank");
+}
+
 // =====================
 // DELETE BILL
 // =====================
@@ -355,19 +359,33 @@ async function openLedger(phone) {
       <hr>
     `;
 
-    data.ledger.forEach(entry => {
-      if (entry.type === "bill") {
-        html += `
-          <p>🧾 Bill #${entry.bill_id} → ₹${entry.amount}</p>
-        `;
-      } else {
-        html += `
-          <p style="color:lightgreen">
-            💵 Payment → ₹${entry.amount}
-          </p>
-        `;
-      }
-    });
+    data.ledger.forEach(l => {
+
+  if (l.type === "bill") {
+    html += `
+      <div class="ledger-row">
+        🧾 Bill #${l.bill_id} → ₹${l.amount}
+
+        <button onclick="viewInvoice(${l.bill_id})">
+          View Bill
+        </button>
+      </div>
+    `;
+  }
+
+  if (l.type === "payment") {
+    html += `
+      <div class="ledger-row">
+        💵 Payment → ₹${l.amount}
+
+        <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.amount})">
+          View Receipt
+        </button>
+      </div>
+    `;
+  }
+
+});
 
     document.getElementById("historyModalContent").innerHTML = html;
     document.getElementById("historyModal").style.display = "flex";

@@ -3,7 +3,10 @@
 <head>
   <title>Invoice</title>
   <link rel="stylesheet" href="invoice.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
 <div class="invoice">
@@ -12,6 +15,9 @@
   <div class="header">
     <h1>SHREE SONA TRADERS</h1>
     <p>Construction | Rental | Fuel Services</p>
+
+    <!-- 🔥 DYNAMIC TITLE -->
+    <h2 id="title">Invoice</h2>
   </div>
 
   <!-- INFO -->
@@ -45,21 +51,23 @@
   <!-- SUMMARY -->
   <div class="summary">
     <div class="box">
-      <p>Total: ₹<span id="total"></span></p>
-      <p>Paid: ₹<span id="paid"></span></p>
-      <p>Remaining: ₹<span id="remaining"></span></p>
+      <p><b>Total:</b> ₹<span id="total"></span></p>
+      <p><b>Paid:</b> ₹<span id="paid"></span></p>
+      <p><b>Remaining:</b> ₹<span id="remaining"></span></p>
     </div>
   </div>
 
   <!-- FOOTER -->
   <div class="footer">
+    <p>Thank you for your business 🙏</p>
     <p>Authorized Signature</p>
   </div>
 
 </div>
 
+<!-- 🔥 BUTTONS -->
 <div class="btns">
-  <button onclick="printInvoice()">🖨 Print</button>
+  <button onclick="printInvoice()">🖨 Print / Save PDF</button>
 </div>
 
 <!-- JS FILE -->

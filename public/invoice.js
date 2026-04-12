@@ -1,3 +1,6 @@
+
+const urlParams = new URLSearchParams(window.location.search);
+const payment = urlParams.get("payment");
 const API = window.location.origin;
 
 // =====================
@@ -28,20 +31,34 @@ async function loadInvoice() {
 }
 
 // =====================
-// RENDER FROM DB
+// RENDER FROM DB (FINAL)
 // =====================
 function renderInvoice(data) {
 
-  document.getElementById("custName").innerText = data.customer_name;
-  document.getElementById("custPhone").innerText = data.phone;
-  document.getElementById("billNo").innerText = data.bill_no;
-  document.getElementById("billDate").innerText =
-    new Date(data.created_at).toLocaleString();
+  // 🔥 GET URL PARAM (for payment receipt)
+  const urlParams = new URLSearchParams(window.location.search);
+  const payment = urlParams.get("payment");
 
+  // =====================
+  // BASIC DETAILS
+  // =====================
+  document.getElementById("custName").innerText = data.customer_name || "-";
+  document.getElementById("custPhone").innerText = data.phone || "-";
+  document.getElementById("billNo").innerText = data.bill_no || "-";
+
+  // ✅ FIX: use bill_date instead of created_at
+  document.getElementById("billDate").innerText =
+    data.bill_date
+      ? new Date(data.bill_date).toLocaleString()
+      : "-";
+
+  // =====================
+  // ITEMS TABLE
+  // =====================
   let rowsHTML = "";
 
   data.items.forEach((i, index) => {
-    const total = i.quantity * i.rate;
+    const total = (i.quantity || 0) * (i.rate || 0);
 
     rowsHTML += `
       <tr>
@@ -56,9 +73,26 @@ function renderInvoice(data) {
 
   document.getElementById("tableBody").innerHTML = rowsHTML;
 
-  document.getElementById("total").innerText = data.total;
-  document.getElementById("paid").innerText = data.paid;
-  document.getElementById("remaining").innerText = data.remaining;
+  // =====================
+  // TOTAL SECTION
+  // =====================
+
+  if (payment) {
+    // 🔥 PAYMENT RECEIPT MODE
+    document.getElementById("title").innerText = "Payment Receipt";
+
+    document.getElementById("total").innerText = payment;
+    document.getElementById("paid").innerText = payment;
+    document.getElementById("remaining").innerText = "-";
+
+  } else {
+    // 🔥 NORMAL INVOICE
+    document.getElementById("title").innerText = "Invoice";
+
+    document.getElementById("total").innerText = data.total;
+    document.getElementById("paid").innerText = data.paid;
+    document.getElementById("remaining").innerText = data.remaining;
+  }
 }
 
 // =====================

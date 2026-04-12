@@ -120,3 +120,12 @@ td {
     box-shadow: none;
   }
 }
+.print-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: cyan;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
