@@ -741,6 +741,67 @@ app.get("/bills/:id", async (req, res) => {
   }
 });
 
+// =====================
+// CUSTOMER LEDGER API
+// =====================
+app.get("/ledger/:phone", async (req, res) => {
+  const { phone } = req.params;
+
+  try {
+    // 🔹 GET ALL BILLS
+    const bills = await pool.query(
+      "SELECT * FROM bills WHERE phone=$1 ORDER BY created_at ASC",
+      [phone]
+    );
+
+    let ledger = [];
+    let totalPurchase = 0;
+    let totalPaid = 0;
+
+    for (let b of bills.rows) {
+
+      totalPurchase += Number(b.total);
+
+      // 🔹 ADD BILL ENTRY
+      ledger.push({
+        type: "bill",
+        bill_id: b.id,
+        amount: b.total,
+        date: b.created_at
+      });
+
+      // 🔹 GET PAYMENTS FOR THIS BILL
+      const payments = await pool.query(
+        "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
+        [b.id]
+      );
+
+      payments.rows.forEach(p => {
+        totalPaid += Number(p.amount);
+
+        ledger.push({
+          type: "payment",
+          bill_id: b.id,
+          amount: p.amount,
+          date: p.created_at
+        });
+      });
+    }
+
+    const remaining = totalPurchase - totalPaid;
+
+    res.json({
+      ledger,
+      totalPurchase,
+      totalPaid,
+      remaining
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: "Ledger error" });
+  }
+});
+
 // --------------------
 // GET ALL CUSTOMERS
 // --------------------
@@ -779,6 +840,8 @@ app.delete("/customers/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 // --------------------
 // SERVER START

@@ -221,3 +221,31 @@ select, input[type="number"] {
   border-radius: 5px;
   cursor: pointer;
 }
+/* ===================== */
+/* LEDGER / HISTORY STYLE */
+/* ===================== */
+
+.history-card {
+  background: rgba(255,255,255,0.05);
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Ledger entries */
+.history-card p {
+  margin: 5px 0;
+}
+
+/* Payment highlight */
+.history-card p.payment {
+  color: lightgreen;
+  font-weight: bold;
+}
+
+/* Bill highlight */
+.history-card p.bill {
+  color: cyan;
+  font-weight: bold;
+}

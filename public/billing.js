@@ -170,12 +170,12 @@ async function loadAllBills() {
 }
 
 // =====================
-// RENDER BILLS (FIXED)
+// RENDER BILLS (FINAL)
 // =====================
 function renderBills() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const status = document.getElementById("statusFilter").value;
-  const date = document.getElementById("dateFilter").value;
+  const search = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  const status = document.getElementById("statusFilter")?.value || "all";
+  const date = document.getElementById("dateFilter")?.value || "";
 
   const pendingDiv = document.getElementById("pendingList");
   const completedDiv = document.getElementById("completedList");
@@ -201,22 +201,28 @@ function renderBills() {
 
     const card = `
       <div class="card ${billStatus}">
-        <h3>${b.customer_name}</h3>
-        <p>Phone: ${b.phone}</p>
-        <p>Total: ₹${b.total}</p>
-        <p>Paid: ₹${b.paid}</p>
+        <h3>${b.customer_name || "Customer"}</h3>
+        <p><b>Phone:</b> ${b.phone}</p>
+        <p><b>Total:</b> ₹${b.total}</p>
+        <p><b>Paid:</b> ₹${b.paid}</p>
 
+        <!-- ACTION BUTTONS -->
         <div class="actions">
-          <button onclick="viewInvoice(${b.id})">View</button>
+          <button onclick="viewInvoice(${b.id})">🧾 View</button>
           <button onclick="viewHistory('${b.phone}')">📜 History</button>
-          <button onclick="deleteBill(${b.id})" class="delete">Delete</button>
+          <button onclick="openLedger('${b.phone}')">📊 Ledger</button>
+          <button onclick="deleteBill(${b.id})" class="delete">🗑 Delete</button>
         </div>
 
-        ${billStatus === "pending" ? `
-          <p>Remaining: ₹${b.total - b.paid}</p>
-          <input type="number" id="pay_${b.id}" placeholder="Pay amount">
-          <button onclick="payNow(${b.id})">Pay</button>
-        ` : `<p>✅ Completed</p>`}
+        ${
+          billStatus === "pending"
+            ? `
+          <p><b>Remaining:</b> ₹${b.total - b.paid}</p>
+          <input type="number" id="pay_${b.id}" placeholder="Enter amount">
+          <button onclick="payNow(${b.id})">💵 Pay</button>
+        `
+            : `<p style="color:lightgreen;">✅ Completed</p>`
+        }
       </div>
     `;
 
@@ -330,6 +336,44 @@ async function viewHistory(phone) {
 
   } catch (err) {
     alert("Error loading history");
+  }
+}
+
+// =====================
+// OPEN LEDGER
+// =====================
+async function openLedger(phone) {
+  try {
+    const res = await fetch(`${API}/ledger/${phone}`);
+    const data = await res.json();
+
+    let html = `
+      <h2>Customer Ledger</h2>
+      <p><b>Total Purchase:</b> ₹${data.totalPurchase}</p>
+      <p><b>Total Paid:</b> ₹${data.totalPaid}</p>
+      <p><b>Remaining:</b> ₹${data.remaining}</p>
+      <hr>
+    `;
+
+    data.ledger.forEach(entry => {
+      if (entry.type === "bill") {
+        html += `
+          <p>🧾 Bill #${entry.bill_id} → ₹${entry.amount}</p>
+        `;
+      } else {
+        html += `
+          <p style="color:lightgreen">
+            💵 Payment → ₹${entry.amount}
+          </p>
+        `;
+      }
+    });
+
+    document.getElementById("historyModalContent").innerHTML = html;
+    document.getElementById("historyModal").style.display = "flex";
+
+  } catch (err) {
+    alert("Ledger load error");
   }
 }
 
