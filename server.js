@@ -445,7 +445,7 @@ app.get("/orders", async (req, res) => {
 });
 
 // --------------------
-// CREATE BILL (MULTI-ITEM)
+// CREATE BILL (MULTI-ITEM) - FINAL FIXED
 // --------------------
 app.post("/bill", async (req, res) => {
   try {
@@ -488,7 +488,7 @@ app.post("/bill", async (req, res) => {
     const paidAmount = Number(paid) || 0;
     const remaining = total - paidAmount;
 
-    const status = remaining > 0 ? "pending" : "paid";
+    const status = remaining > 0 ? "pending" : "completed"; // ✅ FIXED STATUS
 
     // --------------------
     // GENERATE BILL NUMBER
@@ -496,7 +496,7 @@ app.post("/bill", async (req, res) => {
     const billNo = "INV-" + Date.now();
 
     // --------------------
-    // INSERT INTO DB
+    // INSERT INTO BILLS
     // --------------------
     const result = await pool.query(
       `INSERT INTO bills
@@ -507,7 +507,7 @@ app.post("/bill", async (req, res) => {
         customerData.id,
         customerData.name,
         phone,
-        JSON.stringify(items), // 🔥 IMPORTANT
+        JSON.stringify(items),
         total,
         paidAmount,
         remaining,
@@ -515,6 +515,19 @@ app.post("/bill", async (req, res) => {
         billNo
       ]
     );
+
+    const newBill = result.rows[0];
+
+    // 🔥🔥🔥 IMPORTANT FIX (ADD THIS BLOCK)
+    // --------------------
+    // INSERT INITIAL PAYMENT INTO payments TABLE
+    // --------------------
+    if (paidAmount > 0) {
+      await pool.query(
+        "INSERT INTO payments (bill_id, amount) VALUES ($1, $2)",
+        [newBill.id, paidAmount]
+      );
+    }
 
     // --------------------
     // SUCCESS RESPONSE
