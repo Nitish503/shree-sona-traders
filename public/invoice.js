@@ -1,6 +1,3 @@
-
-const urlParams = new URLSearchParams(window.location.search);
-const payment = urlParams.get("payment");
 const API = window.location.origin;
 
 // =====================
@@ -8,7 +5,6 @@ const API = window.location.origin;
 // =====================
 async function loadInvoice() {
   const params = new URLSearchParams(window.location.search);
-
   const billId = params.get("bill_id");
 
   // 🔥 CASE 1: LOAD FROM DATABASE
@@ -31,13 +27,10 @@ async function loadInvoice() {
 }
 
 // =====================
-// RENDER FROM DB (FINAL FIXED)
+// RENDER FROM DB
 // =====================
 function renderInvoice(data) {
 
-  const API = window.location.origin;
-
-  // 🔥 GET URL PARAM
   const urlParams = new URLSearchParams(window.location.search);
   const payment = Number(urlParams.get("payment")) || 0;
 
@@ -58,7 +51,9 @@ function renderInvoice(data) {
   // =====================
   let rowsHTML = "";
 
-  data.items.forEach((i, index) => {
+  const items = Array.isArray(data.items) ? data.items : [];
+
+  items.forEach((i, index) => {
     const total = (i.quantity || 0) * (i.rate || 0);
 
     rowsHTML += `
@@ -75,64 +70,57 @@ function renderInvoice(data) {
   document.getElementById("tableBody").innerHTML = rowsHTML;
 
   // =====================
-// PAYMENT RECEIPT LOGIC (🔥 WITH METHOD)
-// =====================
+  // PAYMENT RECEIPT LOGIC
+  // =====================
+  if (payment > 0) {
 
-if (payment > 0) {
+    document.getElementById("title").innerText = "Payment Receipt";
 
-  document.getElementById("title").innerText = "Payment Receipt";
+    fetch(`${API}/payments/${data.id}`)
+      .then(res => res.json())
+      .then(payments => {
 
-  // 🔥 FETCH ALL PAYMENTS OF THIS BILL
-  fetch(`${API}/payments/${data.id}`)
-    .then(res => res.json())
-    .then(payments => {
+        let cumulativePaid = 0;
+        let installmentNumber = 0;
+        let paymentMethod = "Cash";
 
-      let cumulativePaid = 0;
-      let installmentNumber = 0;
-      let paymentMethod = "Cash"; // 🔥 DEFAULT
+        payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-      // 🔥 SORT BY DATE
-      payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        payments.forEach((p, index) => {
+          cumulativePaid += Number(p.amount);
 
-      payments.forEach((p, index) => {
-        cumulativePaid += Number(p.amount);
+          if (Number(p.amount) === payment && installmentNumber === 0) {
+            installmentNumber = index + 1;
+            paymentMethod = p.method || "Cash";
+          }
+        });
 
-        // 🔥 MATCH CURRENT PAYMENT
-        if (Number(p.amount) === payment && installmentNumber === 0) {
-          installmentNumber = index + 1;
+        const remaining = data.total - cumulativePaid;
 
-          // ✅ GET METHOD HERE (NEW)
-          paymentMethod = p.method || "Cash";
-        }
+        document.getElementById("total").innerText = data.total;
+        document.getElementById("paid").innerText = payment;
+        document.getElementById("remaining").innerText = remaining;
+
+        const extra = document.createElement("p");
+        extra.innerHTML = `
+          <b>Installment:</b> ${installmentNumber}<br>
+          <b>Bill No:</b> ${data.bill_no || "#" + data.id}<br>
+          <b>Payment Method:</b> ${paymentMethod}
+        `;
+
+        document.querySelector(".summary .box").appendChild(extra);
       });
 
-      const remaining = data.total - cumulativePaid;
+  } else {
+    // =====================
+    // NORMAL INVOICE
+    // =====================
+    document.getElementById("title").innerText = "Invoice";
 
-      // ✅ EXISTING VALUES (UNCHANGED)
-      document.getElementById("total").innerText = data.total;
-      document.getElementById("paid").innerText = payment;
-      document.getElementById("remaining").innerText = remaining;
-
-      // 🔥 EXTRA INFO (UPDATED)
-      const extra = document.createElement("p");
-      extra.innerHTML = `
-        <b>Installment:</b> ${installmentNumber}<br>
-        <b>Bill No:</b> ${data.bill_no}<br>
-        <b>Payment Method:</b> ${paymentMethod}
-      `;
-
-      document.querySelector(".summary .box").appendChild(extra);
-    });
-
-} else {
-  // =====================
-  // NORMAL INVOICE
-  // =====================
-  document.getElementById("title").innerText = "Invoice";
-
-  document.getElementById("total").innerText = data.total;
-  document.getElementById("paid").innerText = data.paid;
-  document.getElementById("remaining").innerText = data.remaining;
+    document.getElementById("total").innerText = data.total;
+    document.getElementById("paid").innerText = data.paid;
+    document.getElementById("remaining").innerText = data.remaining;
+  }
 }
 
 // =====================
@@ -143,12 +131,13 @@ function renderFromParams(params) {
   document.getElementById("custName").innerText = params.get("name");
   document.getElementById("custPhone").innerText = params.get("phone");
   document.getElementById("billNo").innerText = params.get("bill_no");
+
   document.getElementById("billDate").innerText =
     new Date().toLocaleString();
 
-  const itemsParam = params.get("items");
-
   let rowsHTML = "";
+
+  const itemsParam = params.get("items");
 
   if (itemsParam) {
     const items = JSON.parse(decodeURIComponent(itemsParam));

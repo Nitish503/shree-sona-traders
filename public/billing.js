@@ -71,7 +71,7 @@ function removeRow(btn) {
 }
 
 // =====================
-// CREATE BILL (UPDATED WITH PAYMENT HISTORY)
+// CREATE BILL (FINAL FIXED)
 // =====================
 async function createBill() {
   const phone = document.getElementById("phone").value;
@@ -106,7 +106,7 @@ async function createBill() {
   }
 
   try {
-    // 🔥 CREATE BILL
+    // 🔥 CREATE BILL (backend handles payment history automatically)
     const res = await fetch(`${API}/bill`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -122,20 +122,6 @@ async function createBill() {
     if (!res.ok) {
       alert(data.error);
       return;
-    }
-
-    // =========================
-    // 🔥 ADD INITIAL PAYMENT ENTRY
-    // =========================
-    if (paid > 0) {
-      await fetch(`${API}/payments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bill_id: data.id,   // 🔥 IMPORTANT (bill id from backend)
-          amount: Number(paid)
-        })
-      });
     }
 
     alert("✅ Bill Generated");

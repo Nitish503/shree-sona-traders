@@ -731,7 +731,7 @@ app.delete("/bills/:id", async (req, res) => {
 });
 
 // --------------------
-// GET SINGLE BILL
+// GET SINGLE BILL (FINAL FIXED)
 // --------------------
 app.get("/bills/:id", async (req, res) => {
   try {
@@ -742,7 +742,24 @@ app.get("/bills/:id", async (req, res) => {
       [id]
     );
 
-    res.json(result.rows[0]);
+    // 🔥 SAFETY CHECK (NEW)
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Bill not found" });
+    }
+
+    const bill = result.rows[0];
+
+    // 🔥 IMPORTANT FIX (items parsing)
+    bill.items = typeof bill.items === "string"
+      ? JSON.parse(bill.items)
+      : bill.items;
+
+    // 🔥 OPTIONAL SAFE DEFAULTS (no break)
+    bill.total = Number(bill.total) || 0;
+    bill.paid = Number(bill.paid) || 0;
+    bill.remaining = Number(bill.remaining) || 0;
+
+    res.json(bill);
 
   } catch (err) {
     console.error("❌ Fetch Bill Error:", err.message);
