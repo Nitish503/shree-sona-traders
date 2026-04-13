@@ -46,7 +46,7 @@ function renderInvoice(data) {
   // =====================
   document.getElementById("custName").innerText = data.customer_name || "-";
   document.getElementById("custPhone").innerText = data.phone || "-";
-  document.getElementById("billNo").innerText = data.bill_no || "-";
+  document.getElementById("billNo").innerText = "#" + data.id;
 
   document.getElementById("billDate").innerText =
     data.bill_date
@@ -75,59 +75,64 @@ function renderInvoice(data) {
   document.getElementById("tableBody").innerHTML = rowsHTML;
 
   // =====================
-  // PAYMENT RECEIPT LOGIC (🔥 MAIN FIX)
-  // =====================
+// PAYMENT RECEIPT LOGIC (🔥 WITH METHOD)
+// =====================
 
-  if (payment > 0) {
+if (payment > 0) {
 
-    document.getElementById("title").innerText = "Payment Receipt";
+  document.getElementById("title").innerText = "Payment Receipt";
 
-    // 🔥 FETCH ALL PAYMENTS OF THIS BILL
-    fetch(`${API}/payments/${data.id}`)
-      .then(res => res.json())
-      .then(payments => {
+  // 🔥 FETCH ALL PAYMENTS OF THIS BILL
+  fetch(`${API}/payments/${data.id}`)
+    .then(res => res.json())
+    .then(payments => {
 
-        let cumulativePaid = 0;
-        let installmentNumber = 0;
+      let cumulativePaid = 0;
+      let installmentNumber = 0;
+      let paymentMethod = "Cash"; // 🔥 DEFAULT
 
-        // 🔥 SORT BY DATE
-        payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      // 🔥 SORT BY DATE
+      payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-        payments.forEach((p, index) => {
-          cumulativePaid += Number(p.amount);
+      payments.forEach((p, index) => {
+        cumulativePaid += Number(p.amount);
 
-          // 🔥 MATCH CURRENT PAYMENT
-          if (Number(p.amount) === payment && installmentNumber === 0) {
-            installmentNumber = index + 1;
-          }
-        });
+        // 🔥 MATCH CURRENT PAYMENT
+        if (Number(p.amount) === payment && installmentNumber === 0) {
+          installmentNumber = index + 1;
 
-        const remaining = data.total - cumulativePaid;
-
-        // ✅ CORRECT VALUES
-        document.getElementById("total").innerText = data.total;
-        document.getElementById("paid").innerText = payment;
-        document.getElementById("remaining").innerText = remaining;
-
-        // 🔥 ADD EXTRA INFO (Installment + Bill)
-        const extra = document.createElement("p");
-        extra.innerHTML = `
-          <b>Installment:</b> ${installmentNumber}<br>
-          <b>Bill No:</b> ${data.bill_no}
-        `;
-        document.querySelector(".summary .box").appendChild(extra);
+          // ✅ GET METHOD HERE (NEW)
+          paymentMethod = p.method || "Cash";
+        }
       });
 
-  } else {
-    // =====================
-    // NORMAL INVOICE
-    // =====================
-    document.getElementById("title").innerText = "Invoice";
+      const remaining = data.total - cumulativePaid;
 
-    document.getElementById("total").innerText = data.total;
-    document.getElementById("paid").innerText = data.paid;
-    document.getElementById("remaining").innerText = data.remaining;
-  }
+      // ✅ EXISTING VALUES (UNCHANGED)
+      document.getElementById("total").innerText = data.total;
+      document.getElementById("paid").innerText = payment;
+      document.getElementById("remaining").innerText = remaining;
+
+      // 🔥 EXTRA INFO (UPDATED)
+      const extra = document.createElement("p");
+      extra.innerHTML = `
+        <b>Installment:</b> ${installmentNumber}<br>
+        <b>Bill No:</b> ${data.bill_no}<br>
+        <b>Payment Method:</b> ${paymentMethod}
+      `;
+
+      document.querySelector(".summary .box").appendChild(extra);
+    });
+
+} else {
+  // =====================
+  // NORMAL INVOICE
+  // =====================
+  document.getElementById("title").innerText = "Invoice";
+
+  document.getElementById("total").innerText = data.total;
+  document.getElementById("paid").innerText = data.paid;
+  document.getElementById("remaining").innerText = data.remaining;
 }
 
 // =====================

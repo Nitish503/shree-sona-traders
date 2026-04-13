@@ -445,22 +445,16 @@ app.get("/orders", async (req, res) => {
 });
 
 // --------------------
-// CREATE BILL (MULTI-ITEM) - FINAL FIXED
+// CREATE BILL (FINAL WITH METHOD)
 // --------------------
 app.post("/bill", async (req, res) => {
   try {
     const { phone, items, paid } = req.body;
 
-    // --------------------
-    // VALIDATION
-    // --------------------
     if (!phone || !items || items.length === 0) {
       return res.status(400).json({ error: "Missing required data" });
     }
 
-    // --------------------
-    // CHECK CUSTOMER
-    // --------------------
     const customer = await pool.query(
       "SELECT * FROM customers WHERE phone=$1",
       [phone]
@@ -474,9 +468,6 @@ app.post("/bill", async (req, res) => {
 
     const customerData = customer.rows[0];
 
-    // --------------------
-    // CALCULATE TOTAL
-    // --------------------
     let total = 0;
 
     items.forEach(item => {
@@ -488,16 +479,10 @@ app.post("/bill", async (req, res) => {
     const paidAmount = Number(paid) || 0;
     const remaining = total - paidAmount;
 
-    const status = remaining > 0 ? "pending" : "completed"; // ✅ FIXED STATUS
+    const status = remaining > 0 ? "pending" : "completed";
 
-    // --------------------
-    // GENERATE BILL NUMBER
-    // --------------------
     const billNo = "INV-" + Date.now();
 
-    // --------------------
-    // INSERT INTO BILLS
-    // --------------------
     const result = await pool.query(
       `INSERT INTO bills
       (customer_id, customer_name, phone, items, total, paid, remaining, status, bill_no)
@@ -518,20 +503,14 @@ app.post("/bill", async (req, res) => {
 
     const newBill = result.rows[0];
 
-    // 🔥🔥🔥 IMPORTANT FIX (ADD THIS BLOCK)
-    // --------------------
-    // INSERT INITIAL PAYMENT INTO payments TABLE
-    // --------------------
+    // 🔥 SAVE INITIAL PAYMENT WITH METHOD
     if (paidAmount > 0) {
       await pool.query(
-        "INSERT INTO payments (bill_id, amount) VALUES ($1, $2)",
-        [newBill.id, paidAmount]
+        "INSERT INTO payments (bill_id, amount, method) VALUES ($1, $2, $3)",
+        [newBill.id, paidAmount, "Cash"] // default
       );
     }
 
-    // --------------------
-    // SUCCESS RESPONSE
-    // --------------------
     res.json({
       message: "Bill created",
       bill_no: billNo,
@@ -657,12 +636,12 @@ app.get("/bills/customer/:phone", async (req, res) => {
 });
 
 // --------------------
-// PAY / REBILL AMOUNT (FINAL WITH HISTORY)
+// PAY / REBILL AMOUNT (FINAL WITH METHOD)
 // --------------------
 app.put("/bills/:id/pay", async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount } = req.body;
+    const { amount, method } = req.body;
 
     // 🔹 VALIDATION
     const payAmount = Number(amount);
@@ -682,23 +661,21 @@ app.put("/bills/:id/pay", async (req, res) => {
 
     const current = bill.rows[0];
 
-    // 🔹 SAFE NUMBER CONVERSION
     const currentPaid = Number(current.paid) || 0;
     const total = Number(current.total) || 0;
 
     const newPaid = currentPaid + payAmount;
     const remaining = total - newPaid;
 
-    // 🔹 STATUS FIX
     const status = newPaid >= total ? "completed" : "pending";
 
-    // 🔥 STEP 1: SAVE PAYMENT HISTORY
+    // 🔥 SAVE PAYMENT WITH METHOD
     await pool.query(
-      "INSERT INTO payments (bill_id, amount) VALUES ($1, $2)",
-      [id, payAmount]
+      "INSERT INTO payments (bill_id, amount, method) VALUES ($1, $2, $3)",
+      [id, payAmount, method || "Cash"]
     );
 
-    // 🔥 STEP 2: UPDATE BILL
+    // 🔥 UPDATE BILL
     const updated = await pool.query(
       `UPDATE bills 
        SET paid=$1, remaining=$2, status=$3 
@@ -774,14 +751,17 @@ app.get("/bills/:id", async (req, res) => {
 });
 
 // =====================
-// CUSTOMER LEDGER API (FIXED)
+// CUSTOMER LEDGER API (FINAL WITH METHOD)
 // =====================
 app.get("/ledger/:phone", async (req, res) => {
   const { phone } = req.params;
 
   try {
     const billsResult = await pool.query(
-      "SELECT * FROM bills WHERE phone=$1 ORDER BY id ASC",
+      `SELECT id, total, bill_date 
+       FROM bills 
+       WHERE phone=$1 
+       ORDER BY id ASC`,
       [phone]
     );
 
@@ -796,17 +776,20 @@ app.get("/ledger/:phone", async (req, res) => {
       const billTotal = Number(bill.total) || 0;
       totalPurchase += billTotal;
 
-      // ✅ FIXED: bill_date instead of created_at
+      // 🧾 BILL ENTRY
       ledger.push({
         type: "bill",
         bill_id: bill.id,
         amount: billTotal,
-        date: bill.bill_date   // 🔥 FIX HERE
+        date: bill.bill_date || new Date()
       });
 
-      // PAYMENTS
+      // 💵 PAYMENTS
       const payResult = await pool.query(
-        "SELECT * FROM payments WHERE bill_id=$1 ORDER BY id ASC",
+        `SELECT amount, created_at, method 
+         FROM payments 
+         WHERE bill_id=$1 
+         ORDER BY created_at ASC`,
         [bill.id]
       );
 
@@ -818,10 +801,14 @@ app.get("/ledger/:phone", async (req, res) => {
           type: "payment",
           bill_id: bill.id,
           amount: amt,
-          date: p.created_at   // ✅ correct
+          method: p.method || "Cash",
+          date: p.created_at || new Date()
         });
       }
     }
+
+    // 🔥 FINAL SORT
+    ledger.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     res.json({
       ledger,
@@ -835,6 +822,7 @@ app.get("/ledger/:phone", async (req, res) => {
     res.status(500).json({ error: "Ledger failed" });
   }
 });
+
 
 // --------------------
 // GET ALL CUSTOMERS

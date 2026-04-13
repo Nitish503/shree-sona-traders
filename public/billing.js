@@ -170,7 +170,7 @@ async function loadAllBills() {
 }
 
 // =====================
-// RENDER BILLS (FINAL)
+// RENDER BILLS (FINAL WITH PAYMENT METHOD)
 // =====================
 function renderBills() {
   const search = (document.getElementById("searchInput")?.value || "").toLowerCase();
@@ -217,8 +217,18 @@ function renderBills() {
         ${
           billStatus === "pending"
             ? `
-          <p><b>Remaining:</b> ₹${b.total - b.paid}</p>
+          <p><b>Due:</b> ₹${b.total - b.paid}</p>
+
           <input type="number" id="pay_${b.id}" placeholder="Enter amount">
+
+          <!-- 🔥 NEW PAYMENT METHOD DROPDOWN -->
+          <select id="method_${b.id}" style="margin-top:6px;">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+            <option value="Bank">Bank</option>
+            <option value="Card">Card</option>
+          </select>
+
           <button onclick="payNow(${b.id})">💵 Pay</button>
         `
             : `<p style="color:lightgreen;">✅ Completed</p>`
@@ -242,10 +252,13 @@ function applyFilters() {
 }
 
 // =====================
-// PAY FUNCTION
+// PAY FUNCTION (WITH METHOD)
 // =====================
 async function payNow(id) {
   const amount = document.getElementById(`pay_${id}`).value;
+
+  // 🔥 NEW (GET METHOD)
+  const method = document.getElementById(`method_${id}`)?.value || "Cash";
 
   if (!amount) return alert("Enter amount");
 
@@ -253,7 +266,10 @@ async function payNow(id) {
     const res = await fetch(`${API}/bills/${id}/pay`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: Number(amount) })
+      body: JSON.stringify({ 
+        amount: Number(amount),
+        method   // ✅ NEW
+      })
     });
 
     const data = await res.json();
@@ -296,7 +312,7 @@ async function deleteBill(id) {
 }
 
 // =====================
-// VIEW HISTORY (INSTALLMENTS)
+// VIEW HISTORY (INSTALLMENTS + METHOD)
 // =====================
 async function viewHistory(phone) {
   try {
@@ -307,9 +323,11 @@ async function viewHistory(phone) {
 
     for (let b of bills) {
 
-      // 🔥 GET PAYMENTS OF THIS BILL
       const payRes = await fetch(`${API}/payments/${b.id}`);
-      const payments = await payRes.json();
+      let payments = await payRes.json();
+
+      // 🔥 SORT (IMPORTANT)
+      payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
       html += `
         <div class="history-card">
@@ -322,15 +340,26 @@ async function viewHistory(phone) {
         html += `<p>No payments yet</p>`;
       }
 
-      payments.forEach(p => {
+      payments.forEach((p, i) => {
+
+        const order =
+          i === 0 ? "1st" :
+          i === 1 ? "2nd" :
+          i === 2 ? "3rd" :
+          (i + 1) + "th";
+
         html += `
-          <p>₹${p.amount} → ${new Date(p.created_at).toLocaleString()}</p>
+          <p>
+            ${order} Payment → ₹${p.amount} 
+            (${p.method || "Cash"}) → 
+            ${new Date(p.created_at).toLocaleString()}
+          </p>
         `;
       });
 
       html += `
           <p><b>Total Paid:</b> ₹${b.paid}</p>
-          <p><b>Remaining:</b> ₹${b.total - b.paid}</p>
+          <p><b>Due:</b> ₹${b.total - b.paid}</p>
         </div>
       `;
     }
@@ -344,7 +373,7 @@ async function viewHistory(phone) {
 }
 
 // =====================
-// OPEN LEDGER
+// OPEN LEDGER (WITH METHOD + ORDER)
 // =====================
 async function openLedger(phone) {
   try {
@@ -355,37 +384,48 @@ async function openLedger(phone) {
       <h2>Customer Ledger</h2>
       <p><b>Total Purchase:</b> ₹${data.totalPurchase}</p>
       <p><b>Total Paid:</b> ₹${data.totalPaid}</p>
-      <p><b>Remaining:</b> ₹${data.remaining}</p>
+      <p><b>Due:</b> ₹${data.remaining}</p>
       <hr>
     `;
 
+    let paymentCount = 0;
+
     data.ledger.forEach(l => {
 
-  if (l.type === "bill") {
-    html += `
-      <div class="ledger-row">
-        🧾 Bill #${l.bill_id} → ₹${l.amount}
+      if (l.type === "bill") {
+        html += `
+          <div class="ledger-row">
+            🧾 Bill #${l.bill_id} → ₹${l.amount}
 
-        <button onclick="viewInvoice(${l.bill_id})">
-          View Bill
-        </button>
-      </div>
-    `;
-  }
+            <button onclick="viewInvoice(${l.bill_id})">
+              View Bill
+            </button>
+          </div>
+        `;
+      }
 
-  if (l.type === "payment") {
-    html += `
-      <div class="ledger-row">
-        💵 Payment → ₹${l.amount}
+      if (l.type === "payment") {
 
-        <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.amount})">
-          View Receipt
-        </button>
-      </div>
-    `;
-  }
+        paymentCount++;
 
-});
+        const order =
+          paymentCount === 1 ? "1st" :
+          paymentCount === 2 ? "2nd" :
+          paymentCount === 3 ? "3rd" :
+          paymentCount + "th";
+
+        html += `
+          <div class="ledger-row">
+            💵 ${order} Payment (${l.method || "Cash"}) → ₹${l.amount}
+
+            <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.amount})">
+              View Receipt
+            </button>
+          </div>
+        `;
+      }
+
+    });
 
     document.getElementById("historyModalContent").innerHTML = html;
     document.getElementById("historyModal").style.display = "flex";
