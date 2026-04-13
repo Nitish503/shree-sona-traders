@@ -77,6 +77,9 @@ async function createBill() {
   const phone = document.getElementById("phone").value;
   const paid = document.getElementById("paid").value || 0;
 
+  // ✅ NEW LINE (GET METHOD)
+  const method = document.getElementById("paymentMethod").value;
+
   const rows = document.querySelectorAll("#itemsTable tr");
 
   if (!phone || rows.length === 0) {
@@ -106,14 +109,14 @@ async function createBill() {
   }
 
   try {
-    // 🔥 CREATE BILL (backend handles payment history automatically)
     const res = await fetch(`${API}/bill`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         phone,
         items,
-        paid: Number(paid)
+        paid: Number(paid),
+        method   // ✅ NEW (SEND METHOD)
       })
     });
 
@@ -126,7 +129,6 @@ async function createBill() {
 
     alert("✅ Bill Generated");
 
-    // CLEAR UI
     document.getElementById("itemsTable").innerHTML = "";
     document.getElementById("total").innerText = "0";
     document.getElementById("paid").value = "";
@@ -138,6 +140,7 @@ async function createBill() {
     alert("❌ Network error");
   }
 }
+
 
 // =====================
 // LOAD ALL BILLS
@@ -374,31 +377,48 @@ async function openLedger(phone) {
       <hr>
     `;
 
-    let paymentCount = 0;
+    // ✅ GROUP ENTRIES BY BILL (NEW)
+    let grouped = {};
 
     data.ledger.forEach(l => {
-
-      if (l.type === "bill") {
-        html += `
-          <div class="ledger-row">
-            🧾 Bill #${l.bill_id} → ₹${l.amount}
-
-            <button onclick="viewInvoice(${l.bill_id})">
-              View Bill
-            </button>
-          </div>
-        `;
+      if (!grouped[l.bill_id]) {
+        grouped[l.bill_id] = [];
       }
+      grouped[l.bill_id].push(l);
+    });
 
-      if (l.type === "payment") {
+    // ✅ LOOP BILL-WISE (NEW)
+    Object.keys(grouped).forEach(billId => {
 
-        paymentCount++;
+      let entries = grouped[billId];
+
+      entries.forEach(l => {
+
+        // ===== BILL (UNCHANGED) =====
+        if (l.type === "bill") {
+          html += `
+            <div class="ledger-row">
+              🧾 Bill #${l.bill_id} → ₹${l.amount}
+
+              <button onclick="viewInvoice(${l.bill_id})">
+                View Bill
+              </button>
+            </div>
+          `;
+        }
+
+      });
+
+      // ===== PAYMENTS (FIXED PART) =====
+      let payments = entries.filter(e => e.type === "payment");
+
+      payments.forEach((l, index) => {
 
         const order =
-          paymentCount === 1 ? "1st" :
-          paymentCount === 2 ? "2nd" :
-          paymentCount === 3 ? "3rd" :
-          paymentCount + "th";
+          index === 0 ? "1st" :
+          index === 1 ? "2nd" :
+          index === 2 ? "3rd" :
+          (index + 1) + "th";
 
         html += `
           <div class="ledger-row">
@@ -409,7 +429,7 @@ async function openLedger(phone) {
             </button>
           </div>
         `;
-      }
+      });
 
     });
 

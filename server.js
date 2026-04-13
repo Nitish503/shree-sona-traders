@@ -449,7 +449,8 @@ app.get("/orders", async (req, res) => {
 // --------------------
 app.post("/bill", async (req, res) => {
   try {
-    const { phone, items, paid } = req.body;
+    // ✅ ADD method
+    const { phone, items, paid, method } = req.body;
 
     if (!phone || !items || items.length === 0) {
       return res.status(400).json({ error: "Missing required data" });
@@ -503,11 +504,11 @@ app.post("/bill", async (req, res) => {
 
     const newBill = result.rows[0];
 
-    // 🔥 SAVE INITIAL PAYMENT WITH METHOD
+    // 🔥 UPDATED HERE
     if (paidAmount > 0) {
       await pool.query(
         "INSERT INTO payments (bill_id, amount, method) VALUES ($1, $2, $3)",
-        [newBill.id, paidAmount, "Cash"] // default
+        [newBill.id, paidAmount, method || "Cash"] // ✅ dynamic method
       );
     }
 
@@ -526,6 +527,7 @@ app.post("/bill", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // --------------------
 // GET ALL BILLS

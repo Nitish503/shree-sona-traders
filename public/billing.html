@@ -19,7 +19,18 @@
 
   <div class="top-inputs">
     <input id="phone" placeholder="Customer Phone">
-    <input id="paid" type="number" placeholder="Paid Amount">
+
+    <!-- ✅ UPDATED SECTION (PAID + METHOD) -->
+    <div style="display:flex; gap:10px; width:100%;">
+      <input id="paid" type="number" placeholder="Paid Amount" style="flex:2;">
+
+      <select id="paymentMethod" style="flex:1;">
+        <option value="Cash">Cash</option>
+        <option value="UPI">UPI</option>
+        <option value="Bank">Bank</option>
+        <option value="Card">Card</option>
+      </select>
+    </div>
   </div>
 
   <!-- ITEMS -->
