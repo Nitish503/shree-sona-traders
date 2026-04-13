@@ -620,6 +620,25 @@ app.get("/payments/:bill_id", async (req, res) => {
 });
 
 // =====================
+// GET PAYMENTS BY BILL
+// =====================
+app.get("/payments/:bill_id", async (req, res) => {
+  const { bill_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
+      [bill_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ Payment Fetch Error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// =====================
 // CUSTOMER HISTORY API
 // =====================
 app.get("/bills/customer/:phone", async (req, res) => {

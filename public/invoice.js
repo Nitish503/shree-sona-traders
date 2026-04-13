@@ -31,13 +31,15 @@ async function loadInvoice() {
 }
 
 // =====================
-// RENDER FROM DB (FINAL)
+// RENDER FROM DB (FINAL FIXED)
 // =====================
 function renderInvoice(data) {
 
-  // 🔥 GET URL PARAM (for payment receipt)
+  const API = window.location.origin;
+
+  // 🔥 GET URL PARAM
   const urlParams = new URLSearchParams(window.location.search);
-  const payment = urlParams.get("payment");
+  const payment = Number(urlParams.get("payment")) || 0;
 
   // =====================
   // BASIC DETAILS
@@ -46,7 +48,6 @@ function renderInvoice(data) {
   document.getElementById("custPhone").innerText = data.phone || "-";
   document.getElementById("billNo").innerText = data.bill_no || "-";
 
-  // ✅ FIX: use bill_date instead of created_at
   document.getElementById("billDate").innerText =
     data.bill_date
       ? new Date(data.bill_date).toLocaleString()
@@ -74,19 +75,53 @@ function renderInvoice(data) {
   document.getElementById("tableBody").innerHTML = rowsHTML;
 
   // =====================
-  // TOTAL SECTION
+  // PAYMENT RECEIPT LOGIC (🔥 MAIN FIX)
   // =====================
 
-  if (payment) {
-    // 🔥 PAYMENT RECEIPT MODE
+  if (payment > 0) {
+
     document.getElementById("title").innerText = "Payment Receipt";
 
-    document.getElementById("total").innerText = payment;
-    document.getElementById("paid").innerText = payment;
-    document.getElementById("remaining").innerText = "-";
+    // 🔥 FETCH ALL PAYMENTS OF THIS BILL
+    fetch(`${API}/payments/${data.id}`)
+      .then(res => res.json())
+      .then(payments => {
+
+        let cumulativePaid = 0;
+        let installmentNumber = 0;
+
+        // 🔥 SORT BY DATE
+        payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+        payments.forEach((p, index) => {
+          cumulativePaid += Number(p.amount);
+
+          // 🔥 MATCH CURRENT PAYMENT
+          if (Number(p.amount) === payment && installmentNumber === 0) {
+            installmentNumber = index + 1;
+          }
+        });
+
+        const remaining = data.total - cumulativePaid;
+
+        // ✅ CORRECT VALUES
+        document.getElementById("total").innerText = data.total;
+        document.getElementById("paid").innerText = payment;
+        document.getElementById("remaining").innerText = remaining;
+
+        // 🔥 ADD EXTRA INFO (Installment + Bill)
+        const extra = document.createElement("p");
+        extra.innerHTML = `
+          <b>Installment:</b> ${installmentNumber}<br>
+          <b>Bill No:</b> ${data.bill_no}
+        `;
+        document.querySelector(".summary .box").appendChild(extra);
+      });
 
   } else {
-    // 🔥 NORMAL INVOICE
+    // =====================
+    // NORMAL INVOICE
+    // =====================
     document.getElementById("title").innerText = "Invoice";
 
     document.getElementById("total").innerText = data.total;
