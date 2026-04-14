@@ -32,7 +32,8 @@ async function loadInvoice() {
 function renderInvoice(data) {
 
   const urlParams = new URLSearchParams(window.location.search);
-  const paymentIndex = Number(urlParams.get("paymentIndex"));
+  const paymentIndexParam = urlParams.get("paymentIndex");
+const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : null;
 
   // =====================
   // BASIC DETAILS
@@ -72,7 +73,7 @@ function renderInvoice(data) {
   // =====================
   // PAYMENT RECEIPT LOGIC
   // =====================
-  if (!isNaN(paymentIndex)) {
+  if (paymentIndex !== null) {
 
   document.getElementById("title").innerText = "Payment Receipt";
 
