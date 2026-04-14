@@ -1,131 +1,80 @@
 body {
   font-family: Arial;
-  background: #f5f7fa;
-  margin: 0;
-  padding: 10px;
+  background: #f5f5f5;
 }
 
 .invoice {
-  max-width: 900px;
+  width: 900px;
   margin: auto;
-  background: #fff;
+  background: white;
   padding: 20px;
-  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 /* HEADER */
-.header {
-  text-align: center;
-  border-bottom: 3px solid #3498db;
-  padding-bottom: 10px;
-}
-
-.header h1 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-/* INFO */
-.info {
+.top-box {
   display: flex;
   justify-content: space-between;
-  margin: 20px 0;
-}
-
-.info p {
-  margin: 5px 0;
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  background: #3498db;
-  color: white;
+  border: 1px solid #000;
   padding: 10px;
 }
 
-td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
+.logo {
+  width: 80px;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+/* DETAILS */
+.details-box {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #000;
+  border-top: none;
+  padding: 10px;
+}
+
+/* TABLE */
+.main-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.main-table th,
+.main-table td {
+  border: 1px solid #000;
+  padding: 6px;
   text-align: center;
 }
 
 /* SUMMARY */
-.summary {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-.summary .box {
-  border: 2px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  background: #f9f9f9;
-}
-
-.summary p {
-  margin: 5px 0;
-  font-weight: bold;
+.summary-box {
+  margin-top: 10px;
+  border: 1px solid #000;
+  padding: 10px;
+  width: 300px;
+  float: right;
 }
 
 /* FOOTER */
-.footer {
-  margin-top: 50px;
-  text-align: right;
-  font-weight: bold;
+.footer-box {
+  margin-top: 60px;
+  display: flex;
+  justify-content: space-between;
 }
 
-/* BUTTON */
-.btns {
+.sign {
   text-align: center;
-  margin-top: 20px;
-}
-
-.btns button {
-  padding: 10px 20px;
-  background: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* MOBILE */
-@media (max-width: 600px) {
-  .info {
-    flex-direction: column;
-  }
-
-  table {
-    font-size: 12px;
-  }
-}
-
-/* PRINT */
-@media print {
-  .btns {
-    display: none;
-  }
-
-  body {
-    background: white;
-  }
-
-  .invoice {
-    box-shadow: none;
-  }
-}
-.print-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: cyan;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
 }
