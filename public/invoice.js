@@ -34,7 +34,7 @@ function renderInvoice(data) {
   const urlParams = new URLSearchParams(window.location.search);
   const paymentIndexParam = urlParams.get("paymentIndex");
 const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : null;
-console.log("DATA:", data);
+
 
   // =====================
   // BASIC DETAILS
@@ -53,23 +53,30 @@ console.log("DATA:", data);
   // =====================
   let rowsHTML = "";
 
-  const items = Array.isArray(data.items) ? data.items : [];
+  let items = [];
+
+if (Array.isArray(data.items)) {
+  items = data.items;
+} else if (typeof data.items === "string") {
+  try {
+    items = JSON.parse(data.items);
+  } catch {
+    items = [];
+  }
+}
 
   items.forEach((i, index) => {
 
-  const name = i.name || i.item_name || "-";
-  const qty = i.quantity || i.qty || 0;
-  const rate = i.rate || i.price || 0;
-  const unit = i.unit || "-";
-
+  const qty = Number(i.quantity) || 0;
+  const rate = Number(i.rate) || 0;
   const total = qty * rate;
 
   rowsHTML += `
     <tr>
       <td>${index + 1}</td>
-      <td>${name}</td>
+      <td>${i.name || "-"}</td>
       <td>${qty}</td>
-      <td>${unit}</td>
+      <td>${i.unit || "-"}</td>
       <td>${rate}</td>
       <td>${total}</td>
     </tr>
