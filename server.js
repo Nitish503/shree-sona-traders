@@ -608,7 +608,15 @@ app.get("/payments/:bill_id", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
+      `SELECT 
+        id AS payment_id,   -- ✅ IMPORTANT FIX
+        bill_id,
+        amount,
+        method,
+        created_at
+       FROM payments 
+       WHERE bill_id=$1 
+       ORDER BY created_at ASC`,
       [bill_id]
     );
 
@@ -795,7 +803,7 @@ app.get("/ledger/:phone", async (req, res) => {
       const billTotal = Number(bill.total) || 0;
       totalPurchase += billTotal;
 
-      // 🧾 BILL ENTRY
+      // 🧾 BILL ENTRY (UNCHANGED)
       ledger.push({
         type: "bill",
         bill_id: bill.id,
@@ -805,7 +813,7 @@ app.get("/ledger/:phone", async (req, res) => {
 
       // 💵 PAYMENTS
       const payResult = await pool.query(
-        `SELECT amount, created_at, method 
+        `SELECT id AS payment_id, amount, created_at, method   -- ✅ ONLY CHANGE
          FROM payments 
          WHERE bill_id=$1 
          ORDER BY created_at ASC`,
@@ -819,6 +827,7 @@ app.get("/ledger/:phone", async (req, res) => {
         ledger.push({
           type: "payment",
           bill_id: bill.id,
+          payment_id: p.payment_id,   // ✅ ONLY ADD THIS LINE
           amount: amt,
           method: p.method || "Cash",
           date: p.created_at || new Date()
@@ -826,7 +835,7 @@ app.get("/ledger/:phone", async (req, res) => {
       }
     }
 
-    // 🔥 FINAL SORT
+    // 🔥 FINAL SORT (UNCHANGED)
     ledger.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     res.json({
@@ -839,6 +848,71 @@ app.get("/ledger/:phone", async (req, res) => {
   } catch (err) {
     console.error("❌ LEDGER ERROR:", err.message);
     res.status(500).json({ error: "Ledger failed" });
+  }
+});
+
+// =====================
+// PAYMENT RECEIPT API (FINAL FIX)
+// =====================
+app.get("/payment-invoice/:paymentId", async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+
+    // 1. CURRENT PAYMENT
+    const paymentRes = await pool.query(
+      "SELECT * FROM payments WHERE id=$1",
+      [paymentId]
+    );
+
+    const payment = paymentRes.rows[0];
+
+    // 2. BILL
+    const billRes = await pool.query(
+      "SELECT * FROM bills WHERE id=$1",
+      [payment.bill_id]
+    );
+
+    const bill = billRes.rows[0];
+
+    // 3. ALL PAYMENTS OF THIS BILL
+    const paymentsRes = await pool.query(
+      "SELECT * FROM payments WHERE bill_id=$1 ORDER BY created_at ASC",
+      [payment.bill_id]
+    );
+
+    const payments = paymentsRes.rows;
+
+    // 4. FIND INDEX
+    const index = payments.findIndex(p => p.id == paymentId);
+
+    // 5. CUMULATIVE PAID
+    let cumulativePaid = 0;
+    for (let i = 0; i <= index; i++) {
+      cumulativePaid += Number(payments[i].amount);
+    }
+
+    // 6. REMAINING
+    const remaining = bill.total - cumulativePaid;
+
+    // 7. INSTALLMENT
+    const installment = index + 1;
+
+    res.json({
+      customer_name: bill.customer_name,
+      phone: bill.phone,
+      bill_no: bill.bill_no,
+      total: bill.total,
+      paid: payment.amount,
+      remaining,
+      installment,
+      method: payment.method,
+      date: payment.created_at,
+      items: bill.items
+    });
+
+  } catch (err) {
+    console.error("❌ Receipt Error:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

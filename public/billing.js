@@ -276,17 +276,6 @@ async function payNow(id) {
 }
 
 // =====================
-// VIEW INVOICE (🔥 FINAL)
-// =====================
-function viewInvoice(id) {
-  window.open(`/invoice.html?bill_id=${id}`, "_blank");
-}
-
-function viewPaymentInvoice(billId, amount) {
-  window.open(`/invoice.html?bill_id=${billId}&payment=${amount}`, "_blank");
-}
-
-// =====================
 // DELETE BILL
 // =====================
 async function deleteBill(id) {
@@ -362,6 +351,20 @@ async function viewHistory(phone) {
 }
 
 // =====================
+// VIEW INVOICE (🔥 FINAL)
+// =====================
+function viewInvoice(id) {
+  window.open(`/invoice.html?bill_id=${id}`, "_blank");
+}
+
+// ✅ UPDATED (payment_id instead of amount)
+function viewPaymentInvoice(billId, paymentId) {
+  window.open(`/invoice.html?bill_id=${billId}&payment_id=${paymentId}`, "_blank");
+}
+
+
+
+// =====================
 // OPEN LEDGER (WITH METHOD + ORDER)
 // =====================
 async function openLedger(phone) {
@@ -377,7 +380,6 @@ async function openLedger(phone) {
       <hr>
     `;
 
-    // ✅ GROUP ENTRIES BY BILL (NEW)
     let grouped = {};
 
     data.ledger.forEach(l => {
@@ -387,14 +389,12 @@ async function openLedger(phone) {
       grouped[l.bill_id].push(l);
     });
 
-    // ✅ LOOP BILL-WISE (NEW)
     Object.keys(grouped).forEach(billId => {
 
       let entries = grouped[billId];
 
       entries.forEach(l => {
 
-        // ===== BILL (UNCHANGED) =====
         if (l.type === "bill") {
           html += `
             <div class="ledger-row">
@@ -409,7 +409,6 @@ async function openLedger(phone) {
 
       });
 
-      // ===== PAYMENTS (FIXED PART) =====
       let payments = entries.filter(e => e.type === "payment");
 
       payments.forEach((l, index) => {
@@ -424,7 +423,7 @@ async function openLedger(phone) {
           <div class="ledger-row">
             💵 ${order} Payment (${l.method || "Cash"}) → ₹${l.amount}
 
-            <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.amount})">
+            <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.payment_id})">
               View Receipt
             </button>
           </div>

@@ -3,7 +3,6 @@
 <head>
   <title>Invoice</title>
   <link rel="stylesheet" href="invoice.css">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -18,6 +17,9 @@
 
     <!-- 🔥 DYNAMIC TITLE -->
     <h2 id="title">Invoice</h2>
+
+    <!-- ✅ NEW (INSTALLMENT INFO) -->
+    <p id="installmentInfo" style="font-weight:bold;"></p>
   </div>
 
   <!-- INFO -->
@@ -25,6 +27,11 @@
     <div class="left">
       <p><b>Customer:</b> <span id="custName"></span></p>
       <p><b>Phone:</b> <span id="custPhone"></span></p>
+
+      <!-- ✅ NEW (PAYMENT METHOD) -->
+      <p id="methodRow" style="display:none;">
+        <b>Method:</b> <span id="method"></span>
+      </p>
     </div>
 
     <div class="right">
