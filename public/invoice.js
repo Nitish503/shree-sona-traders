@@ -34,6 +34,7 @@ function renderInvoice(data) {
   const urlParams = new URLSearchParams(window.location.search);
   const paymentIndexParam = urlParams.get("paymentIndex");
 const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : null;
+console.log("DATA:", data);
 
   // =====================
   // BASIC DETAILS
@@ -107,7 +108,7 @@ const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : nu
         <b>Payment Method:</b> ${currentPayment.method || "Cash"}
       `;
 
-      document.querySelector(".summary .box").appendChild(extra);
+      document.querySelector(".summary-box").appendChild(extra);
     });
 
   } else {
