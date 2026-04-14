@@ -136,3 +136,8 @@ body {
     display: none;
   }
 }
+@media print {
+  .btns {
+    display: none;
+  }
+}
