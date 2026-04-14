@@ -35,6 +35,16 @@ function renderInvoice(data) {
   const paymentIndexParam = urlParams.get("paymentIndex");
 const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : null;
 
+// =====================
+// LOAD SIGNATURE
+// =====================
+const savedSignature = localStorage.getItem("signature");
+
+if (savedSignature) {
+  const img = document.getElementById("signatureImg");
+  img.src = savedSignature;
+  img.style.display = "block";
+}
 
   // =====================
   // BASIC DETAILS
