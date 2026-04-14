@@ -11,17 +11,29 @@ async function addRow() {
   const row = document.createElement("tr");
 
   row.innerHTML = `
-    <td>
-      <select onchange="setRate(this)">
-        <option value="">Select Item</option>
-        ${data.map(i => `<option value="${i.rate}">${i.name}</option>`).join("")}
-      </select>
-    </td>
-    <td><input type="number" min="1" oninput="calcRow(this)"></td>
-    <td><input type="number" value="0" oninput="calcRow(this)"></td>
-    <td class="rowTotal">0</td>
-    <td><button onclick="removeRow(this)">X</button></td>
-  `;
+  <td>
+    <select>${options}</select>
+  </td>
+
+  <td>
+    <input type="number" oninput="calculateTotal(this)">
+  </td>
+
+  <!-- ✅ ADD UNIT FIELD -->
+  <td>
+    <input type="text" class="unit" placeholder="Unit">
+  </td>
+
+  <td>
+    <input type="number" oninput="calculateTotal(this)">
+  </td>
+
+  <td class="total">0</td>
+
+  <td>
+    <button onclick="this.closest('tr').remove()">❌</button>
+  </td>
+`;
 
   document.getElementById("itemsTable").appendChild(row);
 }
@@ -90,17 +102,19 @@ async function createBill() {
   let items = [];
 
   rows.forEach(row => {
-    const name = row.querySelector("select").selectedOptions[0].text;
-    const qty = row.children[1].children[0].value;
-    const rate = row.children[2].children[0].value;
+const name = row.querySelector("select").selectedOptions[0].text;
+const qty = row.children[1].children[0].value;
+const unit = row.children[2].children[0].value;   // ✅ NEW
+const rate = row.children[3].children[0].value;
 
     if (!qty || !rate) return;
 
     items.push({
-      name,
-      quantity: Number(qty),
-      rate: Number(rate)
-    });
+  name,
+  quantity: Number(qty),
+  unit: unit,          // ✅ ADD THIS
+  rate: Number(rate)
+});
   });
 
   if (items.length === 0) {

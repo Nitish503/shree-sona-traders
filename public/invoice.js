@@ -62,6 +62,7 @@ const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : nu
         <td>${index + 1}</td>
         <td>${i.name}</td>
         <td>${i.quantity}</td>
+        <td>${i.unit || "-"}</td>   // ✅ SHOW UNIT
         <td>${i.rate}</td>
         <td>${total}</td>
       </tr>
