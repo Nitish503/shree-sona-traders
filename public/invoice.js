@@ -56,19 +56,25 @@ console.log("DATA:", data);
   const items = Array.isArray(data.items) ? data.items : [];
 
   items.forEach((i, index) => {
-    const total = (i.quantity || 0) * (i.rate || 0);
 
-    rowsHTML += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${i.name}</td>
-        <td>${i.quantity}</td>
-        <td>${i.unit || "-"}</td>   
-        <td>${i.rate}</td>
-        <td>${total}</td>
-      </tr>
-    `;
-  });
+  const name = i.name || i.item_name || "-";
+  const qty = i.quantity || i.qty || 0;
+  const rate = i.rate || i.price || 0;
+  const unit = i.unit || "-";
+
+  const total = qty * rate;
+
+  rowsHTML += `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${name}</td>
+      <td>${qty}</td>
+      <td>${unit}</td>
+      <td>${rate}</td>
+      <td>${total}</td>
+    </tr>
+  `;
+});
 
   document.getElementById("tableBody").innerHTML = rowsHTML;
 
