@@ -358,8 +358,8 @@ function viewInvoice(id) {
 }
 
 // ✅ UPDATED (payment_id instead of amount)
-function viewPaymentInvoice(billId, paymentId) {
-  window.open(`/invoice.html?bill_id=${billId}&payment_id=${paymentId}`, "_blank");
+function viewPaymentInvoice(billId, index) {
+  window.open(`/invoice.html?bill_id=${billId}&paymentIndex=${index}`, "_blank");
 }
 
 
@@ -423,7 +423,7 @@ async function openLedger(phone) {
           <div class="ledger-row">
             💵 ${order} Payment (${l.method || "Cash"}) → ₹${l.amount}
 
-            <button onclick="viewPaymentInvoice(${l.bill_id}, ${l.payment_id})">
+            <button onclick="viewPaymentInvoice(${l.bill_id}, ${index})">
               View Receipt
             </button>
           </div>

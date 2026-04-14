@@ -32,7 +32,7 @@ async function loadInvoice() {
 function renderInvoice(data) {
 
   const urlParams = new URLSearchParams(window.location.search);
-  const payment = Number(urlParams.get("payment")) || 0;
+  const paymentIndex = Number(urlParams.get("paymentIndex"));
 
   // =====================
   // BASIC DETAILS
@@ -72,44 +72,41 @@ function renderInvoice(data) {
   // =====================
   // PAYMENT RECEIPT LOGIC
   // =====================
-  if (payment > 0) {
+  if (!isNaN(paymentIndex)) {
 
-    document.getElementById("title").innerText = "Payment Receipt";
+  document.getElementById("title").innerText = "Payment Receipt";
 
-    fetch(`${API}/payments/${data.id}`)
-      .then(res => res.json())
-      .then(payments => {
+  fetch(`${API}/payments/${data.id}`)
+    .then(res => res.json())
+    .then(payments => {
 
-        let cumulativePaid = 0;
-        let installmentNumber = 0;
-        let paymentMethod = "Cash";
+      payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-        payments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      let paidSoFar = 0;
 
-        payments.forEach((p, index) => {
-          cumulativePaid += Number(p.amount);
-
-          if (Number(p.amount) === payment && installmentNumber === 0) {
-            installmentNumber = index + 1;
-            paymentMethod = p.method || "Cash";
-          }
-        });
-
-        const remaining = data.total - cumulativePaid;
-
-        document.getElementById("total").innerText = data.total;
-        document.getElementById("paid").innerText = payment;
-        document.getElementById("remaining").innerText = remaining;
-
-        const extra = document.createElement("p");
-        extra.innerHTML = `
-          <b>Installment:</b> ${installmentNumber}<br>
-          <b>Bill No:</b> ${data.bill_no || "#" + data.id}<br>
-          <b>Payment Method:</b> ${paymentMethod}
-        `;
-
-        document.querySelector(".summary .box").appendChild(extra);
+      payments.forEach((p, i) => {
+        if (i <= paymentIndex) {
+          paidSoFar += Number(p.amount);
+        }
       });
+
+      const currentPayment = payments[paymentIndex];
+
+      const due = data.total - paidSoFar;
+
+      document.getElementById("total").innerText = data.total;
+      document.getElementById("paid").innerText = currentPayment.amount;
+      document.getElementById("remaining").innerText = due;
+
+      const extra = document.createElement("p");
+      extra.innerHTML = `
+        <b>Installment:</b> ${paymentIndex + 1}<br>
+        <b>Bill No:</b> ${data.bill_no || "#" + data.id}<br>
+        <b>Payment Method:</b> ${currentPayment.method || "Cash"}
+      `;
+
+      document.querySelector(".summary .box").appendChild(extra);
+    });
 
   } else {
     // =====================
