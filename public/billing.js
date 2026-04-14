@@ -10,30 +10,39 @@ async function addRow() {
 
   const row = document.createElement("tr");
 
+  // ✅ CREATE OPTIONS (FIX)
+  let options = "";
+  data.forEach(item => {
+    options += `<option value="${item.rate || 0}">${item.name}</option>`;
+  });
+
   row.innerHTML = `
-  <td>
-    <select>${options}</select>
-  </td>
+    <td>
+      <select onchange="setRate(this)">
+        ${options}
+      </select>
+    </td>
 
-  <td>
-    <input type="number" oninput="calculateTotal(this)">
-  </td>
+    <td>
+      <input type="number" oninput="calcRow(this)">
+    </td>
 
-  <!-- ✅ ADD UNIT FIELD -->
-  <td>
-    <input type="text" class="unit" placeholder="Unit">
-  </td>
+    <!-- ✅ UNIT (EDITABLE) -->
+    <td>
+      <input type="text" class="unit" placeholder="Unit">
+    </td>
 
-  <td>
-    <input type="number" oninput="calculateTotal(this)">
-  </td>
+    <td>
+      <input type="number" oninput="calcRow(this)">
+    </td>
 
-  <td class="total">0</td>
+    <!-- ✅ FIX CLASS NAME -->
+    <td class="rowTotal">0</td>
 
-  <td>
-    <button onclick="this.closest('tr').remove()">❌</button>
-  </td>
-`;
+    <td>
+      <button onclick="removeRow(this)">❌</button>
+    </td>
+  `;
 
   document.getElementById("itemsTable").appendChild(row);
 }
@@ -43,7 +52,10 @@ async function addRow() {
 // =====================
 function setRate(select) {
   const row = select.closest("tr");
-  row.children[2].children[0].value = select.value;
+
+  // ✅ RATE IS NOW COLUMN 3 (AFTER UNIT)
+  row.children[3].children[0].value = select.value;
+
   calcRow(select);
 }
 
@@ -54,8 +66,9 @@ function calcRow(el) {
   const row = el.closest("tr");
 
   const qty = row.children[1].children[0].value || 0;
-  const rate = row.children[2].children[0].value || 0;
+  const rate = row.children[3].children[0].value || 0;
 
+  // ✅ FIX CLASS
   row.querySelector(".rowTotal").innerText = qty * rate;
 
   calcTotal();
