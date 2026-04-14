@@ -62,7 +62,7 @@ const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : nu
         <td>${index + 1}</td>
         <td>${i.name}</td>
         <td>${i.quantity}</td>
-        <td>${i.unit || "-"}</td>   // ✅ SHOW UNIT
+        <td>${i.unit || "-"}</td>   
         <td>${i.rate}</td>
         <td>${total}</td>
       </tr>
@@ -96,9 +96,9 @@ const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : nu
 
       const due = data.total - paidSoFar;
 
-      document.getElementById("total").innerText = data.total;
-      document.getElementById("paid").innerText = currentPayment.amount;
-      document.getElementById("remaining").innerText = due;
+      document.getElementById("total").innerText = Number(data.total) || 0;
+      document.getElementById("paid").innerText = Number(currentPayment.amount) || 0;
+      document.getElementById("remaining").innerText = Number(due) || 0;
 
       const extra = document.createElement("p");
       extra.innerHTML = `
@@ -116,9 +116,9 @@ const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : nu
     // =====================
     document.getElementById("title").innerText = "Invoice";
 
-    document.getElementById("total").innerText = data.total;
-    document.getElementById("paid").innerText = data.paid;
-    document.getElementById("remaining").innerText = data.remaining;
+    document.getElementById("total").innerText = Number(data.total) || 0;
+    document.getElementById("paid").innerText = Number(data.paid) || 0;
+    document.getElementById("remaining").innerText = Number(data.remaining) || 0;
   }
 }
 
