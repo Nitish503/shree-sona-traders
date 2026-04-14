@@ -141,3 +141,9 @@ body {
     display: none;
   }
 }
+.signature-img {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto 5px;
+}
