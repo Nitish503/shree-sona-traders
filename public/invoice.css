@@ -187,12 +187,16 @@ button {
   flex: 0 0 80px;
 }
 
-/* CENTER (FIXED OVERLAP) */
+/* CENTER (FIXED PERFECT CENTER ALIGNMENT) */
 .pdf-mode .center {
   flex: 1;
-  max-width: calc(100% - 320px);
   text-align: center;
   padding: 0 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* 🔥 THIS FIXES CENTER */
 
   line-height: 1.6;
   white-space: normal;
@@ -213,6 +217,10 @@ button {
   text-align: right;
   padding-right: 15px;
   padding-left: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* 🔥 clean right alignment */
 
   white-space: normal;
   word-break: break-word;
