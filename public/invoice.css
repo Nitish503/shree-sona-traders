@@ -193,6 +193,7 @@ button {
 @media (max-width: 768px) {
 
   .invoice {
+    zoom:0.9;
     width: 100%;
     transform: scale(0.95);
     transform-origin: top center;
