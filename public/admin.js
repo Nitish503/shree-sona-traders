@@ -59,3 +59,60 @@ async function uploadSignature() {
     alert("❌ Upload failed");
   }
 }
+
+//===============================
+// Company details function
+//==============================  
+
+async function saveCompany() {
+
+  const data = {
+    name: document.getElementById("cName").value,
+    address: document.getElementById("cAddress").value,
+    phone: document.getElementById("cPhone").value,
+    gst: document.getElementById("cGST").value,
+    email: document.getElementById("cEmail").value
+  };
+
+  try {
+    await fetch("/company", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    alert("✅ Company details saved");
+
+  } catch (err) {
+    alert("❌ Failed");
+  }
+}
+
+async function uploadLogo() {
+
+  const file = document.getElementById("logoFile").files[0];
+
+  if (!file) {
+    alert("Select logo");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res = await fetch("/upload-logo", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    document.getElementById("logoPreview").src = data.url;
+
+    alert("✅ Logo uploaded");
+
+  } catch (err) {
+    alert("Upload failed");
+  }
+}

@@ -1015,6 +1015,85 @@ app.get("/signature", async (req, res) => {
   }
 });
 
+// =====================
+// SAVE COMPANY DETAILS
+// =====================
+app.post("/company", async (req, res) => {
+  try {
+    const { name, address, phone, gst, email } = req.body;
+
+    const existing = await pool.query("SELECT * FROM company WHERE id=1");
+
+    if (existing.rows.length > 0) {
+      await pool.query(
+        "UPDATE company SET name=$1, address=$2, phone=$3, gst=$4, email=$5 WHERE id=1",
+        [name, address, phone, gst, email]
+      );
+    } else {
+      await pool.query(
+        "INSERT INTO company (id, name, address, phone, gst, email) VALUES (1,$1,$2,$3,$4,$5)",
+        [name, address, phone, gst, email]
+      );
+    }
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// =====================
+// GET COMPANY DETAILS
+// =====================
+app.get("/company", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM company WHERE id=1");
+    res.json(result.rows[0] || {});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================
+// UPLOAD COMPANY LOGO
+// =====================
+app.post("/upload-logo", upload.single("image"), async (req, res) => {
+  try {
+    const imageUrl = req.file.path;
+
+    const existing = await pool.query("SELECT logo FROM company WHERE id=1");
+
+    const oldUrl = existing.rows[0]?.logo;
+
+    // 🔥 delete old logo from Cloudinary
+    if (oldUrl) {
+      const publicId = getPublicId(oldUrl);
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    if (existing.rows.length > 0) {
+      await pool.query(
+        "UPDATE company SET logo=$1 WHERE id=1",
+        [imageUrl]
+      );
+    } else {
+      await pool.query(
+        "INSERT INTO company (id, logo) VALUES (1, $1)",
+        [imageUrl]
+      );
+    }
+
+    res.json({ success: true, url: imageUrl });
+
+  } catch (err) {
+    console.error("Logo upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------

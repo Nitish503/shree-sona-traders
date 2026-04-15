@@ -49,6 +49,29 @@ fetch(`${API}/signature`)
   });
 
   // =====================
+// LOAD COMPANY DETAILS plus logo
+// =====================
+
+fetch(`${API}/company`)
+  .then(res => res.json())
+  .then(c => {
+
+    document.getElementById("c_name").innerText = c.name || "";
+    document.getElementById("c_address").innerText = c.address || "";
+    document.getElementById("c_phone").innerText = c.phone || "";
+    document.getElementById("c_gst").innerText = c.gst || "";
+
+    // ✅ LOAD LOGO
+    if (c.logo) {
+      const logo = document.getElementById("companyLogo");
+      logo.src = c.logo;
+      logo.style.display = "block";
+    }
+
+  });
+
+
+  // =====================
   // BASIC DETAILS
   // =====================
   document.getElementById("custName").innerText = data.customer_name || "-";

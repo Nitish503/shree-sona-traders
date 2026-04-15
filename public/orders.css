@@ -43,3 +43,7 @@ h2 {
   padding: 6px 10px;
   cursor: pointer;
 }
+.logo {
+  max-width: 100px;
+  height: auto;
+}
