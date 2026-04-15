@@ -171,7 +171,6 @@ button {
   border-radius: 4px;
 }
 
-/* 🔥 PDF FORCE LAYOUT FIX */
 /* ======================
    🔥 PDF MODE FINAL FIX
 ====================== */
@@ -236,77 +235,57 @@ button {
 }
 
 /* ======================
-   PRINT FIX (IMPORTANT)
+   🔥 FINAL PDF FIX (STRONG)
 ====================== */
 @media print {
 
-  body {
-    background: white;
-  }
-
-  .btns {
-    display: none;
-  }
-
-  .invoice {
-    width: 100%;
-    border: none;
-    margin: 0;
-    padding: 6px;
-    page-break-inside: avoid;
-  }
-
-  /* ✅ FIX HEADER (NO SHRINK, NO OVERLAP) */
   .top-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 15px !important;
+    padding: 10px !important;
   }
 
+  /* LEFT LOGO */
   .left {
-    width: 80px;
-    flex-shrink: 0;
+    flex: 0 0 80px;
   }
 
+  /* CENTER CONTENT */
   .center {
     flex: 1;
     text-align: center;
-    padding: 0 10px;
-    line-height: 1.5;
-    min-width: 0; /* 🔥 important */
-  }
-
-  .right {
-    width: 200px;
-    flex-shrink: 0; /* 🔥 prevent cutting */
-    text-align: right;
-    padding-right: 12px;
     line-height: 1.6;
-
-    /* 🔥 VERY IMPORTANT FIX */
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    padding: 0 10px;
   }
 
-  /* ✅ FONT CONTROL */
   .center h2 {
-    font-size: 15px;
+    font-size: 16px;
+    margin-bottom: 4px;
   }
 
   .center p {
     font-size: 11px;
+    margin: 2px 0;
+    white-space: normal;
+    word-break: break-word;
   }
 
+  /* RIGHT SIDE (EMAIL + STATE) */
   .right {
+    flex: 0 0 200px;
+    text-align: right;
     font-size: 11px;
+    line-height: 1.6;
+    padding-right: 12px;
+    white-space: normal;
+    word-break: break-word;
   }
 
-  /* 🔥 EXTRA SAFETY (NO TEXT CUT) */
-  .top-box * {
-    white-space: normal !important;
-  }
 }
+
+
 /* ======================
    MOBILE FIX (RECTANGLE LAYOUT)
 ====================== */
