@@ -176,9 +176,9 @@ button {
 
 .pdf-mode .top-box {
   display: grid !important;
-  grid-template-columns: 90px auto 220px;
+  grid-template-columns: 120px 1fr 120px;
   align-items: center;
-  column-gap: 15px;
+  column-gap: 10px;
 }
 
 /* LEFT */
@@ -194,33 +194,25 @@ button {
 
   line-height: 1.6;
   white-space: normal;
+
   word-break: break-word;
   overflow-wrap: break-word;
 
-  justify-self: center;   /* 🔥 THIS IS THE REAL CENTER FIX */
-}
+  justify-self: center;
 
-.pdf-mode .center * {
-  display: block;
-  width: 100%;
+  max-width: 100%;
 }
 
 /* RIGHT (EMAIL FIX) */
 .pdf-mode .right {
-  width: 220px;
-
+  width: 120px;
   text-align: right;
-  padding-right: 15px;
-  padding-left: 10px;
-
-  /* ❌ REMOVE FLEX (this was breaking alignment) */
-  display: block;
+  padding-right: 10px;
 
   white-space: normal;
   word-break: break-word;
-  overflow-wrap: break-word;
 
-  justify-self: end; /* 🔥 IMPORTANT for grid */
+  justify-self: end;
 }
 
 /* ======================
