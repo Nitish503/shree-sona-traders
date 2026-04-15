@@ -188,17 +188,78 @@ button {
 }
 
 /* ======================
-   MOBILE (VIEW ONLY)
+   MOBILE FIX (RECTANGLE LAYOUT)
 ====================== */
 @media (max-width: 768px) {
 
   .invoice {
     width: 100%;
-    transform: scale(0.9);
+    transform: scale(0.95);
     transform-origin: top center;
+    overflow-x: auto;
   }
 
-  .btns {
-    margin-bottom: 20px;
+  /* 🔥 FIX HEADER BREAKING */
+  .top-box {
+    grid-template-columns: 70px 1fr 120px;
+    gap: 5px;
   }
+
+  .logo {
+    width: 60px;
+    height: 70px;
+  }
+
+  .center h2 {
+    font-size: 14px;
+  }
+
+  .center p {
+    font-size: 11px;
+  }
+
+  /* 🔥 FIX EMAIL/STATE OVERFLOW */
+  .right {
+    font-size: 10px;
+    word-break: break-word;
+    text-align: right;
+  }
+
+  /* 🔥 FIX BILL SECTION */
+  .details-box {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bill-to,
+  .invoice-info {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  /* 🔥 TABLE FIX */
+  .main-table th,
+  .main-table td {
+    font-size: 10px;
+    padding: 4px;
+  }
+
+  /* 🔥 BOTTOM FIX */
+  .bottom-section {
+    grid-template-columns: 55% 45%;
+  }
+
+  .left-footer,
+  .summary-box,
+  .sign {
+    font-size: 11px;
+  }
+
+  /* 🔥 BUTTON FIX */
+  button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
+.invoice {
+  zoom: 0.9;
 }
