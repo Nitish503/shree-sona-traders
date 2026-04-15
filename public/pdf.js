@@ -14,7 +14,10 @@ async function sharePDF(event) {
     return;
   }
 
-  // ✅ TEMP FIX FOR PDF RENDERING (important)
+  // ✅ APPLY PDF MODE (IMPORTANT FIX)
+  element.classList.add("pdf-mode");
+
+  // ✅ TEMP FIX FOR PDF RENDERING
   element.style.transform = "scale(1)";
   element.style.zoom = "1";
 
@@ -45,7 +48,7 @@ async function sharePDF(event) {
 
   try {
 
-    // ✅ Generate PDF properly
+    // ✅ Generate PDF
     const worker = html2pdf().from(element).set(opt);
     const pdf = await worker.toPdf().get('pdf');
 
@@ -75,7 +78,8 @@ async function sharePDF(event) {
     alert("Sharing failed or cancelled");
   } finally {
 
-    // 🔁 Restore UI
+    // 🔁 RESTORE UI (IMPORTANT)
+    element.classList.remove("pdf-mode");
     element.style.transform = "";
     element.style.zoom = "";
 
