@@ -7,13 +7,14 @@ body {
   background: linear-gradient(135deg, #eef2f7, #d9e4f5);
   min-height: 100vh;
   display: flex;
+  font-size: 16px; /* 🔥 Bigger text */
 }
 
 /* =====================
    SIDEBAR
 ===================== */
 .admin-menu {
-  width: 220px;
+  width: 240px; /* 🔥 slightly bigger */
   background: #1e2a38;
   color: white;
   height: 100vh;
@@ -30,55 +31,60 @@ body {
 }
 
 .admin-menu li {
-  margin: 10px 0;
+  margin: 12px 0;
 }
 
 .admin-menu a {
   color: white;
   text-decoration: none;
   display: block;
-  padding: 12px 20px;
+  padding: 14px 22px;
+  font-size: 16px;
   transition: 0.3s;
 }
 
 .admin-menu a:hover {
   background: #2d3e50;
-  padding-left: 25px;
+  padding-left: 28px;
 }
 
 /* =====================
    DASHBOARD
 ===================== */
 .dashboard {
-  margin-left: 220px;
-  padding: 20px;
+  margin-left: 240px;
+  padding: 25px;
   flex: 1;
+  max-width: 1200px; /* 🔥 wider layout */
+  width: 100%;
+  margin-right: auto;
   animation: fadeIn 0.5s ease;
 }
 
 /* =====================
-   MENU BUTTON (MOBILE)
+   MENU BUTTON
 ===================== */
 .menu-toggle {
   display: none;
   background: #2d89ef;
   color: white;
   border: none;
-  padding: 10px;
-  font-size: 18px;
+  padding: 10px 14px;
+  font-size: 20px;
   border-radius: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 /* =====================
    HEADINGS
 ===================== */
 h1 {
-  margin-top: 0;
+  font-size: 26px;
 }
 
 h3 {
-  margin-top: 25px;
+  margin-top: 30px;
+  font-size: 20px;
 }
 
 /* =====================
@@ -86,24 +92,42 @@ h3 {
 ===================== */
 .card-container {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   flex-wrap: wrap;
   margin-top: 20px;
 }
 
 .card {
   flex: 1;
-  min-width: 180px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
   transition: 0.3s;
 }
 
+.card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.card p {
+  margin-top: 8px;
+  color: #555;
+}
+
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+}
+
+/* =====================
+   FORM SECTIONS
+===================== */
+.dashboard input,
+.dashboard button {
+  max-width: 500px;
 }
 
 /* =====================
@@ -111,29 +135,33 @@ h3 {
 ===================== */
 input {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
+  margin-bottom: 10px;
+  font-size: 15px;
   transition: 0.2s;
 }
 
 input:focus {
   border-color: #2d89ef;
-  box-shadow: 0 0 5px rgba(45, 137, 239, 0.3);
+  box-shadow: 0 0 6px rgba(45, 137, 239, 0.3);
 }
 
 /* =====================
    BUTTONS
 ===================== */
 button {
-  padding: 10px 15px;
+  padding: 12px 18px;
   background: linear-gradient(135deg, #2d89ef, #1b6fd6);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 15px;
   transition: 0.3s;
+  margin-top: 5px;
 }
 
 button:hover {
@@ -145,7 +173,7 @@ button:hover {
 ===================== */
 img {
   margin-top: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 /* =====================
@@ -154,21 +182,21 @@ img {
 footer {
   position: fixed;
   bottom: 0;
-  left: 220px;
+  left: 240px;
   right: 0;
   text-align: center;
   background: #1e2a38;
   color: white;
-  padding: 10px;
+  padding: 12px;
 }
 
 /* =====================
-   ANIMATIONS
+   ANIMATION
 ===================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -181,8 +209,13 @@ footer {
 ===================== */
 @media (max-width: 768px) {
 
+  body {
+    font-size: 15px;
+  }
+
   .admin-menu {
     transform: translateX(-100%);
+    width: 220px;
     z-index: 1000;
   }
 
@@ -192,6 +225,7 @@ footer {
 
   .dashboard {
     margin-left: 0;
+    padding: 15px;
   }
 
   .menu-toggle {
@@ -200,5 +234,19 @@ footer {
 
   footer {
     left: 0;
+  }
+
+  /* 🔥 STACK CARDS */
+  .card-container {
+    flex-direction: column;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  /* 🔥 FULL WIDTH INPUTS */
+  input, button {
+    width: 100%;
   }
 }

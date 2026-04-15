@@ -9,12 +9,12 @@ async function sharePDF() {
   const element = document.querySelector(".invoice");
 
   const opt = {
-    margin: 0.3,
-    filename: `Invoice_${document.getElementById("billNo").innerText}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
+  margin: 5,
+  filename: 'invoice.pdf',
+  image: { type: 'jpeg', quality: 1 },
+  html2canvas: { scale: 2 },
+  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+};
 
   const btn = event.target;
   btn.innerText = "Generating...";

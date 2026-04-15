@@ -4,19 +4,23 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f5f5f5;
+  background: #eee;
 }
 
-/* MAIN CONTAINER */
+/* =====================
+   MAIN INVOICE
+===================== */
 .invoice {
-  max-width: 900px;
+  width: 800px;
   margin: auto;
   background: #fff;
   padding: 15px;
   border: 2px solid #000;
 }
 
-/* TITLE */
+/* =====================
+   TITLE
+===================== */
 .title {
   text-align: center;
   margin-bottom: 10px;
@@ -27,35 +31,37 @@ body {
 ===================== */
 .top-box {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   border: 1px solid #000;
   padding: 10px;
 }
 
-.left {
-  width: 20%;
+/* LEFT IMAGE */
+.left img {
+  width: 90px;
+  height: 110px;
+  object-fit: cover;
 }
 
-.logo {
-  width: 100%;
-  max-width: 80px;
-  object-fit: contain;
-}
-
+/* CENTER */
 .center {
-  width: 50%;
+  flex: 1;
   text-align: center;
 }
 
 .center h2 {
-  margin: 0;
+  margin: 5px 0;
 }
 
-.right {
-  width: 30%;
-  text-align: right;
+.center p {
+  margin: 2px 0;
   font-size: 14px;
+}
+
+/* RIGHT */
+.right {
+  text-align: right;
+  font-size: 13px;
 }
 
 /* =====================
@@ -63,19 +69,19 @@ body {
 ===================== */
 .details-box {
   display: flex;
-  justify-content: space-between;
   border: 1px solid #000;
   border-top: none;
-  padding: 10px;
 }
 
 .bill-to {
-  width: 50%;
+  width: 60%;
+  padding: 10px;
+  border-right: 1px solid #000;
 }
 
 .invoice-info {
-  width: 50%;
-  text-align: right;
+  width: 40%;
+  padding: 10px;
 }
 
 /* =====================
@@ -91,12 +97,12 @@ body {
 .main-table td {
   border: 1px solid #000;
   padding: 6px;
+  font-size: 13px;
   text-align: center;
-  font-size: 14px;
 }
 
 .main-table th {
-  background: #eee;
+  background: #f5f5f5;
 }
 
 /* =====================
@@ -104,69 +110,75 @@ body {
 ===================== */
 .bottom-section {
   display: flex;
-  justify-content: space-between;
   margin-top: 10px;
-  gap: 10px;
 }
 
-/* LEFT FOOTER */
+/* LEFT */
 .left-footer {
   width: 60%;
+  border: 1px solid #000;
+  padding: 10px;
 }
 
-/* RIGHT SIDE */
+/* RIGHT */
 .right-box {
   width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  margin-left: 10px;
 }
 
-/* SUMMARY */
+/* =====================
+   SUMMARY
+===================== */
 .summary-box {
   border: 1px solid #000;
   padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
+  font-size: 14px;
 }
 
-/* SIGNATURE */
+.summary-box p {
+  margin: 5px 0;
+}
+
+/* =====================
+   SIGNATURE
+===================== */
 .sign {
+  border: 1px solid #000;
+  border-top: none;
   text-align: center;
-  margin-top: 10px;
+  padding: 10px;
 }
 
 .signature-img {
   max-width: 120px;
-  max-height: 60px;
-  object-fit: contain;
+  margin-bottom: 5px;
 }
 
 /* =====================
-   BUTTONS
+   BUTTONS (HIDE IN PRINT)
 ===================== */
 .btns {
   text-align: center;
   margin-top: 10px;
 }
 
-.btns button {
-  padding: 10px 15px;
+button {
+  padding: 8px 12px;
   margin: 5px;
   border: none;
   background: #2d89ef;
-  color: #fff;
+  color: white;
   border-radius: 5px;
   cursor: pointer;
 }
 
 /* =====================
-   MOBILE RESPONSIVE
+   MOBILE VIEW
 ===================== */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
 
   .invoice {
-    padding: 10px;
+    width: 100%;
     border: none;
   }
 
@@ -175,45 +187,22 @@ body {
     text-align: center;
   }
 
-  .left, .center, .right {
-    width: 100%;
-    text-align: center;
-  }
-
-  .right {
-    margin-top: 5px;
-  }
-
   .details-box {
     flex-direction: column;
-  }
-
-  .invoice-info {
-    text-align: left;
-    margin-top: 10px;
   }
 
   .bottom-section {
     flex-direction: column;
   }
 
-  .left-footer,
   .right-box {
-    width: 100%;
-  }
-
-  .summary-box {
-    width: 100%;
-  }
-
-  .btns {
-    display: flex;
-    flex-direction: column;
+    margin-left: 0;
+    margin-top: 10px;
   }
 }
 
 /* =====================
-   PRINT (PDF + A4)
+   PRINT (🔥 IMPORTANT)
 ===================== */
 @media print {
 
@@ -222,17 +211,16 @@ body {
   }
 
   .invoice {
-    border: none;
     width: 100%;
-    margin: 0;
+    border: none;
   }
 
   .btns {
     display: none;
   }
 
-  @page {
-    size: A4;
-    margin: 10mm;
+  /* Prevent page break */
+  .invoice {
+    page-break-inside: avoid;
   }
 }

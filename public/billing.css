@@ -3,45 +3,83 @@
 ===================== */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-}
-
-/* MAIN CONTAINER */
-.container {
-  max-width: 900px;
-  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #d9e4f5);
   padding: 15px;
 }
 
-/* HEADINGS */
-h2 {
-  margin-top: 10px;
+/* =====================
+   CONTAINER
+===================== */
+.container {
+  max-width: 900px;
+  margin: auto;
 }
 
-h3 {
-  margin-top: 10px;
+/* =====================
+   HEADINGS
+===================== */
+h2 {
+  margin-top: 20px;
+}
+
+.section-title {
+  margin-top: 25px;
+  font-size: 22px;
+}
+
+.pending {
+  color: #e69500;
+}
+
+.completed {
+  color: #2e8b57;
 }
 
 /* =====================
    INPUTS
 ===================== */
-.top-inputs input,
-.filters input,
-.filters select,
-.top-inputs select {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+input, select {
   width: 100%;
-  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  font-size: 15px;
+  transition: 0.2s;
 }
 
-/* FLEX INPUTS */
-.top-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+input:focus, select:focus {
+  border-color: #2d89ef;
+  box-shadow: 0 0 6px rgba(45, 137, 239, 0.3);
+}
+
+/* =====================
+   BUTTONS (MAIN)
+===================== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #2d89ef, #1b6fd6);
+  color: white;
+}
+
+.btn.add {
+  background: #28a745;
+  color: white;
+}
+
+.btn:hover {
+  transform: scale(1.03);
 }
 
 /* =====================
@@ -50,121 +88,113 @@ h3 {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  background: #fff;
+  margin-top: 15px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 th, td {
+  padding: 10px;
   border: 1px solid #ddd;
-  padding: 8px;
   text-align: center;
-  font-size: 14px;
 }
 
 th {
-  background: #2c3e50;
-  color: white;
+  background: #f4f6f9;
 }
 
 /* =====================
-   BUTTONS
-===================== */
-.btn {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* BUTTON COLORS */
-.btn.add {
-  background: #27ae60;
-  color: white;
-  width: 100%;
-}
-
-.btn.primary {
-  background: #2980b9;
-  color: white;
-  width: 100%;
-}
-
-/* =====================
-   FILTERS
-===================== */
-.filters {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* =====================
-   SECTION TITLES
-===================== */
-.section-title {
-  margin-top: 20px;
-  font-weight: bold;
-}
-
-.section-title.pending {
-  color: #e67e22;
-}
-
-.section-title.completed {
-  color: #27ae60;
-}
-
-/* =====================
-   CARDS
+   CARDS (CUSTOMER)
 ===================== */
 .cards {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .card {
-  background: white;
-  padding: 12px;
-  border-radius: 8px;
-  border-left: 5px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border-left: 6px solid #ffa500;
 }
 
-.card.pending {
-  border-left-color: #f39c12;
+.card h3 {
+  margin: 0 0 10px;
 }
 
-.card.completed {
-  border-left-color: #2ecc71;
-}
-
-/* CARD TEXT */
 .card p {
   margin: 5px 0;
 }
 
-/* CARD BUTTONS */
-.card .actions {
+/* =====================
+   CARD BUTTONS (🔥 FIXED)
+===================== */
+.card button {
+  width: 100%;
+  padding: 10px;
   margin-top: 8px;
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.card button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 12px;
+/* Different styles */
+.card .view-btn {
+  background: #3498db;
+  color: white;
+}
+
+.card .history-btn {
+  background: #6c5ce7;
+  color: white;
+}
+
+.card .ledger-btn {
+  background: #00b894;
+  color: white;
+}
+
+.card .delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Hover */
+.card button:hover {
+  transform: scale(1.05);
 }
 
 /* =====================
-   MODAL
+   PAY SECTION
+===================== */
+.pay-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pay-section input {
+  flex: 2;
+}
+
+.pay-section select {
+  flex: 1;
+}
+
+.pay-section button {
+  flex: 1;
+  background: #27ae60;
+  color: white;
+  border-radius: 8px;
+}
+
+/* =====================
+   MODAL (LEDGER / HISTORY)
 ===================== */
 .modal {
   display: none;
@@ -174,49 +204,81 @@ th {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
+  z-index: 1000;
 }
 
 .modal-content {
   background: white;
-  margin: 10% auto;
-  padding: 15px;
   width: 90%;
   max-width: 500px;
-  border-radius: 8px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 15px;
+  animation: fadeIn 0.3s ease;
 }
 
 /* =====================
-   MOBILE OPTIMIZATION
+   LEDGER ITEMS (🔥 IMPROVED)
+===================== */
+.modal-content div {
+  margin-bottom: 10px;
+}
+
+.modal-content button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #2d89ef;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+/* =====================
+   FILTERS
+===================== */
+.filters {
+  margin-top: 20px;
+}
+
+/* =====================
+   ANIMATION
+===================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================
+   MOBILE
 ===================== */
 @media (max-width: 600px) {
 
-  .container {
+  body {
     padding: 10px;
   }
 
-  /* TABLE SCROLL FIX */
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+  .container {
+    width: 100%;
   }
 
-  th, td {
-    font-size: 12px;
-    padding: 6px;
+  .card {
+    padding: 15px;
   }
 
-  /* BUTTON FULL WIDTH */
   .btn {
-    width: 100%;
+    font-size: 15px;
   }
 
-  /* CARD ACTIONS STACK */
-  .card .actions {
+  /* STACK PAY */
+  .pay-section {
     flex-direction: column;
-  }
-
-  .card button {
-    width: 100%;
   }
 }
