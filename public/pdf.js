@@ -1,6 +1,5 @@
 async function sharePDF(event) {
 
-  // 🔐 Check library
   if (typeof html2pdf === "undefined") {
     alert("PDF service not loaded. Please refresh.");
     return;
@@ -8,16 +7,17 @@ async function sharePDF(event) {
 
   const element = document.querySelector(".invoice");
 
-  // 🔒 Safety check
   if (!element) {
     alert("Invoice not found");
     return;
   }
 
-  // ✅ APPLY PDF MODE (IMPORTANT FIX)
+  // ✅ APPLY PDF MODE
   element.classList.add("pdf-mode");
 
-  // ✅ TEMP FIX FOR PDF RENDERING
+  // 🔥 WAIT FOR CSS TO APPLY (VERY IMPORTANT)
+  await new Promise(resolve => setTimeout(resolve, 300));
+
   element.style.transform = "scale(1)";
   element.style.zoom = "1";
 
@@ -25,17 +25,17 @@ async function sharePDF(event) {
     margin: 5,
     filename: 'invoice.pdf',
     image: { type: 'jpeg', quality: 1 },
-    html2canvas: { 
+    html2canvas: {
       scale: 3,
       useCORS: true,
       scrollY: 0
     },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'a4', 
-      orientation: 'portrait' 
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
     },
-    pagebreak: { 
+    pagebreak: {
       mode: ['avoid-all', 'css', 'legacy']
     }
   };
@@ -48,7 +48,6 @@ async function sharePDF(event) {
 
   try {
 
-    // ✅ Generate PDF
     const worker = html2pdf().from(element).set(opt);
     const pdf = await worker.toPdf().get('pdf');
 
@@ -58,7 +57,6 @@ async function sharePDF(event) {
       type: "application/pdf"
     });
 
-    // 📱 Mobile Share
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
@@ -66,7 +64,6 @@ async function sharePDF(event) {
         text: 'Here is your invoice'
       });
     } else {
-      // 💻 Desktop fallback
       const link = document.createElement("a");
       link.href = URL.createObjectURL(pdfBlob);
       link.download = "invoice.pdf";
@@ -78,7 +75,6 @@ async function sharePDF(event) {
     alert("Sharing failed or cancelled");
   } finally {
 
-    // 🔁 RESTORE UI (IMPORTANT)
     element.classList.remove("pdf-mode");
     element.style.transform = "";
     element.style.zoom = "";

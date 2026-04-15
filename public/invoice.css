@@ -8,7 +8,7 @@ body {
 }
 
 .invoice {
-  width: 794px; /* A4 width */
+  width: 794px;
   margin: auto;
   background: #fff;
   border: 1px solid #000;
@@ -27,7 +27,7 @@ body {
 }
 
 /* ======================
-   HEADER (STRICT ROW)
+   HEADER
 ====================== */
 .top-box {
   display: grid;
@@ -38,7 +38,6 @@ body {
   column-gap: 10px;
 }
 
-/* LOGO */
 .logo {
   width: 80px;
   height: 90px;
@@ -72,7 +71,7 @@ body {
 }
 
 /* ======================
-   BILL DETAILS (2 BOX)
+   BILL DETAILS
 ====================== */
 .details-box {
   display: grid;
@@ -113,7 +112,7 @@ body {
 }
 
 /* ======================
-   BOTTOM SECTION
+   BOTTOM
 ====================== */
 .bottom-section {
   display: grid;
@@ -121,26 +120,22 @@ body {
   margin-top: 5px;
 }
 
-/* TERMS */
 .left-footer {
   border: 1px solid #000;
   padding: 8px;
   font-size: 12px;
 }
 
-/* RIGHT SIDE */
 .right-box {
   margin-left: 5px;
 }
 
-/* SUMMARY */
 .summary-box {
   border: 1px solid #000;
   padding: 8px;
   font-size: 12px;
 }
 
-/* SIGN */
 .sign {
   border: 1px solid #000;
   border-top: none;
@@ -150,8 +145,6 @@ body {
 
 .signature-img {
   max-width: 120px;
-  height: auto;
-  margin-bottom: 5px;
 }
 
 /* ======================
@@ -172,122 +165,61 @@ button {
 }
 
 /* ======================
-   🔥 PDF MODE FINAL FIX
+   🔥 FINAL PDF FIX (ONLY ADD)
 ====================== */
+
+.pdf-mode .invoice {
+  width: 794px !important;
+  max-width: 794px !important;
+  overflow: hidden;
+}
 
 .pdf-mode .top-box {
   display: flex !important;
   justify-content: space-between;
-  align-items: flex-start; /* 🔥 prevent vertical squeeze */
-  gap: 15px;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-/* LEFT (LOGO) */
+/* LEFT */
 .pdf-mode .left {
-  width: 80px;
-  flex-shrink: 0;
+  width: 80px !important;
+  flex: 0 0 80px;
 }
 
-/* CENTER (COMPANY DETAILS) */
+/* CENTER (FIXED OVERLAP) */
 .pdf-mode .center {
   flex: 1;
+  max-width: calc(100% - 320px);
   text-align: center;
   padding: 0 10px;
 
-  /* 🔥 MAIN FIX FOR OVERLAP */
   line-height: 1.6;
+  white-space: normal;
   word-break: break-word;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+.pdf-mode .center * {
   display: block;
-  min-width: 0;
+  width: 100%;
 }
 
-.pdf-mode .center h2 {
-  font-size: 15px;
-  margin: 2px 0;
-}
-
-.pdf-mode .center p {
-  font-size: 11px;
-  margin: 3px 0; /* 🔥 spacing between lines */
-  line-height: 1.6;
-}
-
-/* RIGHT (EMAIL + STATE) */
+/* RIGHT (EMAIL FIX) */
 .pdf-mode .right {
   width: 220px;
-  flex-shrink: 0;
+  flex: 0 0 220px;
+
   text-align: right;
+  padding-right: 15px;
+  padding-left: 10px;
 
-  padding-right: 12px;
-  padding-left: 5px;
-
-  line-height: 1.6;
-  font-size: 11px;
-
+  white-space: normal;
   word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-/* EXTRA SAFETY */
-.pdf-mode .top-box * {
-  white-space: normal !important;
 }
 
 /* ======================
-   🔥 FINAL PDF FIX (STRONG)
-====================== */
-@media print {
-
-  .top-box {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 15px !important;
-    padding: 10px !important;
-  }
-
-  /* LEFT LOGO */
-  .left {
-    flex: 0 0 80px;
-  }
-
-  /* CENTER CONTENT */
-  .center {
-    flex: 1;
-    text-align: center;
-    line-height: 1.6;
-    padding: 0 10px;
-  }
-
-  .center h2 {
-    font-size: 16px;
-    margin-bottom: 4px;
-  }
-
-  .center p {
-    font-size: 11px;
-    margin: 2px 0;
-    white-space: normal;
-    word-break: break-word;
-  }
-
-  /* RIGHT SIDE (EMAIL + STATE) */
-  .right {
-    flex: 0 0 200px;
-    text-align: right;
-    font-size: 11px;
-    line-height: 1.6;
-    padding-right: 12px;
-    white-space: normal;
-    word-break: break-word;
-  }
-
-}
-
-
-/* ======================
-   MOBILE FIX (RECTANGLE LAYOUT)
+   MOBILE
 ====================== */
 @media (max-width: 768px) {
 
@@ -296,12 +228,10 @@ button {
     width: 100%;
     transform: scale(0.95);
     transform-origin: top center;
-    overflow-x: auto;
   }
 
   .top-box {
     grid-template-columns: 70px 1fr 120px;
-    gap: 5px;
   }
 
   .logo {
@@ -324,21 +254,9 @@ button {
   .main-table th,
   .main-table td {
     font-size: 10px;
-    padding: 4px;
   }
 
   .bottom-section {
     grid-template-columns: 55% 45%;
-  }
-
-  .left-footer,
-  .summary-box,
-  .sign {
-    font-size: 11px;
-  }
-
-  button {
-    font-size: 11px;
-    padding: 6px 10px;
   }
 }
