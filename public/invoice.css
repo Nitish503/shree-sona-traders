@@ -166,6 +166,37 @@ button {
 }
 
 /* ======================
+   🔥 PDF OVERLAP FIX (ADD HERE)
+====================== */
+
+/* Fix text overlapping */
+.center {
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.center h2 {
+  line-height: 1.3;
+}
+
+.center p {
+  line-height: 1.4;
+}
+
+/* Fix right section (email/state touching border) */
+.right {
+  padding-left: 8px;
+  padding-right: 5px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Add spacing between columns */
+.top-box {
+  column-gap: 10px;
+}
+
+/* ======================
    PRINT FIX (IMPORTANT)
 ====================== */
 @media print {
@@ -186,6 +217,24 @@ button {
     page-break-inside: avoid;
   }
 }
+
+/* 🔥 PDF HEADER FIX */
+  .top-box {
+    grid-template-columns: 90px 1fr 200px;
+  }
+
+  .right {
+    font-size: 11px;
+    padding-right: 6px;
+  }
+
+  .center h2 {
+    font-size: 16px;
+  }
+
+  .center p {
+    font-size: 11px;
+  }
 
 /* ======================
    MOBILE FIX (RECTANGLE LAYOUT)

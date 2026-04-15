@@ -8,14 +8,34 @@ async function sharePDF(event) {
 
   const element = document.querySelector(".invoice");
 
-   const opt = {
-  margin: 5,
-  filename: 'invoice.pdf',
-  image: { type: 'jpeg', quality: 1 },
-  html2canvas: { scale: 3, useCORS: true },
-  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-  pagebreak: { mode: ['avoid-all'] }
-};
+  // 🔒 Safety check
+  if (!element) {
+    alert("Invoice not found");
+    return;
+  }
+
+  // ✅ TEMP FIX FOR PDF RENDERING (important)
+  element.style.transform = "scale(1)";
+  element.style.zoom = "1";
+
+  const opt = {
+    margin: 5,
+    filename: 'invoice.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { 
+      scale: 3,
+      useCORS: true,
+      scrollY: 0
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait' 
+    },
+    pagebreak: { 
+      mode: ['avoid-all', 'css', 'legacy']
+    }
+  };
 
   const btn = event?.target;
   if (btn) {
@@ -25,12 +45,9 @@ async function sharePDF(event) {
 
   try {
 
-    // ✅ FIXED WAY (important)
-    const pdf = await html2pdf()
-      .from(element)
-      .set(opt)
-      .toPdf()
-      .get('pdf');
+    // ✅ Generate PDF properly
+    const worker = html2pdf().from(element).set(opt);
+    const pdf = await worker.toPdf().get('pdf');
 
     const pdfBlob = pdf.output('blob');
 
@@ -38,7 +55,7 @@ async function sharePDF(event) {
       type: "application/pdf"
     });
 
-    // 📱 Mobile share
+    // 📱 Mobile Share
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
@@ -46,7 +63,7 @@ async function sharePDF(event) {
         text: 'Here is your invoice'
       });
     } else {
-      // 💻 fallback download
+      // 💻 Desktop fallback
       const link = document.createElement("a");
       link.href = URL.createObjectURL(pdfBlob);
       link.download = "invoice.pdf";
@@ -57,6 +74,11 @@ async function sharePDF(event) {
     console.error("Share failed:", err);
     alert("Sharing failed or cancelled");
   } finally {
+
+    // 🔁 Restore UI
+    element.style.transform = "";
+    element.style.zoom = "";
+
     if (btn) {
       btn.innerText = "📤 Share PDF";
       btn.disabled = false;
