@@ -1,6 +1,6 @@
-async function sharePDF() {
+async function sharePDF(event) {
 
-  // 🔐 safety check
+  // 🔐 Check library
   if (typeof html2pdf === "undefined") {
     alert("PDF service not loaded. Please refresh.");
     return;
@@ -9,36 +9,43 @@ async function sharePDF() {
   const element = document.querySelector(".invoice");
 
   const opt = {
-  margin: 5,
-  filename: 'invoice.pdf',
-  image: { type: 'jpeg', quality: 1 },
-  html2canvas: { scale: 2 },
-  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-};
+    margin: 5,
+    filename: 'invoice.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
 
-  const btn = event.target;
-  btn.innerText = "Generating...";
-  btn.disabled = true;
+  const btn = event?.target;
+  if (btn) {
+    btn.innerText = "Generating...";
+    btn.disabled = true;
+  }
 
   try {
-    const pdfBlob = await html2pdf()
+
+    // ✅ FIXED WAY (important)
+    const pdf = await html2pdf()
       .from(element)
       .set(opt)
-      .outputPdf('blob');
+      .toPdf()
+      .get('pdf');
+
+    const pdfBlob = pdf.output('blob');
 
     const file = new File([pdfBlob], "invoice.pdf", {
       type: "application/pdf"
     });
 
     // 📱 Mobile share
-    if (navigator.share) {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
         title: 'Invoice',
         text: 'Here is your invoice'
       });
     } else {
-      // 💻 Desktop fallback
+      // 💻 fallback download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(pdfBlob);
       link.download = "invoice.pdf";
@@ -46,9 +53,12 @@ async function sharePDF() {
     }
 
   } catch (err) {
-    console.log("Share cancelled or failed");
+    console.error("Share failed:", err);
+    alert("Sharing failed or cancelled");
   } finally {
-    btn.innerText = "📤 Share PDF";
-    btn.disabled = false;
+    if (btn) {
+      btn.innerText = "📤 Share PDF";
+      btn.disabled = false;
+    }
   }
 }

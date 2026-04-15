@@ -1,72 +1,81 @@
-/* =====================
+/* ======================
    GLOBAL
-===================== */
+====================== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #eee;
+  background: #f5f5f5;
 }
 
-/* =====================
+/* ======================
    MAIN INVOICE
-===================== */
+====================== */
 .invoice {
   width: 800px;
   margin: auto;
   background: #fff;
-  padding: 15px;
-  border: 2px solid #000;
+  padding: 10px;
+  border: 1.5px solid #000;
+  box-sizing: border-box;
 }
 
-/* =====================
+/* ======================
    TITLE
-===================== */
+====================== */
 .title {
   text-align: center;
-  margin-bottom: 10px;
+  margin: 5px 0 10px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-/* =====================
+/* ======================
    HEADER
-===================== */
+====================== */
 .top-box {
   display: flex;
-  align-items: center;
   border: 1px solid #000;
-  padding: 10px;
+  padding: 8px;
+  align-items: center;
 }
 
-/* LEFT IMAGE */
-.left img {
+/* LOGO */
+.left {
   width: 90px;
-  height: 110px;
+}
+
+.logo {
+  width: 80px;
+  height: 100px;
   object-fit: cover;
 }
 
-/* CENTER */
+/* COMPANY CENTER */
 .center {
   flex: 1;
   text-align: center;
 }
 
 .center h2 {
-  margin: 5px 0;
+  margin: 3px 0;
+  font-size: 18px;
 }
 
 .center p {
   margin: 2px 0;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-/* RIGHT */
+/* RIGHT INFO */
 .right {
+  width: 200px;
   text-align: right;
   font-size: 13px;
 }
 
-/* =====================
-   BILL DETAILS
-===================== */
+/* ======================
+   BILL + INVOICE DETAILS
+====================== */
 .details-box {
   display: flex;
   border: 1px solid #000;
@@ -77,20 +86,22 @@ body {
   width: 60%;
   padding: 10px;
   border-right: 1px solid #000;
+  font-size: 13px;
 }
 
 .invoice-info {
   width: 40%;
   padding: 10px;
+  font-size: 13px;
 }
 
-/* =====================
+/* ======================
    TABLE
-===================== */
+====================== */
 .main-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .main-table th,
@@ -102,46 +113,47 @@ body {
 }
 
 .main-table th {
-  background: #f5f5f5;
+  background: #f2f2f2;
 }
 
-/* =====================
+/* ======================
    BOTTOM SECTION
-===================== */
+====================== */
 .bottom-section {
   display: flex;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
-/* LEFT */
+/* TERMS */
 .left-footer {
   width: 60%;
   border: 1px solid #000;
   padding: 10px;
+  font-size: 13px;
 }
 
-/* RIGHT */
+/* RIGHT SIDE */
 .right-box {
   width: 40%;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
-/* =====================
+/* ======================
    SUMMARY
-===================== */
+====================== */
 .summary-box {
   border: 1px solid #000;
   padding: 10px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .summary-box p {
   margin: 5px 0;
 }
 
-/* =====================
+/* ======================
    SIGNATURE
-===================== */
+====================== */
 .sign {
   border: 1px solid #000;
   border-top: none;
@@ -154,27 +166,49 @@ body {
   margin-bottom: 5px;
 }
 
-/* =====================
-   BUTTONS (HIDE IN PRINT)
-===================== */
+/* ======================
+   BUTTONS
+====================== */
 .btns {
   text-align: center;
   margin-top: 10px;
 }
 
 button {
-  padding: 8px 12px;
+  padding: 8px 14px;
   margin: 5px;
-  border: none;
   background: #2d89ef;
-  color: white;
+  color: #fff;
+  border: none;
   border-radius: 5px;
-  cursor: pointer;
+  font-size: 13px;
 }
 
-/* =====================
+/* ======================
+   PRINT (IMPORTANT)
+====================== */
+@media print {
+
+  body {
+    background: white;
+  }
+
+  .btns {
+    display: none;
+  }
+
+  .invoice {
+    width: 100%;
+    border: none;
+    margin: 0;
+    padding: 5px;
+    page-break-inside: avoid;
+  }
+}
+
+/* ======================
    MOBILE VIEW
-===================== */
+====================== */
 @media (max-width: 768px) {
 
   .invoice {
@@ -182,45 +216,35 @@ button {
     border: none;
   }
 
-  .top-box {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .details-box {
-    flex-direction: column;
-  }
-
+  .top-box,
+  .details-box,
   .bottom-section {
     flex-direction: column;
   }
 
+  .right {
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  .bill-to,
+  .invoice-info,
+  .left-footer,
+  .right-box {
+    width: 100%;
+  }
+
   .right-box {
     margin-left: 0;
-    margin-top: 10px;
-  }
-}
-
-/* =====================
-   PRINT (🔥 IMPORTANT)
-===================== */
-@media print {
-
-  body {
-    background: white;
+    margin-top: 5px;
   }
 
-  .invoice {
-    width: 100%;
-    border: none;
+  .logo {
+    display: block;
+    margin: auto;
   }
 
-  .btns {
-    display: none;
-  }
-
-  /* Prevent page break */
-  .invoice {
-    page-break-inside: avoid;
+  .center {
+    text-align: center;
   }
 }
