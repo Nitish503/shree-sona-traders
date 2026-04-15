@@ -8,13 +8,14 @@ async function sharePDF(event) {
 
   const element = document.querySelector(".invoice");
 
-  const opt = {
-    margin: 5,
-    filename: 'invoice.pdf',
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
+   const opt = {
+  margin: 5,
+  filename: 'invoice.pdf',
+  image: { type: 'jpeg', quality: 1 },
+  html2canvas: { scale: 3, useCORS: true },
+  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  pagebreak: { mode: ['avoid-all'] }
+};
 
   const btn = event?.target;
   if (btn) {
