@@ -957,16 +957,38 @@ app.delete("/customers/:id", async (req, res) => {
 });
 
 // =====================
-// SAVE SIGNATURE (CLOUDINARY)
+// SAVE / REPLACE SIGNATURE
 // =====================
 app.post("/upload-signature", upload.single("image"), async (req, res) => {
   try {
     const imageUrl = req.file.path;
 
-    await pool.query(
-      "INSERT INTO settings (signature) VALUES ($1)",
-      [imageUrl]
+    // 🔍 GET OLD SIGNATURE
+    const old = await pool.query(
+      "SELECT signature FROM settings WHERE id=1"
     );
+
+    const oldUrl = old.rows[0]?.signature;
+
+    // 🔥 DELETE OLD IMAGE FROM CLOUDINARY
+    if (oldUrl) {
+      const publicId = getPublicId(oldUrl);
+      await cloudinary.uploader.destroy(publicId);
+      console.log("🗑 Old signature deleted:", publicId);
+    }
+
+    // 🔄 UPDATE OR INSERT
+    if (old.rows.length > 0) {
+      await pool.query(
+        "UPDATE settings SET signature=$1 WHERE id=1",
+        [imageUrl]
+      );
+    } else {
+      await pool.query(
+        "INSERT INTO settings (id, signature) VALUES (1, $1)",
+        [imageUrl]
+      );
+    }
 
     res.json({ success: true, url: imageUrl });
 
