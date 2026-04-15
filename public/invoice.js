@@ -36,15 +36,17 @@ function renderInvoice(data) {
 const paymentIndex = paymentIndexParam !== null ? Number(paymentIndexParam) : null;
 
 // =====================
-// LOAD SIGNATURE
+// LOAD SIGNATURE FROM SERVER
 // =====================
-const savedSignature = localStorage.getItem("signature");
-
-if (savedSignature) {
-  const img = document.getElementById("signatureImg");
-  img.src = savedSignature;
-  img.style.display = "block";
-}
+fetch(`${API}/signature`)
+  .then(res => res.json())
+  .then(data => {
+    if (data.signature) {
+      const img = document.getElementById("signatureImg");
+      img.src = data.signature;
+      img.style.display = "block";
+    }
+  });
 
   // =====================
   // BASIC DETAILS

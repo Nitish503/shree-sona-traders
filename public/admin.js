@@ -1,23 +1,34 @@
-// Toggle sidebar for mobile
+// =====================
+// TOGGLE SIDEBAR
+// =====================
 function toggleMenu() {
   const sidebar = document.getElementById("sidebar");
   sidebar.classList.toggle("active");
 }
 
-// Optional: Close menu when clicking outside (better UX)
+// =====================
+// CLOSE MENU ON OUTSIDE CLICK
+// =====================
 document.addEventListener("click", function (event) {
   const sidebar = document.getElementById("sidebar");
   const menuBtn = document.querySelector(".menu-toggle");
 
   if (
+    sidebar &&
+    menuBtn &&
     !sidebar.contains(event.target) &&
     !menuBtn.contains(event.target)
   ) {
     sidebar.classList.remove("active");
   }
 });
-function saveSignature() {
-  const fileInput = document.getElementById("signatureInput");
+
+// =====================
+// UPLOAD SIGNATURE (CLOUDINARY)
+// =====================
+async function uploadSignature() {
+
+  const fileInput = document.getElementById("signatureFile");
   const file = fileInput.files[0];
 
   if (!file) {
@@ -25,21 +36,26 @@ function saveSignature() {
     return;
   }
 
-  const reader = new FileReader();
+  const formData = new FormData();
+  formData.append("image", file);
 
-  reader.onload = function(e) {
-    const base64 = e.target.result;
+  try {
+    const res = await fetch("/upload-signature", {
+      method: "POST",
+      body: formData
+    });
 
-    // 💾 Save in localStorage
-    localStorage.setItem("signature", base64);
+    const data = await res.json();
 
-    // Preview
-    const preview = document.getElementById("previewSignature");
-    preview.src = base64;
-    preview.style.display = "block";
+    if (data.url) {
+      document.getElementById("signaturePreview").src = data.url;
+      alert("✅ Signature uploaded successfully");
+    } else {
+      alert("Upload failed");
+    }
 
-    alert("✅ Signature saved");
-  };
-
-  reader.readAsDataURL(file);
+  } catch (err) {
+    console.error(err);
+    alert("❌ Upload failed");
+  }
 }

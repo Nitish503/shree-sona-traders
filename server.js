@@ -956,6 +956,43 @@ app.delete("/customers/:id", async (req, res) => {
   }
 });
 
+// =====================
+// SAVE SIGNATURE (CLOUDINARY)
+// =====================
+app.post("/upload-signature", upload.single("image"), async (req, res) => {
+  try {
+    const imageUrl = req.file.path;
+
+    await pool.query(
+      "INSERT INTO settings (signature) VALUES ($1)",
+      [imageUrl]
+    );
+
+    res.json({ success: true, url: imageUrl });
+
+  } catch (err) {
+    console.error("❌ Signature Upload Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// =====================
+// GET SIGNATURE
+// =====================
+app.get("/signature", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT signature FROM settings ORDER BY id DESC LIMIT 1"
+    );
+
+    res.json({ signature: result.rows[0]?.signature || null });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------

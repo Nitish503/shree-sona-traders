@@ -44,13 +44,12 @@
     </div>
     <h3>Upload Signature</h3>
 
-<input type="file" id="signatureInput" accept="image/*">
-<br><br>
-
-<img id="previewSignature" style="max-width:150px; display:none;">
+<input type="file" id="signatureFile">
+<button onclick="uploadSignature()">Upload</button>
 
 <br><br>
-<button onclick="saveSignature()">Save Signature</button>
+
+<img id="signaturePreview" style="max-width:150px;">
 
   </section>
 
