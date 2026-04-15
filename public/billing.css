@@ -1,251 +1,222 @@
-/* BODY */
+/* =====================
+   GLOBAL
+===================== */
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #f4f6f9;
 }
 
-/* CONTAINER */
+/* MAIN CONTAINER */
 .container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: auto;
   padding: 15px;
 }
 
 /* HEADINGS */
 h2 {
-  text-align: center;
+  margin-top: 10px;
 }
 
-/* INPUTS */
-.top-inputs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+h3 {
+  margin-top: 10px;
 }
 
-.top-inputs input {
-  flex: 1;
+/* =====================
+   INPUTS
+===================== */
+.top-inputs input,
+.filters input,
+.filters select,
+.top-inputs select {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* TABLE */
+/* FLEX INPUTS */
+.top-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =====================
+   TABLE
+===================== */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  background: #fff;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
 }
 
 th {
   background: #2c3e50;
   color: white;
-  padding: 10px;
 }
 
-td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-}
-
-select, input[type="number"] {
-  width: 100%;
-  padding: 6px;
-}
-
-/* BUTTONS */
+/* =====================
+   BUTTONS
+===================== */
 .btn {
   padding: 10px;
   border: none;
   border-radius: 6px;
   margin-top: 10px;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.add {
+/* BUTTON COLORS */
+.btn.add {
   background: #27ae60;
   color: white;
   width: 100%;
 }
 
-.primary {
+.btn.primary {
   background: #2980b9;
   color: white;
   width: 100%;
 }
 
-/* FILTER */
+/* =====================
+   FILTERS
+===================== */
 .filters {
-  display: flex;
-  gap: 10px;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.filters input,
-.filters select {
-  flex: 1;
-  padding: 8px;
-}
-
-/* SECTION TITLES */
+/* =====================
+   SECTION TITLES
+===================== */
 .section-title {
   margin-top: 20px;
+  font-weight: bold;
 }
 
-.pending {
-  color: #f39c12;
+.section-title.pending {
+  color: #e67e22;
 }
 
-.completed {
+.section-title.completed {
   color: #27ae60;
 }
 
-/* CARDS */
+/* =====================
+   CARDS
+===================== */
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
-/* CARD */
 .card {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  border-left: 5px solid;
+  border-left: 5px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .card.pending {
-  border-color: orange;
+  border-left-color: #f39c12;
 }
 
 .card.completed {
-  border-color: green;
+  border-left-color: #2ecc71;
 }
 
 /* CARD TEXT */
 .card p {
-  margin: 4px 0;
+  margin: 5px 0;
 }
 
-/* ACTION BUTTONS */
-.actions {
-  margin-top: 10px;
+/* CARD BUTTONS */
+.card .actions {
+  margin-top: 8px;
   display: flex;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
-.actions button {
-  flex: 1;
-  padding: 6px;
+.card button {
+  padding: 6px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 12px;
 }
 
-/* VIEW BUTTON */
-.actions button:first-child {
-  background: #3498db;
-  color: white;
-}
-
-/* DELETE BUTTON */
-.actions .delete {
-  background: #e74c3c;
-  color: white;
-}
-
-/* PAY BUTTON */
-.card button {
-  margin-top: 5px;
-  background: #27ae60;
-  color: white;
-}
-
-/* MOBILE */
-@media (max-width: 600px) {
-
-  .top-inputs {
-    flex-direction: column;
-  }
-
-  .filters {
-    flex-direction: column;
-  }
-
-  table {
-    font-size: 12px;
-  }
-}
-/* ===================== */
-/* HISTORY MODAL */
-/* ===================== */
-#historyModal {
+/* =====================
+   MODAL
+===================== */
+.modal {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.7);
-  justify-content: center;
-  align-items: center;
+  background: rgba(0,0,0,0.5);
 }
 
-#historyModal .modal-content {
-  background: #111;
+.modal-content {
+  background: white;
+  margin: 10% auto;
   padding: 15px;
   width: 90%;
-  max-width: 400px;
-  border-radius: 10px;
-  color: white;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.history-card {
-  background: #1e293b;
-  padding: 10px;
-  margin: 10px 0;
+  max-width: 500px;
   border-radius: 8px;
 }
 
-.history-card button {
-  margin-top: 5px;
-  padding: 5px 8px;
-  border: none;
-  background: cyan;
-  color: black;
-  border-radius: 5px;
-  cursor: pointer;
-}
-/* ===================== */
-/* LEDGER / HISTORY STYLE */
-/* ===================== */
+/* =====================
+   MOBILE OPTIMIZATION
+===================== */
+@media (max-width: 600px) {
 
-.history-card {
-  background: rgba(255,255,255,0.05);
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
+  .container {
+    padding: 10px;
+  }
 
-/* Ledger entries */
-.history-card p {
-  margin: 5px 0;
-}
+  /* TABLE SCROLL FIX */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 
-/* Payment highlight */
-.history-card p.payment {
-  color: lightgreen;
-  font-weight: bold;
-}
+  th, td {
+    font-size: 12px;
+    padding: 6px;
+  }
 
-/* Bill highlight */
-.history-card p.bill {
-  color: cyan;
-  font-weight: bold;
+  /* BUTTON FULL WIDTH */
+  .btn {
+    width: 100%;
+  }
+
+  /* CARD ACTIONS STACK */
+  .card .actions {
+    flex-direction: column;
+  }
+
+  .card button {
+    width: 100%;
+  }
 }
