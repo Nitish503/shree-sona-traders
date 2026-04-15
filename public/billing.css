@@ -83,7 +83,7 @@ input:focus, select:focus {
 }
 
 /* =====================
-   TABLE
+   TABLE (🔥 FIXED PROPERLY)
 ===================== */
 table {
   width: 100%;
@@ -92,16 +92,43 @@ table {
   background: white;
   border-radius: 10px;
   overflow: hidden;
+
+  /* 🔥 KEY FIX */
+  table-layout: auto;
 }
 
 th, td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
+
+  /* 🔥 allow proper text */
+  white-space: nowrap;
 }
 
 th {
   background: #f4f6f9;
+}
+
+/* 🔥 ITEM COLUMN WIDTH FIX */
+th:first-child,
+td:first-child {
+  min-width: 140px;
+}
+
+/* 🔥 SELECT FIX */
+td select {
+  width: 100%;
+  min-width: 120px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* 🔥 INPUT FIX */
+td input {
+  width: 100%;
+  min-width: 70px;
+  text-align: center;
 }
 
 /* =====================
@@ -130,7 +157,7 @@ th {
 }
 
 /* =====================
-   CARD BUTTONS (🔥 FIXED)
+   CARD BUTTONS
 ===================== */
 .card button {
   width: 100%;
@@ -143,7 +170,6 @@ th {
   transition: 0.3s;
 }
 
-/* Different styles */
 .card .view-btn {
   background: #3498db;
   color: white;
@@ -164,7 +190,6 @@ th {
   color: white;
 }
 
-/* Hover */
 .card button:hover {
   transform: scale(1.05);
 }
@@ -194,7 +219,7 @@ th {
 }
 
 /* =====================
-   MODAL (LEDGER / HISTORY)
+   MODAL
 ===================== */
 .modal {
   display: none;
@@ -217,9 +242,6 @@ th {
   animation: fadeIn 0.3s ease;
 }
 
-/* =====================
-   LEDGER ITEMS (🔥 IMPROVED)
-===================== */
 .modal-content div {
   margin-bottom: 10px;
 }
@@ -257,7 +279,7 @@ th {
 }
 
 /* =====================
-   MOBILE
+   MOBILE (🔥 SCROLL FIX)
 ===================== */
 @media (max-width: 600px) {
 
@@ -277,8 +299,13 @@ th {
     font-size: 15px;
   }
 
-  /* STACK PAY */
   .pay-section {
     flex-direction: column;
+  }
+
+  /* 🔥 TABLE SCROLL FIX */
+  table {
+    display: block;
+    overflow-x: auto;
   }
 }
