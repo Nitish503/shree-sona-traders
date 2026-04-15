@@ -1020,26 +1020,34 @@ app.get("/signature", async (req, res) => {
 // =====================
 app.post("/company", async (req, res) => {
   try {
-    const { name, address, phone, gst, email } = req.body;
+    const { name, address, phone, gst, email, state } = req.body;
 
     const existing = await pool.query("SELECT * FROM company WHERE id=1");
 
     if (existing.rows.length > 0) {
+
       await pool.query(
-        "UPDATE company SET name=$1, address=$2, phone=$3, gst=$4, email=$5 WHERE id=1",
-        [name, address, phone, gst, email]
+        `UPDATE company 
+         SET name=$1, address=$2, phone=$3, gst=$4, email=$5, state=$6 
+         WHERE id=1`,
+        [name, address, phone, gst, email, state]
       );
+
     } else {
+
       await pool.query(
-        "INSERT INTO company (id, name, address, phone, gst, email) VALUES (1,$1,$2,$3,$4,$5)",
-        [name, address, phone, gst, email]
+        `INSERT INTO company 
+         (id, name, address, phone, gst, email, state) 
+         VALUES (1, $1, $2, $3, $4, $5, $6)`,
+        [name, address, phone, gst, email, state]
       );
+
     }
 
     res.json({ success: true });
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ COMPANY SAVE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -1051,11 +1059,15 @@ app.post("/company", async (req, res) => {
 app.get("/company", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM company WHERE id=1");
+
     res.json(result.rows[0] || {});
+
   } catch (err) {
+    console.error("❌ COMPANY FETCH ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // =====================
 // UPLOAD COMPANY LOGO

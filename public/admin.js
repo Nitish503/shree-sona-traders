@@ -71,7 +71,8 @@ async function saveCompany() {
     address: document.getElementById("cAddress").value,
     phone: document.getElementById("cPhone").value,
     gst: document.getElementById("cGST").value,
-    email: document.getElementById("cEmail").value
+    email: document.getElementById("cEmail").value,
+    state: document.getElementById("cState").value
   };
 
   try {

@@ -60,6 +60,8 @@ fetch(`${API}/company`)
     document.getElementById("c_address").innerText = c.address || "";
     document.getElementById("c_phone").innerText = c.phone || "";
     document.getElementById("c_gst").innerText = c.gst || "";
+    document.getElementById("c_email").innerText = c.email || "";
+    document.getElementById("c_state").innerText = c.state || "";
 
     // ✅ LOAD LOGO
     if (c.logo) {
