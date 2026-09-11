@@ -6,6 +6,11 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+  <script>
+  if (localStorage.getItem("adminAuthenticated") !== "true") {
+    window.location.replace("admin-login.html");
+  }
+</script>
 
   <!-- Sidebar Menu -->
   <nav class="admin-menu" id="sidebar">

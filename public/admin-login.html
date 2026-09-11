@@ -143,11 +143,15 @@
 
           if (data.success === true) {
 
-            message.textContent = "✅ Login successful";
+    message.textContent = "✅ Login successful";
 
-            setTimeout(() => {
-              window.location.href = "admin.html";
-            }, 500);
+    localStorage.setItem("adminAuthenticated", "true");
+
+    setTimeout(() => {
+      window.location.href = "admin.html";
+    }, 500);
+
+}
 
           } else {
 
