@@ -40,7 +40,7 @@ async function uploadSignature() {
   formData.append("image", file);
 
   try {
-    const res = await fetch("/upload-signature", {
+    const res = await fetch("https://shree-sona-traders.onrender.com/upload-signature", {
       method: "POST",
       body: formData
     });
@@ -76,7 +76,7 @@ async function saveCompany() {
   };
 
   try {
-    await fetch("/company", {
+    await fetch("https://shree-sona-traders.onrender.com/company", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -102,7 +102,7 @@ async function uploadLogo() {
   formData.append("image", file);
 
   try {
-    const res = await fetch("/upload-logo", {
+    const res = await fetch("https://shree-sona-traders.onrender.com/upload-logo", {
       method: "POST",
       body: formData
     });

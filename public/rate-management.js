@@ -1,4 +1,4 @@
-const API = window.location.origin;
+const API = "https://shree-sona-traders.onrender.com";
 
 // 🔥 Format ₹ (Indian format)
 function formatRupee(value) {

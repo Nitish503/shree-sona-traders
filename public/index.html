@@ -23,7 +23,9 @@
   <li><a href="rental.html">Rental</a></li>
   <li><a href="fuel.html">Fuel</a></li>
   <li><a href="about.html">About</a></li>
-  <li><a href="admin.html">Admin</a></li>
+  <li id="adminMenu" style="display: none;">
+  <a href="admin.html">Admin</a>
+</li>
    <li><a href="register.html">Customer registration</a></li>
 </ul>
 
@@ -77,6 +79,51 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+
+  // =====================
+  // ADMIN PHONE CHECK
+  // =====================
+  async function checkAdminAccess() {
+
+    const adminMenu = document.getElementById("adminMenu");
+
+    if (!adminMenu) return;
+
+    const phone = prompt("Enter authorized admin phone number:");
+
+    if (!phone) {
+      return;
+    }
+
+    try {
+
+      const res = await fetch(
+        `https://shree-sona-traders.onrender.com/check-admin?phone=${encodeURIComponent(phone.trim())}`
+      );
+
+      const data = await res.json();
+
+      if (data.authorized === true) {
+
+        adminMenu.style.display = "block";
+
+      } else {
+
+        alert("❌ You are not authorized to access Admin.");
+
+      }
+
+    } catch (err) {
+
+      console.error("Admin check failed:", err);
+      alert("❌ Unable to verify admin access.");
+
+    }
+  }
+
+  checkAdminAccess();
+</script>
 
 </body>
 </html>

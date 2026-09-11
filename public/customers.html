@@ -17,7 +17,7 @@
 // LOAD CUSTOMERS
 async function loadCustomers() {
   try {
-    const res = await fetch("/customers");
+    const res = await fetch("https://shree-sona-traders.onrender.com/customers");
 
     if (!res.ok) {
       alert("Error loading customers");
@@ -64,7 +64,7 @@ async function deleteCustomer(id) {
   if (!confirm("Delete this customer?")) return;
 
   try {
-    const res = await fetch(`/customers/${id}`, {
+    const res = await fetch(`https://shree-sona-traders.onrender.com/customers/${id}`, {
       method: "DELETE"
     });
 

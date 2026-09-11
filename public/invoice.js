@@ -1,4 +1,4 @@
-const API = window.location.origin;
+const API = "https://shree-sona-traders.onrender.com";
 
 // =====================
 // LOAD INVOICE
@@ -217,8 +217,9 @@ function renderFromParams(params) {
 // =====================
 // PRINT
 // =====================
-function printInvoice() {
-  window.print();
+async function printInvoice(event) {
+  // Use the same PDF sharing system
+  await sharePDF(event);
 }
 
 // INIT

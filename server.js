@@ -17,6 +17,54 @@ let captchaStore = {};
 app.use(cors());
 app.use(express.json());
 
+// =====================
+// ADMIN LOGIN
+// =====================
+app.post("/admin/login", (req, res) => {
+  const { phone, pin } = req.body;
+
+  const allowedNumbers = (process.env.ADMIN_NUMBERS || "")
+    .split(",")
+    .map(n => n.trim());
+
+  if (!allowedNumbers.includes(phone)) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized number"
+    });
+  }
+
+  if (pin !== process.env.ADMIN_PIN) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid PIN"
+    });
+  }
+
+  res.json({
+    success: true,
+    message: "Admin login successful"
+  });
+});
+
+// =====================
+// ADMIN ACCESS CHECK
+// =====================
+app.get("/check-admin", (req, res) => {
+  const phone = req.query.phone;
+
+  const adminNumbers = (process.env.ADMIN_NUMBERS || "")
+    .split(",")
+    .map(n => n.trim())
+    .filter(Boolean);
+
+  if (adminNumbers.includes(phone)) {
+    return res.json({ authorized: true });
+  }
+
+  res.json({ authorized: false });
+});
+
 // --------------------
 // DB CONNECTION
 // --------------------

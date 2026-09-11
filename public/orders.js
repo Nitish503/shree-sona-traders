@@ -1,6 +1,6 @@
 async function loadOrders() {
   try {
-    const res = await fetch("/orders");
+    const res = await fetch("https://shree-sona-traders.onrender.com/orders");
 
     // 🔥 Handle server error properly
     if (!res.ok) {
@@ -52,18 +52,20 @@ loadOrders();
 // ✅ UPDATE STATUS
 async function updateStatus(id, status) {
   try {
-    const res = await fetch(`/orders/${id}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ status })
-    });
+    const res = await fetch(`${API}/orders/${id}/status`, {
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ status })
+});
 
     if (!res.ok) {
-      alert("Failed to update status");
-      return;
-    }
+  const errorText = await res.text();
+  console.log("STATUS UPDATE ERROR:", res.status, errorText);
+  alert("Failed to update status\nStatus: " + res.status + "\n" + errorText);
+  return;
+}
 
     alert("✅ Status updated");
 
@@ -77,7 +79,7 @@ async function deleteOrder(id) {
   if (!confirm("Delete this order?")) return;
 
   try {
-    const res = await fetch(`/orders/${id}`, {
+    const res = await fetch(`https://shree-sona-traders.onrender.com/orders/${id}`, {
       method: "DELETE"
     });
 

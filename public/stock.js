@@ -12,7 +12,7 @@ async function addItem() {
   formData.append("category", category);
   if (image) formData.append("image", image);
 
-  await fetch("/items", {
+  await fetch("https://shree-sona-traders.onrender.com/items", {
     method: "POST",
     body: formData
   });
@@ -26,7 +26,7 @@ async function addItem() {
 
 // Load items
 async function loadItems(category = "construction") {
-  const res = await fetch(`/items/${category}`);
+  const res = await fetch(`https://shree-sona-traders.onrender.com/items/${category}`);
   const data = await res.json();
 
   const list = document.getElementById("stockList");
@@ -72,7 +72,7 @@ async function editItem(id, name, description, category) {
 
   if (!newName) return;
 
-  await fetch(`/items/${id}`, {
+  await fetch(`https://shree-sona-traders.onrender.com/items/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -91,7 +91,7 @@ async function editItem(id, name, description, category) {
 async function toggleStatus(id, currentStatus) {
   const newStatus = currentStatus === "available" ? "out" : "available";
 
-  await fetch(`/items/${id}/status`, {
+  await fetch(`https://shree-sona-traders.onrender.com/items/${id}/status`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -104,7 +104,7 @@ async function toggleStatus(id, currentStatus) {
 
 // Delete item
 async function deleteItem(id) {
-  await fetch(`/items/${id}`, {
+  await fetch(`https://shree-sona-traders.onrender.com/items/${id}`, {
     method: "DELETE"
   });
 
