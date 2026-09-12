@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Account</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050817;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .account-box {
+      width: 100%;
+      max-width: 450px;
+      margin: 40px auto;
+      padding: 30px 25px;
+      background: #111629;
+      border: 1px solid #292f45;
+      border-radius: 20px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .info {
+      background: #080c1c;
+      border: 1px solid #333b55;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 15px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .back-btn,
+    .logout-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: white;
+      color: #050817;
+    }
+
+    .logout-btn {
+      background: #d9534f;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CUSTOMER LOGIN PROTECTION -->
+  <script>
+    if (localStorage.getItem("customerAuthenticated") !== "true") {
+      window.location.replace("customer-login.html");
+    }
+  </script>
+
+  <div class="account-box">
+
+    <h1>My Account</h1>
+
+    <div class="info">
+      <div class="label">Phone Number</div>
+      <div class="value" id="customerPhone">Loading...</div>
+    </div>
+
+    <a href="index.html" class="back-btn">
+      ← Back to Home
+    </a>
+
+    <button class="logout-btn" onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
+  <script>
+    const phone = localStorage.getItem("customerPhone");
+
+    document.getElementById("customerPhone").textContent =
+      phone || "Not available";
+
+    function logout() {
+      localStorage.removeItem("customerAuthenticated");
+      localStorage.removeItem("customerPhone");
+
+      window.location.replace("customer-login.html");
+    }
+  </script>
+
+</body>
+</html>
