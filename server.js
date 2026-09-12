@@ -1,10 +1,12 @@
 require("dotenv").config(); // 🔥 ENV support
+const bcrypt = require("bcryptjs");
 
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const { Pool } = require("pg");
 const multer = require("multer");
+const crypto = require("crypto");
 
 // 🔥 Cloudinary
 const cloudinary = require("cloudinary").v2;
@@ -347,10 +349,10 @@ app.delete("/orders/:id", async (req, res) => {
 // --------------------
 app.post("/register", async (req, res) => {
   try {
-    const { name, phone, captcha, captchaId } = req.body;
+    const { name, phone, password, captcha, captchaId } = req.body;
 
     // ✅ VALIDATION
-    if (!name || !phone || !captcha || !captchaId) {
+    if (!name || !phone || !password || !captcha || !captchaId) {
       return res.status(400).json({ error: "All fields required" });
     }
 
@@ -377,11 +379,14 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    // ✅ INSERT NEW CUSTOMER
-    const result = await pool.query(
-      "INSERT INTO customers (name, phone) VALUES ($1,$2) RETURNING *",
-      [name, phone]
-    );
+    // 🔐 HASH CUSTOMER PASSWORD
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// ✅ INSERT NEW CUSTOMER
+const result = await pool.query(
+  "INSERT INTO customers (name, phone, password) VALUES ($1,$2,$3) RETURNING id, name, phone",
+  [name, phone, hashedPassword]
+);
 
     res.status(200).json({
       message: "registered",
@@ -1153,6 +1158,69 @@ app.post("/upload-logo", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// =====================
+// CUSTOMER LOGIN
+// =====================
+app.post("/customer/login", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    if (!phone || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number and password are required"
+      });
+    }
+
+    // Find customer by phone number
+    const result = await pool.query(
+      "SELECT id, name, phone, password FROM customers WHERE phone=$1",
+      [phone]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid phone number or password"
+      });
+    }
+
+    const customer = result.rows[0];
+
+    // Compare entered password with bcrypt password
+    const passwordMatch = await bcrypt.compare(
+      password,
+      customer.password
+    );
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid phone number or password"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: customer.id,
+        name: customer.name,
+        phone: customer.phone
+      }
+    });
+
+  } catch (err) {
+    console.error("Customer Login Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 
 // --------------------
 // SERVER START (FIXED FOR RENDER)
