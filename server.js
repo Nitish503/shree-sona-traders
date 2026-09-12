@@ -347,14 +347,14 @@ app.delete("/orders/:id", async (req, res) => {
 // --------------------
 app.post("/register", async (req, res) => {
   try {
-    const { name, phone, captcha, captchaId } = req.body;
+    const { name, phone, password, captcha, captchaId } = req.body;
 
-    // ✅ VALIDATION
-    if (!name || !phone || !captcha || !captchaId) {
+    // VALIDATION
+    if (!name || !phone || !password || !captcha || !captchaId) {
       return res.status(400).json({ error: "All fields required" });
     }
 
-    // 🔐 CAPTCHA CHECK
+    // CAPTCHA CHECK
     if (
       !captchaStore[captchaId] ||
       captchaStore[captchaId].toString().trim() !== captcha.toString().trim()
@@ -362,10 +362,10 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Invalid captcha" });
     }
 
-    // 🧹 DELETE CAPTCHA AFTER USE
+    // DELETE CAPTCHA AFTER USE
     delete captchaStore[captchaId];
 
-    // 🔍 CHECK IF CUSTOMER EXISTS
+    // CHECK IF CUSTOMER EXISTS
     const existing = await pool.query(
       "SELECT * FROM customers WHERE phone=$1",
       [phone]
@@ -377,10 +377,13 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    // ✅ INSERT NEW CUSTOMER
+    // HASH CUSTOMER PASSWORD
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // INSERT NEW CUSTOMER
     const result = await pool.query(
-      "INSERT INTO customers (name, phone) VALUES ($1,$2) RETURNING *",
-      [name, phone]
+      "INSERT INTO customers (name, phone, password) VALUES ($1,$2,$3) RETURNING id, name, phone",
+      [name, phone, hashedPassword]
     );
 
     res.status(200).json({
@@ -389,7 +392,7 @@ app.post("/register", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Register Error:", err);
+    console.error("Register Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
