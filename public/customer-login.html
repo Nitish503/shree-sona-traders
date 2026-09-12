@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #050817;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    .login-box {
+      width: 90%;
+      max-width: 420px;
+      padding: 35px 25px;
+      background: #111629;
+      border: 1px solid #292f45;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #333b55;
+      border-radius: 10px;
+      background: #080c1c;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: #050817;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      margin-top: 20px;
+      min-height: 24px;
+    }
+
+    .register-link {
+      margin-top: 20px;
+      font-size: 15px;
+    }
+
+    .register-link a {
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <h1>Customer Login</h1>
+
+    <form id="customerLoginForm">
+
+      <input
+        type="tel"
+        id="phone"
+        placeholder="Enter phone number"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter password"
+        required
+      >
+
+      <button type="submit" id="loginBtn">
+        Login
+      </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <div class="register-link">
+      Don't have an account?
+      <a href="register.html">Register</a>
+    </div>
+
+  </div>
+
+  <script>
+    const API = "https://shree-sona-traders.onrender.com";
+
+    document
+      .getElementById("customerLoginForm")
+      .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const phone = document.getElementById("phone").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const message = document.getElementById("message");
+        const button = document.getElementById("loginBtn");
+
+        message.textContent = "";
+
+        button.disabled = true;
+        button.textContent = "Checking...";
+
+        try {
+
+          const response = await fetch(`${API}/customer/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              phone,
+              password
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success === true) {
+
+            message.textContent = "✅ Login successful";
+
+            localStorage.setItem(
+              "customerAuthenticated",
+              "true"
+            );
+
+            localStorage.setItem(
+              "customerPhone",
+              phone
+            );
+
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 500);
+
+          } else {
+
+            message.textContent =
+              "❌ " + (data.message || "Invalid phone number or password");
+
+            button.disabled = false;
+            button.textContent = "Login";
+          }
+
+        } catch (error) {
+
+          console.error(error);
+
+          message.textContent =
+            "❌ Unable to connect to server";
+
+          button.disabled = false;
+          button.textContent = "Login";
+        }
+
+      });
+  </script>
+
+</body>
+</html>

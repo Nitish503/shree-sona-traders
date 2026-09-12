@@ -14,6 +14,7 @@
 
   <input type="text" id="name" placeholder="Enter your name">
   <input type="text" id="phone" placeholder="Enter phone number">
+  <input type="password" id="password" placeholder="Create password">
 
   <!-- CAPTCHA BOX -->
   <div class="captcha-container">
@@ -64,12 +65,13 @@ loadCaptcha();
 async function register() {
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
-  const captcha = document.getElementById("captchaInput").value.trim();
+const password = document.getElementById("password").value;
+const captcha = document.getElementById("captchaInput").value.trim();
 
   const loader = document.getElementById("loader");
   const btn = document.getElementById("registerBtn");
 
-  if (!name || !phone || !captcha) {
+  if (!name || !phone || !password || !captcha) {
     alert("Please fill all fields");
     return;
   }
@@ -86,11 +88,12 @@ async function register() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        name,
-        phone,
-        captcha,
-        captchaId
-      })
+  name,
+  phone,
+  password,
+  captcha,
+  captchaId
+})
     });
 
     const data = await res.json();
@@ -110,6 +113,7 @@ async function register() {
     document.getElementById("name").value = "";
     document.getElementById("phone").value = "";
     document.getElementById("captchaInput").value = "";
+    document.getElementById("password").value = "";
 
     // RELOAD CAPTCHA
     loadCaptcha();

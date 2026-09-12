@@ -6,6 +6,11 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+  <script>
+  if (localStorage.getItem("adminAuthenticated") !== "true") {
+    window.location.replace("admin-login.html");
+  }
+</script>
 
   <!-- Sidebar Menu -->
   <nav class="admin-menu" id="sidebar">
@@ -79,43 +84,6 @@
   <footer>
     <p>&copy; 2026 SHREE SONA TRADER. All rights reserved.</p>
   </footer>
-
-  <!-- JS File -->
-   <script>
-  // =====================
-  // PROTECT ADMIN PAGE
-  // =====================
-  (async function () {
-
-    const phone = prompt("Enter authorized admin phone number:");
-
-    if (!phone) {
-      window.location.href = "index.html";
-      return;
-    }
-
-    try {
-
-      const res = await fetch(
-        `https://shree-sona-traders.onrender.com/check-admin?phone=${encodeURIComponent(phone.trim())}`
-      );
-
-      const data = await res.json();
-
-      if (data.authorized !== true) {
-        alert("❌ Unauthorized access");
-        window.location.href = "index.html";
-      }
-
-    } catch (err) {
-
-      alert("❌ Unable to verify admin access");
-      window.location.href = "index.html";
-
-    }
-
-  })();
-</script>
 
   <script src="admin.js"></script>
 

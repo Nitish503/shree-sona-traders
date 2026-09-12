@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { Pool } = require("pg");
 
 // Use your Neon connection string from Render environment
@@ -19,14 +20,20 @@ async function createTables() {
     `);
 
     // Customers table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS customers (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100),
-        email VARCHAR(100) UNIQUE,
-        phone VARCHAR(20)
-      );
-    `);
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20)
+  );
+`);
+
+// Add password column for customer login
+await pool.query(`
+  ALTER TABLE customers
+  ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+`);
 
     // Admins table
     await pool.query(`

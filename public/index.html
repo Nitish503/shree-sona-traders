@@ -10,9 +10,25 @@
 
 <body>
 
+<script>
+  if (localStorage.getItem("customerAuthenticated") !== "true") {
+    window.location.replace("customer-login.html");
+  }
+</script>
+
+<!-- CUSTOMER ACCOUNT BUTTON -->
+<a href="customer-account.html" class="account-button" aria-label="My Account">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="8" r="4"></circle>
+    <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
+  </svg>
+</a>
+
+<!-- your existing homepage code -->
+
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="logo"> MS SHREE SONA TRADERS</div>
+  <div class="logo" id="adminTrigger">MS SHREE SONA TRADERS</div>
   <div class="menu-toggle" id="menuBtn">☰</div>
 </nav>
 

@@ -107,43 +107,48 @@
     <div id="message"></div>
 
   </div>
+<script>
+  const API = "https://shree-sona-traders.onrender.com";
 
-  <script>
-    const API = "https://shree-sona-traders.onrender.com";
+  document
+    .getElementById("adminLoginForm")
+    .addEventListener("submit", async function (event) {
 
-    document
-      .getElementById("adminLoginForm")
-      .addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-        event.preventDefault();
+      const phone = document.getElementById("phone").value.trim();
+      const pin = document.getElementById("pin").value.trim();
+      const message = document.getElementById("message");
+      const button = document.getElementById("loginBtn");
 
-        const phone = document.getElementById("phone").value.trim();
-        const pin = document.getElementById("pin").value.trim();
-        const message = document.getElementById("message");
-        const button = document.getElementById("loginBtn");
+      message.textContent = "";
+      button.disabled = true;
+      button.textContent = "Checking...";
 
-        message.textContent = "";
-        button.disabled = true;
-        button.textContent = "Checking...";
+      try {
 
-        try {
+        const response = await fetch(`${API}/admin/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            phone: phone,
+            pin: pin
+          })
+        });
 
-          const response = await fetch(`${API}/admin/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              phone: phone,
-              pin: pin
-            })
-          });
+        const data = await response.json();
 
-          const data = await response.json();
+        if (data.success === true) {
 
-          if (data.success === true) {
+          message.textContent = "✅ Login successful";
 
-            message.textContent = "✅ Login successful";
+          localStorage.setItem("adminAuthenticated", "true");
+
+          const saved = localStorage.getItem("adminAuthenticated");
+
+          if (saved === "true") {
 
             setTimeout(() => {
               window.location.href = "admin.html";
@@ -151,26 +156,36 @@
 
           } else {
 
-            message.textContent =
-              "❌ " + (data.message || "Invalid login");
-
+            message.textContent = "❌ Unable to save login session";
             button.disabled = false;
             button.textContent = "Login";
+
           }
 
-        } catch (error) {
-
-          console.error(error);
+        } else {
 
           message.textContent =
-            "❌ Unable to connect to server";
+            "❌ " + (data.message || "Invalid login");
 
           button.disabled = false;
           button.textContent = "Login";
+
         }
 
-      });
-  </script>
+      } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "❌ Unable to connect to server";
+
+        button.disabled = false;
+        button.textContent = "Login";
+
+      }
+
+    });
+</script>
 
 </body>
 </html>

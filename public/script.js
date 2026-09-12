@@ -51,3 +51,34 @@ setInterval(() => {
   index = (index + 1) % total;
   updateSlider();
 }, 3500);
+
+// ================================
+// HIDDEN ADMIN LOGIN
+// Tap company logo 5 times quickly
+// ================================
+
+let adminTapCount = 0;
+let adminTapTimer = null;
+
+const adminTrigger = document.getElementById("adminTrigger");
+
+if (adminTrigger) {
+  adminTrigger.addEventListener("click", function () {
+
+    adminTapCount++;
+
+    clearTimeout(adminTapTimer);
+
+    adminTapTimer = setTimeout(function () {
+      adminTapCount = 0;
+    }, 2000);
+
+    if (adminTapCount >= 5) {
+      adminTapCount = 0;
+      clearTimeout(adminTapTimer);
+
+      window.location.href = "admin-login.html";
+    }
+
+  });
+}
