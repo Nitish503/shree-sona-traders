@@ -1221,6 +1221,27 @@ app.post("/customer/login", async (req, res) => {
   }
 });
 
+app.get("/debug/customer/:phone", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, name, phone, password IS NULL AS password_missing FROM customers WHERE phone=$1",
+      [req.params.phone]
+    );
+
+    res.json({
+      count: result.rows.length,
+      customers: result.rows
+    });
+
+  } catch (error) {
+    console.error("Debug customer error:", error);
+
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
 
 // --------------------
 // SERVER START (FIXED FOR RENDER)
