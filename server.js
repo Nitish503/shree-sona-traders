@@ -1181,6 +1181,13 @@ app.post("/customer/login", async (req, res) => {
     }
 
     const customer = result.rows[0];
+    // Check whether customer has a password
+if (!customer.password) {
+  return res.status(401).json({
+    success: false,
+    message: "Invalid phone number or password"
+  });
+}
 
     const passwordMatch = await bcrypt.compare(
       password,
