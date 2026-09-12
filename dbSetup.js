@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+require("dotenv").config();
 
 // Use your Neon connection string from Render environment
 const pool = new Pool({
@@ -38,6 +39,16 @@ async function createTables() {
     `);
 
     console.log("Tables created successfully!");
+    
+    await pool.query(`
+  CREATE TABLE IF NOT EXISTS chat_messages (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    sender VARCHAR(20) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
     process.exit(0);
   } catch (err) {
     console.error("Error creating tables:", err);

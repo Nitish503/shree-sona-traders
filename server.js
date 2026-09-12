@@ -1224,6 +1224,78 @@ if (!customer.password) {
   }
 });
 
+// =====================
+// CUSTOMER CHAT
+// =====================
+
+// Send a chat message
+app.post("/chat/send", async (req, res) => {
+  try {
+    const { customerId, message } = req.body;
+
+    if (!customerId || !message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and message are required"
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO chat_messages
+       (customer_id, sender, message)
+       VALUES ($1, 'customer', $2)
+       RETURNING id, customer_id, sender, message, created_at`,
+      [customerId, message.trim()]
+    );
+
+    res.json({
+      success: true,
+      message: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("Chat Send Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
+// Get all chat messages
+app.get("/chat/messages", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT
+         chat_messages.id,
+         chat_messages.customer_id,
+         customers.name AS customer_name,
+         customers.phone AS customer_phone,
+         chat_messages.sender,
+         chat_messages.message,
+         chat_messages.created_at
+       FROM chat_messages
+       LEFT JOIN customers
+       ON chat_messages.customer_id = customers.id
+       ORDER BY chat_messages.created_at ASC`
+    );
+
+    res.json({
+      success: true,
+      messages: result.rows
+    });
+
+  } catch (err) {
+    console.error("Chat Messages Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------
