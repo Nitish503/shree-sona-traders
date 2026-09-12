@@ -156,15 +156,9 @@
 
             message.textContent = "✅ Login successful";
 
-            localStorage.setItem(
-              "customerAuthenticated",
-              "true"
-            );
-
-            localStorage.setItem(
-              "customerPhone",
-              phone
-            );
+            localStorage.setItem("customerAuthenticated", "true");
+localStorage.setItem("customerPhone", phone);
+localStorage.setItem("customerId", data.user.id);
 
             setTimeout(() => {
               window.location.href = "index.html";
