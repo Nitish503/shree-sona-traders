@@ -1,4 +1,5 @@
 require("dotenv").config(); // 🔥 ENV support
+const bcrypt = require("bcryptjs");
 
 const express = require("express");
 const cors = require("cors");
@@ -1150,6 +1151,66 @@ app.post("/upload-logo", upload.single("image"), async (req, res) => {
   } catch (err) {
     console.error("Logo upload error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================
+// CUSTOMER LOGIN
+// =====================
+app.post("/customer/login", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    if (!phone || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number and password are required"
+      });
+    }
+
+    const result = await pool.query(
+      "SELECT id, name, phone, password FROM customers WHERE phone=$1",
+      [phone]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid phone number or password"
+      });
+    }
+
+    const customer = result.rows[0];
+
+    const passwordMatch = await bcrypt.compare(
+      password,
+      customer.password
+    );
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid phone number or password"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: customer.id,
+        name: customer.name,
+        phone: customer.phone
+      }
+    });
+
+  } catch (err) {
+    console.error("Customer Login Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 });
 
