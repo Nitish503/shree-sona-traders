@@ -1296,6 +1296,54 @@ app.get("/chat/messages", async (req, res) => {
   }
 });
 
+// Admin sends a reply to a customer
+app.post("/chat/admin-send", async (req, res) => {
+  try {
+    const { customerId, message } = req.body;
+
+    if (!customerId || !message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID and message are required"
+      });
+    }
+
+    // Make sure the customer exists
+    const customer = await pool.query(
+      "SELECT id FROM customers WHERE id=$1",
+      [customerId]
+    );
+
+    if (customer.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found"
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO chat_messages
+       (customer_id, sender, message)
+       VALUES ($1, 'admin', $2)
+       RETURNING id, customer_id, sender, message, created_at`,
+      [customerId, message.trim()]
+    );
+
+    res.json({
+      success: true,
+      message: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("Admin Chat Send Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------
