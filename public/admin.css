@@ -250,3 +250,39 @@ footer {
     width: 100%;
   }
 }
+
+/* =========================
+   CHAT MESSAGE DELETE
+   ========================= */
+
+.admin-chat-message-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.admin-chat-message-wrapper.customer {
+  justify-content: flex-start;
+}
+
+.admin-chat-message-wrapper.admin {
+  justify-content: flex-end;
+}
+
+.delete-chat-message {
+  width: auto !important;
+  padding: 5px 9px !important;
+  margin: 0 !important;
+  background: #dc3545 !important;
+  color: white !important;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px !important;
+  cursor: pointer;
+}
+
+.delete-chat-message:hover {
+  background: #b02a37 !important;
+  transform: none !important;
+}
