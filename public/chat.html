@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chat with Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050817;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: #111629;
+      padding: 18px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #292f45;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 15px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .customer {
+      align-self: flex-end;
+      background: #ffffff;
+      color: #050817;
+      border-bottom-right-radius: 4px;
+    }
+
+    .admin {
+      align-self: flex-start;
+      background: #20263a;
+      color: white;
+      border-bottom-left-radius: 4px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      margin-top: 40px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      background: #111629;
+      border-top: 1px solid #292f45;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #333b55;
+      border-radius: 10px;
+      background: #080c1c;
+      color: white;
+      outline: none;
+      font-size: 15px;
+    }
+
+    #sendButton {
+      padding: 13px 20px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: #050817;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      background: #080c1c;
+      color: white;
+      text-decoration: none;
+      border-top: 1px solid #292f45;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CUSTOMER LOGIN PROTECTION -->
+  <script>
+    if (localStorage.getItem("customerAuthenticated") !== "true") {
+      window.location.replace("customer-login.html");
+    }
+  </script>
+
+  <div class="chat-header">
+    💬 Chat with Admin
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="empty">Loading messages...</div>
+  </div>
+
+  <div class="input-area">
+    <input
+      type="text"
+      id="messageInput"
+      placeholder="Type your message..."
+      autocomplete="off"
+    >
+
+    <button id="sendButton">
+      Send
+    </button>
+  </div>
+
+  <a href="index.html" class="back">
+    ← Back to Home
+  </a>
+
+  <script>
+    const API = "https://shree-sona-traders.onrender.com";
+
+    const customerPhone = localStorage.getItem("customerPhone");
+
+    const messagesBox = document.getElementById("messages");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    async function loadMessages() {
+      try {
+        const response = await fetch(`${API}/chat/messages`);
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error("Unable to load messages");
+        }
+
+        messagesBox.innerHTML = "";
+
+        const myMessages = data.messages.filter(
+          msg => msg.customer_phone === customerPhone
+        );
+
+        if (myMessages.length === 0) {
+          messagesBox.innerHTML =
+            '<div class="empty">No messages yet. Start a conversation with Admin.</div>';
+          return;
+        }
+
+        myMessages.forEach(msg => {
+          const div = document.createElement("div");
+
+          div.className =
+            "message " + (msg.sender === "customer" ? "customer" : "admin");
+
+          div.textContent = msg.message;
+
+          messagesBox.appendChild(div);
+        });
+
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+
+      } catch (error) {
+        console.error(error);
+
+        messagesBox.innerHTML =
+          '<div class="empty">Unable to load messages.</div>';
+      }
+    }
+
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+
+      if (!message) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API}/chat/send`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            customerId: localStorage.getItem("customerId"),
+            message: message
+          })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          alert(data.message || "Unable to send message");
+          return;
+        }
+
+        messageInput.value = "";
+
+        loadMessages();
+
+      } catch (error) {
+        console.error(error);
+        alert("Unable to connect to server");
+      }
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+
+    messageInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    loadMessages();
+
+    setInterval(loadMessages, 5000);
+  </script>
+
+</body>
+</html>
