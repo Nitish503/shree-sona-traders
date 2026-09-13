@@ -84,6 +84,53 @@
   <footer>
     <p>&copy; 2026 SHREE SONA TRADER. All rights reserved.</p>
   </footer>
+  <!-- ADMIN CUSTOMER CHAT -->
+<section id="adminChatSection" class="admin-chat-section">
+
+  <h2>💬 Customer Chat</h2>
+
+  <div class="chat-layout">
+
+    <!-- Customer List -->
+    <div class="chat-customers">
+      <h3>Customers</h3>
+
+      <div id="chatCustomerList">
+        <p>No customers have sent messages yet.</p>
+      </div>
+
+    </div>
+
+    <!-- Conversation -->
+    <div class="chat-conversation">
+
+      <div id="selectedCustomer">
+        Select a customer to view the conversation.
+      </div>
+
+      <div id="adminChatMessages">
+      </div>
+
+      <div class="admin-chat-input">
+
+        <input
+          type="text"
+          id="adminMessageInput"
+          placeholder="Type your reply..."
+          autocomplete="off"
+        >
+
+        <button id="adminSendButton">
+          Send
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
   <!-- JS File -->
   <script src="admin.js"></script>
