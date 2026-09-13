@@ -38,6 +38,16 @@ async function createTables() {
       );
     `);
 
+    // Notice Board table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS notice_board (
+        id SERIAL PRIMARY KEY,
+        message TEXT NOT NULL,
+        is_enabled BOOLEAN DEFAULT FALSE,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     console.log("Tables created successfully!");
     
     await pool.query(`

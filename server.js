@@ -1386,6 +1386,140 @@ app.delete("/chat/delete/:messageId", async (req, res) => {
   }
 });
 
+
+// =========================
+// NOTICE BOARD
+// =========================
+
+// Get current notice
+app.get("/notice", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, message, is_enabled, updated_at
+       FROM notice_board
+       ORDER BY id DESC
+       LIMIT 1`
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({
+        success: true,
+        notice: null
+      });
+    }
+
+    res.json({
+      success: true,
+      notice: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("Notice Get Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
+
+// Save / update notice
+app.post("/notice", async (req, res) => {
+  try {
+    const { message, is_enabled } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Notice message is required"
+      });
+    }
+
+    const existing = await pool.query(
+      `SELECT id FROM notice_board
+       ORDER BY id DESC
+       LIMIT 1`
+    );
+
+    let result;
+
+    if (existing.rows.length === 0) {
+
+      result = await pool.query(
+        `INSERT INTO notice_board
+         (message, is_enabled, updated_at)
+         VALUES ($1, $2, CURRENT_TIMESTAMP)
+         RETURNING id, message, is_enabled, updated_at`,
+        [message.trim(), Boolean(is_enabled)]
+      );
+
+    } else {
+
+      result = await pool.query(
+        `UPDATE notice_board
+         SET message = $1,
+             is_enabled = $2,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $3
+         RETURNING id, message, is_enabled, updated_at`,
+        [
+          message.trim(),
+          Boolean(is_enabled),
+          existing.rows[0].id
+        ]
+      );
+
+    }
+
+    res.json({
+      success: true,
+      notice: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("Notice Save Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
+
+// Turn notice off
+app.post("/notice/off", async (req, res) => {
+  try {
+
+    const result = await pool.query(
+      `UPDATE notice_board
+       SET is_enabled = FALSE,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = (
+         SELECT id
+         FROM notice_board
+         ORDER BY id DESC
+         LIMIT 1
+       )
+       RETURNING id, message, is_enabled, updated_at`
+    );
+
+    res.json({
+      success: true,
+      notice: result.rows[0] || null
+    });
+
+  } catch (err) {
+    console.error("Notice Off Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------

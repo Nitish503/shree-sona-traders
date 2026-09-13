@@ -482,3 +482,140 @@ setInterval(
   loadAdminChat,
   5000
 );
+
+// =========================
+// NOTICE BOARD ADMIN
+// =========================
+
+const noticeMessage = document.getElementById("noticeMessage");
+const noticeEnabled = document.getElementById("noticeEnabled");
+const saveNoticeButton = document.getElementById("saveNoticeButton");
+const turnOffNoticeButton = document.getElementById("turnOffNoticeButton");
+
+
+// Load current notice
+async function loadNoticeSettings() {
+
+  if (!noticeMessage || !noticeEnabled) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      "https://shree-sona-traders.onrender.com/notice"
+    );
+
+    const data = await response.json();
+
+    if (!data.success || !data.notice) {
+      return;
+    }
+
+    noticeMessage.value = data.notice.message || "";
+    noticeEnabled.checked = data.notice.is_enabled === true;
+
+  } catch (error) {
+
+    console.error("Notice Load Error:", error);
+
+  }
+}
+
+
+// Save notice
+async function saveNotice() {
+
+  const message = noticeMessage.value.trim();
+
+  if (!message) {
+    alert("Please write a notice message.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      "https://shree-sona-traders.onrender.com/notice",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: message,
+          is_enabled: noticeEnabled.checked
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "Unable to save notice.");
+      return;
+    }
+
+    alert("✅ Notice saved successfully.");
+
+  } catch (error) {
+
+    console.error("Notice Save Error:", error);
+
+    alert("Unable to connect to server.");
+
+  }
+}
+
+
+// Turn notice off
+async function turnOffNotice() {
+
+  try {
+
+    const response = await fetch(
+      "https://shree-sona-traders.onrender.com/notice/off",
+      {
+        method: "POST"
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "Unable to turn off notice.");
+      return;
+    }
+
+    noticeEnabled.checked = false;
+
+    alert("✅ Notice Board turned off.");
+
+  } catch (error) {
+
+    console.error("Notice Off Error:", error);
+
+    alert("Unable to connect to server.");
+
+  }
+}
+
+
+// Button events
+if (saveNoticeButton) {
+  saveNoticeButton.addEventListener(
+    "click",
+    saveNotice
+  );
+}
+
+if (turnOffNoticeButton) {
+  turnOffNoticeButton.addEventListener(
+    "click",
+    turnOffNotice
+  );
+}
+
+
+// Load settings when Admin Dashboard opens
+loadNoticeSettings();

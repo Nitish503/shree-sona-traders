@@ -286,3 +286,50 @@ footer {
   background: #b02a37 !important;
   transform: none !important;
 }
+
+/* =========================
+   NOTICE BOARD ADMIN
+   ========================= */
+
+.notice-admin-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.notice-admin-section h2 {
+  margin-top: 0;
+}
+
+#noticeMessage {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+
+#saveNoticeButton,
+#turnOffNoticeButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+#saveNoticeButton {
+  background: #198754;
+  color: white;
+}
+
+#turnOffNoticeButton {
+  background: #dc3545;
+  color: white;
+}
