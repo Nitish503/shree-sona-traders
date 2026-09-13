@@ -1277,6 +1277,45 @@ app.post("/chat/admin-send", async (req, res) => {
   }
 });
 
+// Delete chat message
+app.delete("/chat/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Message ID is required"
+      });
+    }
+
+    const result = await pool.query(
+      "DELETE FROM chat_messages WHERE id=$1 RETURNING id",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Message not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Message deleted successfully"
+    });
+
+  } catch (err) {
+    console.error("Chat Delete Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
 // --------------------
 // SERVER START (FIXED FOR RENDER)
 // --------------------

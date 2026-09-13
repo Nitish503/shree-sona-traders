@@ -429,3 +429,35 @@ footer {
   background: #b02a37 !important;
   transform: none !important;
 }
+/* =========================
+   CHAT MESSAGE DELETE BUTTON
+   ========================= */
+
+.admin-chat-message-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.admin-chat-message-wrapper.customer {
+  justify-content: flex-start;
+}
+
+.admin-chat-message-wrapper.admin {
+  justify-content: flex-end;
+}
+
+.delete-chat-message {
+  border: none;
+  background: #dc3545;
+  color: white;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.delete-chat-message:hover {
+  opacity: 0.85;
+}

@@ -248,6 +248,12 @@ function displayConversation(customerId) {
 
   customerMessages.forEach(message => {
 
+    const wrapper = document.createElement("div");
+
+    wrapper.className =
+      "admin-chat-message-wrapper " +
+      (message.sender === "customer" ? "customer" : "admin");
+
     const div = document.createElement("div");
 
     div.className =
@@ -256,13 +262,64 @@ function displayConversation(customerId) {
 
     div.textContent = message.message;
 
-    adminChatMessages.appendChild(div);
+    wrapper.appendChild(div);
+
+    // Delete button
+    const deleteButton = document.createElement("button");
+
+    deleteButton.className = "delete-chat-message";
+    deleteButton.textContent = "Delete";
+
+    deleteButton.addEventListener("click", function () {
+      deleteChatMessage(message.id);
+    });
+
+    wrapper.appendChild(deleteButton);
+
+    adminChatMessages.appendChild(wrapper);
 
   });
 
   adminChatMessages.scrollTop =
     adminChatMessages.scrollHeight;
+}
 
+// Delete chat message
+async function deleteChatMessage(messageId) {
+
+  const confirmDelete = confirm(
+    "Are you sure you want to delete this message?"
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${CHAT_API}/chat/delete/${messageId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "Unable to delete message.");
+      return;
+    }
+
+    await loadAdminChat();
+
+  } catch (error) {
+
+    console.error("Delete Chat Error:", error);
+
+    alert("Unable to connect to server.");
+
+  }
 }
 
 
