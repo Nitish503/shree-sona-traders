@@ -619,3 +619,99 @@ if (turnOffNoticeButton) {
 
 // Load settings when Admin Dashboard opens
 loadNoticeSettings();
+
+// =========================
+// SLIDER IMAGE ADMIN
+// =========================
+
+const SLIDER_API = "https://shree-sona-traders.onrender.com";
+
+async function uploadSliderImage(position) {
+
+  const fileInput = document.getElementById(
+    `sliderImage${position}`
+  );
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert(`Please select Slider Image ${position}.`);
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("image", file);
+  formData.append("position", position);
+
+  try {
+
+    const response = await fetch(
+      `${SLIDER_API}/upload-slider`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "Unable to upload slider image.");
+      return;
+    }
+
+    alert(`✅ Slider Image ${position} uploaded successfully.`);
+
+    fileInput.value = "";
+
+  } catch (error) {
+
+    console.error("Slider Upload Error:", error);
+
+    alert("Unable to connect to server.");
+
+  }
+}
+
+
+// Slider 1
+const uploadSlider1 =
+  document.getElementById("uploadSlider1");
+
+if (uploadSlider1) {
+  uploadSlider1.addEventListener(
+    "click",
+    function () {
+      uploadSliderImage(1);
+    }
+  );
+}
+
+
+// Slider 2
+const uploadSlider2 =
+  document.getElementById("uploadSlider2");
+
+if (uploadSlider2) {
+  uploadSlider2.addEventListener(
+    "click",
+    function () {
+      uploadSliderImage(2);
+    }
+  );
+}
+
+
+// Slider 3
+const uploadSlider3 =
+  document.getElementById("uploadSlider3");
+
+if (uploadSlider3) {
+  uploadSlider3.addEventListener(
+    "click",
+    function () {
+      uploadSliderImage(3);
+    }
+  );
+}

@@ -333,3 +333,50 @@ footer {
   background: #dc3545;
   color: white;
 }
+/* =========================
+   SLIDER IMAGE MANAGEMENT
+   ========================= */
+
+.slider-admin-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+.slider-admin-section h2 {
+  margin-top: 0;
+}
+
+.slider-upload-box {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.slider-upload-box h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.slider-upload-box input[type="file"] {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.slider-upload-box button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #198754;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.slider-upload-box button:hover {
+  opacity: 0.9;
+}
