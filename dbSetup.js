@@ -47,6 +47,18 @@ async function createTables() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    // =========================
+// SLIDER IMAGES
+// =========================
+
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS slider_images (
+    id SERIAL PRIMARY KEY,
+    image_url TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 
     console.log("Tables created successfully!");
     
