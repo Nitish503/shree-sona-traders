@@ -1159,6 +1159,77 @@ app.post("/upload-logo", upload.single("image"), async (req, res) => {
   }
 });
 
+
+// =====================
+// UPLOAD SLIDER IMAGE
+// =====================
+app.post("/upload-slider", upload.single("image"), async (req, res) => {
+  try {
+
+    const imageUrl = req.file.path;
+    const position = Number(req.body.position);
+
+    if (!position) {
+      return res.status(400).json({
+        success: false,
+        message: "Slider position is required"
+      });
+    }
+
+    // Find existing image at this position
+    const existing = await pool.query(
+      "SELECT id, image_url FROM slider_images WHERE position=$1",
+      [position]
+    );
+
+    // Delete old image from Cloudinary
+    if (existing.rows.length > 0) {
+
+      const oldUrl = existing.rows[0].image_url;
+
+      if (oldUrl) {
+        const publicId = getPublicId(oldUrl);
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      // Update existing slider image
+      await pool.query(
+        `UPDATE slider_images
+         SET image_url=$1,
+             updated_at=CURRENT_TIMESTAMP
+         WHERE position=$2`,
+        [imageUrl, position]
+      );
+
+    } else {
+
+      // Add new slider image
+      await pool.query(
+        `INSERT INTO slider_images
+         (image_url, position, updated_at)
+         VALUES ($1, $2, CURRENT_TIMESTAMP)`,
+        [imageUrl, position]
+      );
+
+    }
+
+    res.json({
+      success: true,
+      url: imageUrl,
+      position: position
+    });
+
+  } catch (err) {
+
+    console.error("Slider upload error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
+});
 // =====================
 // CUSTOMER LOGIN
 // =====================
@@ -1442,6 +1513,34 @@ app.post("/notice/off", async (req, res) => {
 
   } catch (err) {
     console.error("Notice Off Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
+// =========================
+// SLIDER IMAGES
+// =========================
+
+// Get slider images
+app.get("/slider-images", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, image_url, position
+       FROM slider_images
+       ORDER BY position ASC`
+    );
+
+    res.json({
+      success: true,
+      images: result.rows
+    });
+
+  } catch (err) {
+    console.error("Slider Images Error:", err);
 
     res.status(500).json({
       success: false,
