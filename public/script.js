@@ -144,3 +144,47 @@ if (closeNotice) {
 
 // Load notice
 loadNotice();
+
+// =========================
+// LOAD SLIDER IMAGES
+// =========================
+
+async function loadSliderImages() {
+
+  try {
+
+    const response = await fetch(
+      "https://shree-sona-traders.onrender.com/slider-images"
+    );
+
+    const data = await response.json();
+
+    if (!data.success || !data.images) {
+      return;
+    }
+
+    data.images.forEach(image => {
+
+      const sliderImage = document.getElementById(
+        `sliderImage${image.position}`
+      );
+
+      if (sliderImage) {
+        sliderImage.src = image.image_url;
+      }
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Slider Images Error:",
+      error
+    );
+
+  }
+}
+
+
+// Load slider images
+loadSliderImages();
