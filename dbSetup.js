@@ -60,6 +60,18 @@ await pool.query(`
   );
 `);
 
+// APK update table
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS app_updates (
+    id SERIAL PRIMARY KEY,
+    version VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    download_url TEXT NOT NULL,
+    is_enabled BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
     console.log("Tables created successfully!");
     
     await pool.query(`

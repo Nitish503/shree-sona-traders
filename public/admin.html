@@ -226,6 +226,79 @@
 
 </section>
 
+<!-- APK UPDATE MANAGEMENT -->
+  <section id="apkUpdateSection" class="apk-update-section">
+
+    <h2>📱 APK Update Management</h2>
+    <p>Publish app updates and manage previous APK update records.</p>
+
+    <div class="apk-update-form">
+
+      <h3>Publish New App Version</h3>
+
+      <label for="apkVersion">App Version</label>
+      <input
+        type="text"
+        id="apkVersion"
+        placeholder="Example: 1.0.1"
+        required
+      >
+
+      <br><br>
+
+      <label for="apkMessage">Update Message</label>
+      <textarea
+        id="apkMessage"
+        rows="4"
+        placeholder="Describe the new features or fixes..."
+        required
+      ></textarea>
+
+      <br><br>
+
+      <label for="apkDownloadUrl">APK Download URL</label>
+      <input
+        type="url"
+        id="apkDownloadUrl"
+        placeholder="https://..."
+        required
+      >
+
+      <br><br>
+
+      <label>
+        <input type="checkbox" id="apkUpdateEnabled">
+        Make this the active update for customers
+      </label>
+
+      <br><br>
+
+      <button type="button" id="publishApkUpdateButton">
+        Publish APK Update
+      </button>
+
+      <p id="apkUpdateStatus" role="status"></p>
+
+    </div>
+
+    <hr>
+
+    <div class="apk-update-history">
+
+      <h3>📋 APK Update History</h3>
+
+      <button type="button" id="refreshApkHistoryButton">
+        Refresh History
+      </button>
+
+      <div id="apkUpdateHistoryList">
+        <p>Click Refresh History to load previous updates.</p>
+      </div>
+
+    </div>
+
+  </section>
+
   <!-- JS File -->
   <script src="admin.js"></script>
 
