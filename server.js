@@ -7,6 +7,7 @@ const path = require("path");
 const { Pool } = require("pg");
 const multer = require("multer");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 // 🔥 Cloudinary
 const cloudinary = require("cloudinary").v2;
@@ -43,9 +44,16 @@ app.post("/admin/login", (req, res) => {
     });
   }
 
+  const token = jwt.sign(
+    { phone },
+    process.env.JWT_SECRET,
+    { expiresIn: "8h" }
+  );
+
   res.json({
     success: true,
-    message: "Admin login successful"
+    message: "Admin login successful",
+    token
   });
 });
 
@@ -1545,6 +1553,208 @@ app.get("/slider-images", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error"
+    });
+  }
+});
+
+
+/**
+ * Verify admin JWT token
+ */
+function verifyAdminToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      success: false,
+      message: "Admin authentication required"
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const allowedNumbers = (process.env.ADMIN_NUMBERS || "")
+      .split(",")
+      .map(n => n.trim())
+      .filter(Boolean);
+
+    if (!allowedNumbers.includes(decoded.phone)) {
+      return res.status(403).json({
+        success: false,
+        message: "Admin access denied"
+      });
+    }
+
+    req.admin = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired admin token"
+    });
+  }
+}
+
+// =========================
+// APK UPDATE API
+// =========================
+
+// Get the latest APK update information
+app.get("/api/app-update", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT version, message, download_url, is_enabled, updated_at
+FROM app_updates
+WHERE is_enabled = TRUE
+ORDER BY id DESC
+LIMIT 1
+    `);
+
+    if (result.rows.length === 0) {
+      return res.json({
+        success: true,
+        update: null
+      });
+    }
+
+    res.json({
+      success: true,
+      update: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("APK Update Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch app update"
+    });
+  }
+});
+
+/**
+ * List APK update history for authenticated admins
+ */
+app.get("/api/app-updates", verifyAdminToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, version, message, download_url, is_enabled, updated_at
+      FROM app_updates
+      ORDER BY id DESC
+    `);
+
+    return res.json({
+      success: true,
+      updates: result.rows
+    });
+  } catch (err) {
+    console.error("APK Update History Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch APK update history"
+    });
+  }
+});
+
+// Admin publishes an APK update
+app.post("/api/app-update", verifyAdminToken, async (req, res) => {
+  try {
+    const { version, message, download_url, is_enabled } = req.body;
+
+    if (
+      !version?.trim() ||
+      !message?.trim() ||
+      !download_url?.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Version, message and download link are required"
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO app_updates
+       (version, message, download_url, is_enabled, updated_at)
+       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+       RETURNING id, version, message, download_url, is_enabled, updated_at`,
+      [
+        version.trim(),
+        message.trim(),
+        download_url.trim(),
+        Boolean(is_enabled)
+      ]
+    );
+
+    res.json({
+      success: true,
+      update: result.rows[0]
+    });
+
+  } catch (err) {
+    console.error("APK Update Save Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to save APK update"
+    });
+  }
+});
+
+/**
+ * Delete an older APK update record.
+ * The latest record cannot be deleted.
+ */
+app.delete("/api/app-update/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid update ID"
+      });
+    }
+
+    const latest = await pool.query(
+      "SELECT id FROM app_updates ORDER BY id DESC LIMIT 1"
+    );
+
+    if (
+      latest.rows.length > 0 &&
+      Number(latest.rows[0].id) === id
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "The latest APK record cannot be deleted"
+      });
+    }
+
+    const result = await pool.query(
+      "DELETE FROM app_updates WHERE id = $1 RETURNING id",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "APK update record not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Older APK record deleted successfully"
+    });
+  } catch (err) {
+    console.error("APK Update Delete Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete APK update record"
     });
   }
 });
