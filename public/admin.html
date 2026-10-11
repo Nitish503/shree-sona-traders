@@ -174,10 +174,6 @@
 
 </section>
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2026 SHREE SONA TRADER. All rights reserved.</p>
-  </footer>
   <!-- ADMIN CUSTOMER CHAT -->
 <section id="adminChatSection" class="admin-chat-section">
 
@@ -188,11 +184,9 @@
     <!-- Customer List -->
     <div class="chat-customers">
       <h3>Customers</h3>
-
       <div id="chatCustomerList">
         <p>No customers have sent messages yet.</p>
       </div>
-
     </div>
 
     <!-- Conversation -->
@@ -225,82 +219,68 @@
   </div>
 
 </section>
-
 <!-- APK UPDATE MANAGEMENT -->
-  <section id="apkUpdateSection" class="apk-update-section">
+<section id="apkUpdateSection" class="apk-update-section">
 
-    <h2>📱 APK Update Management</h2>
-    <p>Publish app updates and manage previous APK update records.</p>
+  <h2>📱 APK Update Management</h2>
+  <p>Publish new Android app versions and manage update history.</p>
 
-    <div class="apk-update-form">
+  <h3>Publish New Version</h3>
 
-      <h3>Publish New App Version</h3>
+  <label for="apkVersion">App Version</label>
+  <input
+    type="text"
+    id="apkVersion"
+    placeholder="Example: 1.0.1"
+  >
 
-      <label for="apkVersion">App Version</label>
-      <input
-        type="text"
-        id="apkVersion"
-        placeholder="Example: 1.0.1"
-        required
-      >
+  <br><br>
 
-      <br><br>
+  <label for="apkMessage">Update Message</label>
+  <textarea
+    id="apkMessage"
+    rows="4"
+    placeholder="Describe the new features or fixes..."
+  ></textarea>
 
-      <label for="apkMessage">Update Message</label>
-      <textarea
-        id="apkMessage"
-        rows="4"
-        placeholder="Describe the new features or fixes..."
-        required
-      ></textarea>
+  <br><br>
 
-      <br><br>
+  <label for="apkDownloadUrl">APK Download URL</label>
+  <input
+    type="url"
+    id="apkDownloadUrl"
+    placeholder="https://..."
+  >
 
-      <label for="apkDownloadUrl">APK Download URL</label>
-      <input
-        type="url"
-        id="apkDownloadUrl"
-        placeholder="https://..."
-        required
-      >
+  <br><br>
 
-      <br><br>
+  <label>
+    <input type="checkbox" id="apkUpdateEnabled">
+    Make this the active update for customers
+  </label>
 
-      <label>
-        <input type="checkbox" id="apkUpdateEnabled">
-        Make this the active update for customers
-      </label>
+  <br><br>
 
-      <br><br>
+  <button type="button" id="publishApkUpdateButton">
+    Publish APK Update
+  </button>
 
-      <button type="button" id="publishApkUpdateButton">
-        Publish APK Update
-      </button>
+  <p id="apkUpdateStatus" role="status"></p>
 
-      <p id="apkUpdateStatus" role="status"></p>
+  <hr>
 
-    </div>
+  <h3>📋 APK Update History</h3>
 
-    <hr>
+  <button type="button" id="refreshApkHistoryButton">
+    Refresh History
+  </button>
 
-    <div class="apk-update-history">
+  <div id="apkUpdateHistoryList">
+    <p>Click Refresh History to load previous updates.</p>
+  </div>
 
-      <h3>📋 APK Update History</h3>
+</section>
 
-      <button type="button" id="refreshApkHistoryButton">
-        Refresh History
-      </button>
-
-      <div id="apkUpdateHistoryList">
-        <p>Click Refresh History to load previous updates.</p>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- JS File -->
-  <script src="admin.js"></script>
-
+ <script src="admin.js"></script>
 </body>
 </html>
