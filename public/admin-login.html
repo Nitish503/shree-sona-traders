@@ -140,37 +140,26 @@
 
         const data = await response.json();
 
-        if (data.success === true) {
+        if (data.success === true && data.token) {
 
-          message.textContent = "✅ Login successful";
+  message.textContent = "✅ Login successful";
 
-          localStorage.setItem("adminAuthenticated", "true");
+  localStorage.setItem("adminAuthenticated", "true");
+  localStorage.setItem("adminToken", data.token);
 
-          const saved = localStorage.getItem("adminAuthenticated");
+  setTimeout(() => {
+    window.location.href = "admin.html";
+  }, 500);
 
-          if (saved === "true") {
+} else {
 
-            setTimeout(() => {
-              window.location.href = "admin.html";
-            }, 500);
+  message.textContent =
+    "❌ " + (data.message || "Login failed or token missing");
 
-          } else {
+  button.disabled = false;
+  button.textContent = "Login";
 
-            message.textContent = "❌ Unable to save login session";
-            button.disabled = false;
-            button.textContent = "Login";
-
-          }
-
-        } else {
-
-          message.textContent =
-            "❌ " + (data.message || "Invalid login");
-
-          button.disabled = false;
-          button.textContent = "Login";
-
-        }
+}
 
       } catch (error) {
 

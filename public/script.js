@@ -188,3 +188,98 @@ async function loadSliderImages() {
 
 // Load slider images
 loadSliderImages();
+
+/* ==========================================
+   ANDROID APP UPDATE CHECK
+========================================== */
+
+(function () {
+  const UPDATE_API =
+    "https://shree-sona-traders.onrender.com/api/app-update";
+
+  async function checkForAppUpdate() {
+    const overlay = document.getElementById("appUpdateOverlay");
+    const versionElement = document.getElementById("appUpdateVersion");
+    const messageElement = document.getElementById("appUpdateMessage");
+    const downloadLink = document.getElementById("appUpdateDownload");
+    const laterButton = document.getElementById("appUpdateLater");
+
+    if (
+      !overlay ||
+      !versionElement ||
+      !messageElement ||
+      !downloadLink ||
+      !laterButton
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(UPDATE_API, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error("Update check failed: " + response.status);
+      }
+
+      const data = await response.json();
+      const update = data.update;
+
+      if (!data.success || !update || !update.version || !update.download_url) {
+        return;
+      }
+
+      // Validate the download link before displaying it.
+      let downloadUrl;
+
+      try {
+        downloadUrl = new URL(update.download_url);
+      } catch {
+        console.error("Invalid APK download URL.");
+        return;
+      }
+
+      if (downloadUrl.protocol !== "https:") {
+        console.error("APK download URL must use HTTPS.");
+        return;
+      }
+
+      // Avoid showing the same dismissed version repeatedly in this browser.
+      const dismissedVersion = localStorage.getItem(
+        "dismissedAppUpdateVersion"
+      );
+
+      if (dismissedVersion === String(update.version)) {
+        return;
+      }
+
+      versionElement.textContent = "Version " + update.version;
+      messageElement.textContent =
+        update.message || "A new version of the app is available.";
+
+      downloadLink.href = downloadUrl.href;
+
+      overlay.style.display = "flex";
+
+      laterButton.onclick = function () {
+        localStorage.setItem(
+          "dismissedAppUpdateVersion",
+          String(update.version)
+        );
+
+        overlay.style.display = "none";
+      };
+    } catch (error) {
+      // The homepage should continue working if the update server is unavailable.
+      console.error("Could not check for app updates:", error);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", checkForAppUpdate);
+  } else {
+    checkForAppUpdate();
+  }
+})();

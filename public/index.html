@@ -98,6 +98,71 @@
 
 </div>
 
+<!-- APP UPDATE POPUP -->
+<div id="appUpdateOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  z-index:99999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  box-sizing:border-box;
+">
+  <div style="
+    background:white;
+    color:#222;
+    width:100%;
+    max-width:400px;
+    padding:24px;
+    border-radius:14px;
+    box-sizing:border-box;
+    text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  ">
+    <h2 style="margin-top:0;">📱 App Update Available</h2>
+
+    <p id="appUpdateVersion" style="font-weight:bold;"></p>
+
+    <p id="appUpdateMessage"></p>
+
+    <a
+      id="appUpdateDownload"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+      style="
+        display:block;
+        padding:13px;
+        background:#087f5b;
+        color:white;
+        text-decoration:none;
+        border-radius:8px;
+        font-weight:bold;
+        margin-top:20px;
+      "
+    >
+      Download Latest Version
+    </a>
+
+    <button
+      id="appUpdateLater"
+      type="button"
+      style="
+        margin-top:12px;
+        padding:10px 18px;
+        border:1px solid #ccc;
+        background:white;
+        border-radius:8px;
+        cursor:pointer;
+      "
+    >
+      Remind Me Later
+    </button>
+  </div>
+</div>
+
 <script src="script.js"></script>
 <script>
 

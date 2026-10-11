@@ -639,3 +639,232 @@ if (uploadSlider3) {
     }
   );
 }
+
+// ==========================================
+// APK UPDATE MANAGEMENT
+// ==========================================
+
+const APK_API = "https://shree-sona-traders.onrender.com";
+
+const apkVersionInput = document.getElementById("apkVersion");
+const apkMessageInput = document.getElementById("apkMessage");
+const apkDownloadUrlInput = document.getElementById("apkDownloadUrl");
+const apkUpdateEnabledInput = document.getElementById("apkUpdateEnabled");
+const publishApkButton = document.getElementById("publishApkUpdateButton");
+const refreshApkHistoryButton = document.getElementById("refreshApkHistoryButton");
+const apkUpdateStatus = document.getElementById("apkUpdateStatus");
+const apkUpdateHistoryList = document.getElementById("apkUpdateHistoryList");
+
+function getApkAdminToken() {
+  return localStorage.getItem("adminToken");
+}
+
+async function apkAdminRequest(path, options = {}) {
+  const token = getApkAdminToken();
+
+  if (!token) {
+    throw new Error("Admin token missing. Please log in again.");
+  }
+
+  const response = await fetch(`${APK_API}${path}`, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      ...(options.body ? { "Content-Type": "application/json" } : {})
+    }
+  });
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (response.status === 401) {
+    localStorage.removeItem("adminAuthenticated");
+    localStorage.removeItem("adminToken");
+    window.location.href = "admin-login.html";
+    throw new Error("Your admin session expired. Please log in again.");
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || `Request failed (${response.status})`);
+  }
+
+  return data;
+}
+
+function setApkStatus(message, isError = false) {
+  if (!apkUpdateStatus) return;
+
+  apkUpdateStatus.textContent = message;
+  apkUpdateStatus.style.color = isError ? "red" : "green";
+}
+
+function createApkHistoryElement(update, isLatest) {
+  const card = document.createElement("div");
+
+  card.style.border = "1px solid #ccc";
+  card.style.borderRadius = "8px";
+  card.style.padding = "12px";
+  card.style.margin = "12px 0";
+
+  const title = document.createElement("h4");
+  title.textContent = `Version ${update.version || "Unknown"}`;
+  card.appendChild(title);
+
+  const message = document.createElement("p");
+  message.textContent = update.message || "";
+  card.appendChild(message);
+
+  const link = document.createElement("a");
+  link.textContent = "Download APK";
+  link.href = update.download_url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  card.appendChild(link);
+
+  const status = document.createElement("p");
+  status.textContent = update.is_enabled
+    ? "Status: Active for customers"
+    : "Status: Inactive";
+  card.appendChild(status);
+
+  const date = document.createElement("p");
+  date.textContent = update.updated_at
+    ? `Published: ${new Date(update.updated_at).toLocaleString()}`
+    : "";
+  card.appendChild(date);
+
+  if (isLatest) {
+    const note = document.createElement("p");
+    note.textContent = "Latest record — cannot be deleted.";
+    card.appendChild(note);
+  } else {
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.textContent = "Delete Old Record";
+
+    deleteButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        `Delete the update record for version ${update.version}? This will not delete the hosted APK file.`
+      );
+
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+
+      try {
+        await apkAdminRequest(
+          `/api/app-update/${encodeURIComponent(update.id)}`,
+          { method: "DELETE" }
+        );
+
+        setApkStatus("Old APK update record deleted.");
+        await loadApkUpdateHistory();
+      } catch (error) {
+        setApkStatus(error.message, true);
+        deleteButton.disabled = false;
+      }
+    });
+
+    card.appendChild(deleteButton);
+  }
+
+  return card;
+}
+
+async function loadApkUpdateHistory() {
+  if (!apkUpdateHistoryList) return;
+
+  apkUpdateHistoryList.textContent = "Loading update history...";
+
+  try {
+    const data = await apkAdminRequest("/api/app-updates");
+    const updates = Array.isArray(data.updates) ? data.updates : [];
+
+    apkUpdateHistoryList.replaceChildren();
+
+    if (updates.length === 0) {
+      apkUpdateHistoryList.textContent = "No APK update records found.";
+      return;
+    }
+
+    updates.forEach((update, index) => {
+      apkUpdateHistoryList.appendChild(
+        createApkHistoryElement(update, index === 0)
+      );
+    });
+  } catch (error) {
+    apkUpdateHistoryList.textContent = error.message;
+    setApkStatus(error.message, true);
+  }
+}
+
+if (publishApkButton) {
+  publishApkButton.addEventListener("click", async () => {
+    const version = apkVersionInput.value.trim();
+    const message = apkMessageInput.value.trim();
+    const download_url = apkDownloadUrlInput.value.trim();
+    const is_enabled = apkUpdateEnabledInput.checked;
+
+    if (!version || !message || !download_url) {
+      setApkStatus(
+        "Please enter the app version, update message, and APK download URL.",
+        true
+      );
+      return;
+    }
+
+    try {
+      const parsedUrl = new URL(download_url);
+
+      if (parsedUrl.protocol !== "https:") {
+        setApkStatus("Please use a secure HTTPS download URL.", true);
+        return;
+      }
+    } catch {
+      setApkStatus("Please enter a valid APK download URL.", true);
+      return;
+    }
+
+    publishApkButton.disabled = true;
+    publishApkButton.textContent = "Publishing...";
+
+    try {
+      await apkAdminRequest("/api/app-update", {
+        method: "POST",
+        body: JSON.stringify({
+          version,
+          message,
+          download_url,
+          is_enabled
+        })
+      });
+
+      setApkStatus("APK update published successfully.");
+
+      apkVersionInput.value = "";
+      apkMessageInput.value = "";
+      apkDownloadUrlInput.value = "";
+      apkUpdateEnabledInput.checked = false;
+
+      await loadApkUpdateHistory();
+    } catch (error) {
+      setApkStatus(error.message, true);
+    } finally {
+      publishApkButton.disabled = false;
+      publishApkButton.textContent = "Publish APK Update";
+    }
+  });
+}
+
+if (refreshApkHistoryButton) {
+  refreshApkHistoryButton.addEventListener(
+    "click",
+    loadApkUpdateHistory
+  );
+}
