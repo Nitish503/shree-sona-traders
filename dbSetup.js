@@ -78,6 +78,32 @@ await pool.query(`
   );
 `);
 
+// SMS message templates
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sms_templates (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // SMS sending history
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS sms_send_logs (
+        id SERIAL PRIMARY KEY,
+        template_id INTEGER REFERENCES sms_templates(id) ON DELETE SET NULL,
+        customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
+        customer_name VARCHAR(100),
+        phone VARCHAR(20) NOT NULL,
+        message TEXT NOT NULL,
+        status VARCHAR(30) NOT NULL DEFAULT 'pending',
+        error_message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     console.log("Tables created successfully!");
     process.exit(0);
   } catch (err) {

@@ -1598,6 +1598,294 @@ function verifyAdminToken(req, res, next) {
   }
 }
 
+/* =========================
+   SMS MANAGER API
+   Admin-only backend routes
+   ========================= */
+
+// Get customers with valid phone numbers
+app.get("/api/sms/customers", verifyAdminToken, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, name, phone
+            FROM customers
+            WHERE phone IS NOT NULL
+              AND TRIM(phone) <> ''
+            ORDER BY name ASC
+        `);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("SMS customers error:", error);
+        res.status(500).json({ error: "Failed to load SMS customers" });
+    }
+});
+
+// Get all SMS templates
+app.get("/api/sms/templates", verifyAdminToken, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, name, message, created_at, updated_at
+            FROM sms_templates
+            ORDER BY updated_at DESC, id DESC
+        `);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("SMS templates error:", error);
+        res.status(500).json({ error: "Failed to load SMS templates" });
+    }
+});
+
+// Create an SMS template
+app.post("/api/sms/templates", verifyAdminToken, async (req, res) => {
+    try {
+        const name = typeof req.body.name === "string"
+            ? req.body.name.trim()
+            : "";
+        const message = typeof req.body.message === "string"
+            ? req.body.message.trim()
+            : "";
+
+        if (!name || !message) {
+            return res.status(400).json({
+                error: "Template name and message are required"
+            });
+        }
+
+        if (name.length > 100) {
+            return res.status(400).json({
+                error: "Template name cannot exceed 100 characters"
+            });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO sms_templates (name, message)
+             VALUES ($1, $2)
+             RETURNING id, name, message, created_at, updated_at`,
+            [name, message]
+        );
+
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error("Create SMS template error:", error);
+        res.status(500).json({ error: "Failed to create SMS template" });
+    }
+});
+
+// Update an SMS template
+app.put("/api/sms/templates/:id", verifyAdminToken, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const name = typeof req.body.name === "string"
+            ? req.body.name.trim()
+            : "";
+        const message = typeof req.body.message === "string"
+            ? req.body.message.trim()
+            : "";
+
+        if (!Number.isInteger(id) || id < 1 || !name || !message) {
+            return res.status(400).json({
+                error: "Valid template ID, name and message are required"
+            });
+        }
+
+        if (name.length > 100) {
+            return res.status(400).json({
+                error: "Template name cannot exceed 100 characters"
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE sms_templates
+             SET name = $1, message = $2, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $3
+             RETURNING id, name, message, created_at, updated_at`,
+            [name, message, id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Template not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Update SMS template error:", error);
+        res.status(500).json({ error: "Failed to update SMS template" });
+    }
+});
+
+// Delete an SMS template
+app.delete("/api/sms/templates/:id", verifyAdminToken, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id < 1) {
+            return res.status(400).json({ error: "Invalid template ID" });
+        }
+
+        const result = await pool.query(
+            `DELETE FROM sms_templates WHERE id = $1`,
+            [id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Template not found" });
+        }
+
+        res.json({ message: "SMS template deleted successfully" });
+    } catch (error) {
+        console.error("Delete SMS template error:", error);
+        res.status(500).json({ error: "Failed to delete SMS template" });
+    }
+});
+
+// Get recent SMS sending history
+app.get("/api/sms/logs", verifyAdminToken, async (req, res) => {
+    try {
+        const requestedLimit = Number.parseInt(req.query.limit, 10);
+        const limit = Number.isInteger(requestedLimit)
+            ? Math.min(Math.max(requestedLimit, 1), 200)
+            : 100;
+
+        const result = await pool.query(
+            `SELECT id, template_id, customer_id, customer_name,
+                    phone, message, status, error_message, created_at
+             FROM sms_send_logs
+             ORDER BY created_at DESC, id DESC
+             LIMIT $1`,
+            [limit]
+        );
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("SMS logs error:", error);
+        res.status(500).json({ error: "Failed to load SMS history" });
+    }
+});
+
+// Record SMS results reported by the Android app.
+// The Android phone sends SMS through its SIM; this API only records results.
+app.post("/api/sms/logs", verifyAdminToken, async (req, res) => {
+    const entries = req.body.entries;
+
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 200) {
+        return res.status(400).json({
+            error: "Provide between 1 and 200 SMS result entries"
+        });
+    }
+
+    const allowedStatuses = new Set([
+        "pending",
+        "sent_to_device",
+        "failed",
+        "permission_denied"
+    ]);
+
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        const saved = [];
+
+        for (const entry of entries) {
+            const customerId = entry.customer_id == null
+                ? null
+                : Number(entry.customer_id);
+            const templateId = entry.template_id == null
+                ? null
+                : Number(entry.template_id);
+            const phone = typeof entry.phone === "string"
+                ? entry.phone.trim()
+                : "";
+            const message = typeof entry.message === "string"
+                ? entry.message.trim()
+                : "";
+            const status = typeof entry.status === "string"
+                ? entry.status
+                : "pending";
+            const errorMessage = typeof entry.error_message === "string"
+                ? entry.error_message.slice(0, 500)
+                : null;
+
+            if (
+                !phone ||
+                phone.length > 20 ||
+                !message ||
+                !allowedStatuses.has(status) ||
+                (customerId !== null &&
+                    (!Number.isInteger(customerId) || customerId < 1)) ||
+                (templateId !== null &&
+                    (!Number.isInteger(templateId) || templateId < 1))
+            ) {
+                throw new Error("Invalid SMS result entry");
+            }
+
+            let customerName = null;
+
+            if (customerId !== null) {
+                const customer = await client.query(
+                    `SELECT name, phone FROM customers WHERE id = $1`,
+                    [customerId]
+                );
+
+                if (customer.rowCount === 0) {
+                    throw new Error("Customer not found");
+                }
+
+                customerName = customer.rows[0].name;
+
+                if (customer.rows[0].phone.trim() !== phone) {
+                    throw new Error("Customer phone does not match");
+                }
+            }
+
+            if (templateId !== null) {
+                const template = await client.query(
+                    `SELECT id FROM sms_templates WHERE id = $1`,
+                    [templateId]
+                );
+
+                if (template.rowCount === 0) {
+                    throw new Error("SMS template not found");
+                }
+            }
+
+            const result = await client.query(
+                `INSERT INTO sms_send_logs
+                    (template_id, customer_id, customer_name, phone,
+                     message, status, error_message)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 RETURNING id, status, created_at`,
+                [
+                    templateId,
+                    customerId,
+                    customerName,
+                    phone,
+                    message,
+                    status,
+                    errorMessage
+                ]
+            );
+
+            saved.push(result.rows[0]);
+        }
+
+        await client.query("COMMIT");
+        res.status(201).json({ saved_count: saved.length, entries: saved });
+    } catch (error) {
+        await client.query("ROLLBACK");
+        console.error("Record SMS results error:", error);
+        res.status(400).json({
+            error: error.message || "Failed to record SMS results"
+        });
+    } finally {
+        client.release();
+    }
+});
+
+
 // =========================
 // APK UPDATE API
 // =========================
